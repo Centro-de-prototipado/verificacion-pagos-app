@@ -3,5 +3,8 @@ const nextConfig = {
   logging: {
     browserToTerminal: true,
   },
-}
-export default nextConfig
+  // pdfjs-dist usa módulos nativos Node.js — excluirlo del bundler del servidor
+  serverExternalPackages: ["pdfjs-dist"],
+};
+
+export default nextConfig;

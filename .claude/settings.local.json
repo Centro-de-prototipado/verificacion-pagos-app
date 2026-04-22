@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__notebooklm-mcp__notebook_list",
+      "mcp__notebooklm-mcp__notebook_query",
+      "Bash(pnpm typecheck *)",
+      "mcp__Claude_Preview__preview_start",
+      "mcp__Claude_in_Chrome__computer"
+    ]
+  }
+}
