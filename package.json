@@ -17,6 +17,8 @@
     "@ai-sdk/openai": "^3.0.53",
     "@hookform/resolvers": "^5.2.2",
     "@openrouter/ai-sdk-provider": "^2.8.0",
+    "@pdfme/common": "^6.0.6",
+    "@pdfme/generator": "^6.0.6",
     "ai": "^6.0.168",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",

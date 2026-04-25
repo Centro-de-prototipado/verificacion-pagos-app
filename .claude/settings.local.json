@@ -37,7 +37,23 @@
       "mcp__chrome-devtools__list_pages",
       "mcp__chrome-devtools__select_page",
       "mcp__chrome-devtools__navigate_page",
-      "mcp__chrome-devtools__fill_form"
+      "mcp__chrome-devtools__fill_form",
+      "Bash(pnpm add *)",
+      "Bash(npm install *)",
+      "Bash(npx tsc *)",
+      "Bash(npm info *)",
+      "Bash(node -e \"const d=require\\('fs'\\).readFileSync\\('/dev/stdin','utf8'\\); const j=JSON.parse\\(d\\); console.log\\(JSON.stringify\\({version:j.version,downloads:'check npmjs',description:j.description,keywords:j.keywords,homepage:j.homepage,repository:j.repository,peerDependencies:j.peerDependencies,engines:j.engines},null,2\\)\\)\")",
+      "Bash(node -e \"process.stdin.resume\\(\\);let d='';process.stdin.on\\('data',c=>d+=c\\);process.stdin.on\\('end',\\(\\)=>{const j=JSON.parse\\(d\\);console.log\\('last published:',j.time&&j.time.modified\\);console.log\\('weekly downloads note: use npm-stat.com API'\\)}\\)\")",
+      "WebSearch",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:vercel.com)",
+      "WebFetch(domain:dev.to)",
+      "WebFetch(domain:bundlephobia.com)",
+      "WebFetch(domain:pdfme.com)",
+      "WebFetch(domain:joyfill.io)",
+      "WebFetch(domain:www.danielolawoyin.com)",
+      "WebFetch(domain:www.nutrient.io)",
+      "Bash(npm uninstall *)"
     ]
   }
 }

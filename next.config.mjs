@@ -4,7 +4,7 @@ const nextConfig = {
     browserToTerminal: true,
   },
   // pdfjs-dist usa módulos nativos Node.js — excluirlo del bundler del servidor
-  serverExternalPackages: ["pdfjs-dist"],
+  serverExternalPackages: ["pdfjs-dist", "@pdfme/generator", "@pdfme/common"],
 };
 
 export default nextConfig;
