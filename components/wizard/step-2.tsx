@@ -2,112 +2,191 @@
 
 import { useCallback, useEffect, useState } from "react"
 import { toast } from "sonner"
-import { Loader2Icon, RefreshCwIcon, ArrowRightIcon } from "lucide-react"
+import { Loader2Icon, RefreshCwIcon } from "lucide-react"
 
 import { useWizardStore } from "@/lib/store"
-import type { RawPDFText, WizardStep } from "@/lib/types"
+import type { ExtractedData, RawPDFText, WizardStep } from "@/lib/types"
 
 import { Button } from "@/components/ui/button"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Separator } from "@/components/ui/separator"
-import { PdfTextPreview } from "@/components/preview/pdf-text-preview"
 import { SectionHeader } from "./section-header"
 
-// Mapeo de claves a etiquetas legibles
-const DOCUMENT_LABELS: Record<keyof RawPDFText, string> = {
-  paymentSheet: "Planilla de Seguridad Social",
-  arl: "Certificado ARL",
-  contract: "Contrato u Orden",
-  contract2: "Segundo contrato",
-}
-
-type ExtractionStatus = "idle" | "loading" | "success" | "error"
+type ExtractionStatus =
+  | "idle"
+  | "loading-text"
+  | "loading-ai"
+  | "ready"
+  | "error"
 
 export function Step2() {
-  const { documents, manualData, rawText, setRawText, setStep } =
+  const { documents, rawText, setRawText, setExtractedData, setStep } =
     useWizardStore()
 
-  const [status, setStatus] = useState<ExtractionStatus>(
-    rawText ? "success" : "idle"
-  )
+  const [status, setStatus] = useState<ExtractionStatus>("idle")
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
-  const extractText = useCallback(async () => {
-    setStatus("loading")
+  const buildFormData = useCallback(() => {
+    const formData = new FormData()
+
+    if (documents.paymentSheet) {
+      formData.append("paymentSheet", documents.paymentSheet)
+    }
+    if (documents.arl) {
+      formData.append("arl", documents.arl)
+    }
+    if (documents.contract) {
+      formData.append("contract", documents.contract)
+    }
+    if (documents.contract2) {
+      formData.append("contract2", documents.contract2)
+    }
+
+    return formData
+  }, [documents])
+
+  const processStep = useCallback(async () => {
+    setStatus("loading-text")
     setErrorMessage(null)
 
-    const formData = new FormData()
-    if (documents.paymentSheet)
-      formData.append("paymentSheet", documents.paymentSheet)
-    if (documents.arl) formData.append("arl", documents.arl)
-    if (documents.contract) formData.append("contract", documents.contract)
-    if (documents.contract2) formData.append("contract2", documents.contract2)
+    const parseApiError = async (res: Response, fallback: string) => {
+      try {
+        const payload = (await res.json()) as {
+          error?: string
+          details?: string
+        }
+
+        return payload.details ?? payload.error ?? fallback
+      } catch {
+        return fallback
+      }
+    }
 
     try {
-      const res = await fetch("/api/extract-text", {
+      const textRes = await fetch("/api/extract-text", {
         method: "POST",
-        body: formData,
+        body: buildFormData(),
       })
 
-      if (!res.ok) {
-        throw new Error(`Error del servidor: ${res.status}`)
+      if (!textRes.ok) {
+        const details = await parseApiError(
+          textRes,
+          `Error del servidor en extracción de texto: ${textRes.status}`
+        )
+        throw new Error(details)
       }
 
-      const data: RawPDFText = await res.json()
-      setRawText(data)
-      setStatus("success")
-      toast.success("Texto extraído correctamente.", {
-        description: "Revisa el contenido y confirma para continuar.",
+      const rawData: RawPDFText = await textRes.json()
+      setRawText(rawData)
+
+      setStatus("loading-ai")
+
+      const aiRes = await fetch("/api/extract", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ rawText: rawData }),
+      })
+
+      if (!aiRes.ok) {
+        const details = await parseApiError(
+          aiRes,
+          `Error del servidor en extracción IA: ${aiRes.status}`
+        )
+        throw new Error(details)
+      }
+
+      const extractedPayload = (await aiRes.json()) as ExtractedData & {
+        warnings?: string[]
+      }
+
+      const { warnings = [], ...extractedData } = extractedPayload
+
+      setExtractedData(extractedData)
+      setStatus("ready")
+
+      if (warnings.length > 0) {
+        toast.warning("Extracción IA con observaciones.", {
+          description: warnings.join(" · "),
+        })
+      }
+
+      toast.success("Proceso automático completado.", {
+        description: "Todo está listo. Presiona continuar para avanzar.",
       })
     } catch (err) {
       const message =
         err instanceof Error
           ? err.message
           : "Error desconocido al procesar los PDFs."
+
       setErrorMessage(message)
       setStatus("error")
-      toast.error("No se pudo extraer el texto.", { description: message })
-    }
-  }, [documents, setRawText])
 
-  // Auto-extraer al montar si aún no hay texto
+      toast.error("No se pudo completar el proceso automático.", {
+        description: message,
+      })
+    }
+  }, [buildFormData, setExtractedData, setRawText])
+
   useEffect(() => {
-    if (!rawText) extractText()
+    processStep()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  const activeText = rawText ?? ({} as Partial<RawPDFText>)
-
-  // Solo mostrar los documentos que se subieron
-  const documentEntries = (
-    Object.keys(DOCUMENT_LABELS) as (keyof RawPDFText)[]
-  ).filter((key) => {
-    if (key === "paymentSheet") return !!documents.paymentSheet
-    if (key === "arl") return !!documents.arl
-    if (key === "contract") return !!documents.contract
-    if (key === "contract2") return manualData?.contractCount === "2"
-    return false
-  })
-
   return (
     <div className="flex flex-col gap-8">
-      {/* ① Estado de extracción */}
       <div className="flex flex-col gap-4">
         <SectionHeader
           number={1}
-          title="Extracción de texto de los PDFs"
-          subtitle="Verificamos que los documentos contienen texto legible antes de enviarlos a la IA."
-          done={status === "success"}
+          title="Procesamiento automático de documentos"
+          subtitle="El sistema extrae texto y luego ejecuta la extracción con IA."
+          done={status === "ready"}
         />
 
-        {status === "loading" && (
+        {status === "loading-text" && (
           <div className="flex flex-col items-center gap-3 rounded-xl border border-dashed py-10 pl-9 text-center">
             <Loader2Icon className="size-8 animate-spin text-primary" />
             <div className="flex flex-col gap-1">
-              <p className="text-sm font-medium">Procesando documentos…</p>
+              <p className="text-sm font-medium">Extrayendo texto de los PDFs…</p>
               <p className="text-xs text-muted-foreground">
                 Esto puede tardar unos segundos según el tamaño de los archivos.
               </p>
+            </div>
+          </div>
+        )}
+
+        {status === "loading-ai" && (
+          <div className="flex flex-col items-center gap-3 rounded-xl border border-dashed py-10 pl-9 text-center">
+            <Loader2Icon className="size-8 animate-spin text-primary" />
+            <div className="flex flex-col gap-1">
+              <p className="text-sm font-medium">Extrayendo datos con IA…</p>
+              <p className="text-xs text-muted-foreground">
+                En cuanto termine, podrás continuar con un solo click.
+              </p>
+            </div>
+          </div>
+        )}
+
+        {status === "ready" && (
+          <div className="flex flex-col gap-3 rounded-xl border border-dashed py-6 pl-9">
+            <p className="text-sm font-medium">Listo para continuar</p>
+            <p className="text-xs text-muted-foreground">
+              El texto y la extracción con IA ya terminaron correctamente.
+            </p>
+            <div className="flex gap-3">
+              <Button
+                variant="outline"
+                size="sm"
+                className="w-fit gap-2"
+                onClick={processStep}
+              >
+                <RefreshCwIcon className="size-4" />
+                Reintentar proceso automático
+              </Button>
+              <Button size="sm" className="w-fit" onClick={() => setStep(3 as WizardStep)}>
+                Continuar
+              </Button>
             </div>
           </div>
         )}
@@ -123,82 +202,17 @@ export function Step2() {
               variant="outline"
               size="sm"
               className="w-fit gap-2"
-              onClick={extractText}
+              onClick={processStep}
             >
               <RefreshCwIcon className="size-4" />
-              Reintentar extracción
+              Reintentar proceso automático
             </Button>
           </div>
         )}
       </div>
 
-      {/* ② Previews de texto */}
-      {status === "success" && rawText && (
-        <>
-          <Separator />
-
-          <div className="flex flex-col gap-4">
-            <SectionHeader
-              number={2}
-              title="Revisa el contenido extraído"
-              subtitle="Expande cada documento para verificar que el texto fue leído correctamente. Si ves texto ilegible o vacío, el PDF podría estar escaneado."
-              done={false}
-            />
-
-            <div className="flex flex-col gap-3 pl-0 sm:pl-9">
-              {documentEntries.map((key, index) => (
-                <PdfTextPreview
-                  key={key}
-                  stepNumber={index + 1}
-                  label={DOCUMENT_LABELS[key]}
-                  text={activeText[key] ?? ""}
-                />
-              ))}
-            </div>
-          </div>
-
-          <Separator />
-
-          {/* ③ Confirmar y continuar */}
-          <div className="flex flex-col gap-4">
-            <SectionHeader
-              number={3}
-              title="Confirma y envía a la IA"
-              subtitle="Una vez confirmado, la IA de Gemini 2.5 Flash extraerá los datos estructurados de cada documento."
-            />
-
-            <div className="flex flex-col gap-3 pl-0 sm:pl-9">
-              <p className="text-xs text-muted-foreground">
-                ¿Ves algún problema con el texto extraído? Puedes volver al paso
-                anterior y reemplazar el archivo.
-              </p>
-              <div className="flex gap-3">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="gap-2"
-                  onClick={extractText}
-                >
-                  <RefreshCwIcon className="size-4" />
-                  Re-extraer
-                </Button>
-                <Button
-                  size="lg"
-                  className="flex-1 gap-2 text-base sm:flex-none sm:px-8"
-                  onClick={() => {
-                    setStep(3 as WizardStep)
-                    toast.success("¡Paso 2 completado!", {
-                      description: "La IA procesará los documentos ahora.",
-                    })
-                  }}
-                >
-                  Continuar al paso 3
-                  <ArrowRightIcon className="size-4" />
-                </Button>
-              </div>
-            </div>
-          </div>
-        </>
+      {status === "idle" && !rawText && (
+        <p className="text-sm text-muted-foreground">Preparando proceso…</p>
       )}
     </div>
   )

@@ -33,13 +33,21 @@ export function ManualForm({
   onContractCountChange,
 }: ManualFormProps) {
   const form = useForm<ManualFormInput>({
-    resolver: zodResolver(ManualFormSchema) as Resolver<ManualFormInput>,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    resolver: zodResolver(ManualFormSchema as any) as Resolver<ManualFormInput>,
     mode: "onBlur",
     defaultValues: {
       contractCount: "1",
       isPensioner: false,
       paymentsToRequest: 1,
       paymentNumber: 1,
+      // Explicit empty strings so every input starts controlled, not undefined
+      amountToCharge: "" as unknown as number,
+      paymentRequestPeriod: "",
+      payrollPeriod: "",
+      quipuCompany: "",
+      institutionalEmail: "",
+      amendmentNumber: "",
       ...defaultValues,
     },
   })

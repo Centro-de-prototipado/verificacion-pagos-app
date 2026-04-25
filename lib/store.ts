@@ -18,6 +18,8 @@ interface WizardState {
   rawText: RawPDFText | null
   extractedData: ExtractedData | null
   validationResults: ValidationResult[]
+  /** Whether the user confirmed informe de actividades was received */
+  informeRecibido: boolean
   status: VerificationStatus
   error: string | null
 
@@ -28,6 +30,7 @@ interface WizardState {
   setRawText: (text: RawPDFText) => void
   setExtractedData: (data: ExtractedData) => void
   setValidationResults: (results: ValidationResult[]) => void
+  setInformeRecibido: (value: boolean) => void
   setStatus: (status: VerificationStatus) => void
   setError: (error: string | null) => void
   reset: () => void
@@ -42,11 +45,13 @@ const INITIAL_STATE = {
     arl: null,
     contract: null,
     contract2: null,
+    paymentSheet2: null,
   } satisfies UploadedDocuments,
   manualData: null,
   rawText: null,
   extractedData: null,
   validationResults: [] as ValidationResult[],
+  informeRecibido: false,
   status: "idle" as VerificationStatus,
   error: null,
 }
@@ -68,6 +73,8 @@ export const useWizardStore = create<WizardState>((set) => ({
   setExtractedData: (extractedData) => set({ extractedData }),
 
   setValidationResults: (validationResults) => set({ validationResults }),
+
+  setInformeRecibido: (informeRecibido) => set({ informeRecibido }),
 
   setStatus: (status) => set({ status }),
 

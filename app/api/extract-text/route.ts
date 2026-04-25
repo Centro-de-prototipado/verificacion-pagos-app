@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server"
 import { extractTextFromPDF } from "@/lib/pdf/extract-text"
 import type { RawPDFText } from "@/lib/types"
 
+export const runtime = "nodejs"
+
 // Campos de PDF que se esperan en el FormData
 const PDF_KEYS = ["paymentSheet", "arl", "contract", "contract2"] as const
 type PDFKey = (typeof PDF_KEYS)[number]

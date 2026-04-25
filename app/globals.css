@@ -125,5 +125,6 @@
     }
   html {
     @apply font-sans;
-    }
+    font-size: clamp(17px, 0.2vw + 16px, 18px);
+  }
 }

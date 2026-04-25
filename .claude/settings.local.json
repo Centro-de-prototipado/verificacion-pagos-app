@@ -5,7 +5,27 @@
       "mcp__notebooklm-mcp__notebook_query",
       "Bash(pnpm typecheck *)",
       "mcp__Claude_Preview__preview_start",
-      "mcp__Claude_in_Chrome__computer"
+      "mcp__Claude_in_Chrome__computer",
+      "Bash(npx skills *)",
+      "Bash(pip install *)",
+      "Bash(python *)",
+      "Bash(node -e ' *)",
+      "Bash(node -e \"require\\('pdfjs-dist'\\)\")",
+      "Bash(node --input-type=module)",
+      "Bash(2>&1)",
+      "Bash(pnpm dev *)",
+      "Bash(curl -s http://localhost:3000)",
+      "mcp__plugin_chrome-devtools-mcp_chrome-devtools__navigate_page",
+      "mcp__plugin_chrome-devtools-mcp_chrome-devtools__take_screenshot",
+      "mcp__plugin_chrome-devtools-mcp_chrome-devtools__take_snapshot",
+      "mcp__plugin_chrome-devtools-mcp_chrome-devtools__upload_file",
+      "mcp__plugin_chrome-devtools-mcp_chrome-devtools__evaluate_script",
+      "mcp__plugin_chrome-devtools-mcp_chrome-devtools__fill",
+      "mcp__plugin_chrome-devtools-mcp_chrome-devtools__click",
+      "mcp__plugin_chrome-devtools-mcp_chrome-devtools__wait_for",
+      "mcp__plugin_chrome-devtools-mcp_chrome-devtools__list_network_requests",
+      "Bash(curl *)",
+      "WebFetch(domain:docs.z.ai)"
     ]
   }
 }

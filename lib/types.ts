@@ -1,6 +1,6 @@
 // ─── Primitives ───────────────────────────────────────────────────────────────
 
-export type WizardStep = 1 | 2 | 3 | 4
+export type WizardStep = 1 | 2 | 3 | 4 | 5
 
 export type ContractType =
   | "OSE"
@@ -50,6 +50,8 @@ export interface UploadedDocuments {
   contract: File | null
   /** Only when contractCount === "2" */
   contract2?: File | null
+  /** Next month's planilla — required when paymentSheet was paid after its deadline */
+  paymentSheet2?: File | null
 }
 
 // ─── AI-extracted data (populated in Phase 3) ────────────────────────────────
@@ -67,6 +69,8 @@ export interface ARLData {
   endDate: string
   coverageStatus: "ACTIVA" | "INACTIVA" | "SUSPENDIDA"
   riskClass: RiskClass
+  /** ARL cotization rate as percentage, e.g. 1.044 means 1.044% */
+  cotizationRate: number
 }
 
 export interface ContractData {
@@ -76,6 +80,10 @@ export interface ContractData {
   documentType: DocumentType
   documentNumber: string
   totalValueBeforeTax: number
+  /** DD/MM/YYYY */
+  startDate: string
+  /** DD/MM/YYYY */
+  endDate: string
   activityReport: {
     required: boolean
     frequencyMonths: number | null
@@ -107,4 +115,104 @@ export interface RawPDFText {
   arl: string
   contract: string
   contract2?: string
+}
+
+// ─── Contribution calculations (Phase 4 output / Phase 5 input) ──────────────
+
+export interface ContributionCalculation {
+  /** Base usada: max(IBC calculado, SMMLV) */
+  calculationBase: number
+  monthlyValue: number
+  contractMonths: number
+  ibc: number
+  healthContribution: number
+  pensionContribution: number
+  /** Calculado como: cotizationRate% × calculationBase */
+  arlContribution: number
+  solidarityFund: number
+  totalObligatory: number
+  /** Valor mensualizado = base de retención en el 069 */
+  monthlyRetentionBase: number
+}
+
+// ─── PDF format input data (Phase 5) ─────────────────────────────────────────
+
+/** Data needed to fill U.FT.12.010.053 — Constancia de cumplimiento contractual */
+export interface Format053Data {
+  // Contrato
+  contractType: ContractType
+  /** e.g. "14/2026" */
+  orderNumberYear: string
+  /** e.g. "CSI 1/2026" — only when there's an amendment */
+  amendmentLabel?: string
+  quipuCompany: string
+  contractorName: string
+  documentNumber: string
+  // Planilla
+  sheetNumber: string
+  /** e.g. "2026/03/06" */
+  paymentDate: string
+  /** Month name in Spanish, e.g. "febrero" */
+  payrollPeriodName: string
+  // Pago
+  paymentNumber: number
+  paymentType: "Parcial" | "Final" | "Único"
+  amountToCharge: number
+  // Informe de actividades
+  activityReportReceived: boolean | "N/A"
+  // Fecha de expedición (current date)
+  expeditionDate: string
+}
+
+/** Data needed to fill U.FT.12.010.069 — Certificación determinación cedular */
+export interface Format069Data {
+  // Sección 1 — Datos generales
+  contractorName: string
+  /** e.g. "23/03/2026" */
+  processingDate: string
+  documentType: DocumentType
+  documentNumber: string
+  isPensioner: boolean
+  institutionalEmail: string
+  // Sección 2 — Relación contratos (contrato principal)
+  quipuCompany: string
+  contractType: ContractType
+  orderNumber: string
+  contractTotalValue: number
+  /** e.g. "26/01/2026" */
+  startDate: string
+  /** e.g. "22/10/2026" */
+  endDate: string
+  /** e.g. "Riesgo 2" */
+  riskClassLabel: string
+  // Segundo contrato (opcional — solo cuando contractCount === "2")
+  contract2Type?: ContractType
+  contract2OrderNumber?: string
+  contract2TotalValue?: number
+  contract2StartDate?: string
+  contract2EndDate?: string
+  // Sección 3 — Anexos
+  /** e.g. "4013-OSE-14-2026" */
+  deductionsContractRef: string
+  /** e.g. "marzo/2026" */
+  paymentRequestPeriod: string
+  /** e.g. "febrero/2026" */
+  payrollPeriod: string
+  // Sección 4 — Cálculo aportes (from ContributionCalculation)
+  healthContribution: number
+  pensionContribution: number
+  solidarityFund: number
+  arlContribution: number
+  totalObligatory: number
+  // Sección 5 — Mensualización
+  monthlyValue: number
+  contractMonths: number
+  ibc: number
+  // Sección 6 — Base retención
+  monthlyRetentionBase: number
+  // Declaración formal
+  formalDeclaration: "SI" | "NO"
+  // Firma sección 7
+  signerName: string
+  signerDocumentRef: string
 }

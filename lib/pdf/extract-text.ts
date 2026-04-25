@@ -1,7 +1,11 @@
-// pdfjs-dist corre en el servidor (Route Handler) sin worker — see next.config.mjs
-import * as pdfjsLib from "pdfjs-dist"
+// pdfjs-dist corre en el servidor (Route Handler) sin worker.
+// El build legacy evita dependencias de DOM APIs como DOMMatrix en Node.js.
+import * as pdfjsLib from "pdfjs-dist/legacy/build/pdf.mjs"
+import { MIN_TEXT_LENGTH } from "@/lib/constants/pdf"
 
-pdfjsLib.GlobalWorkerOptions.workerSrc = ""
+const PDF_WORKER_SRC = "pdfjs-dist/legacy/build/pdf.worker.mjs"
+
+pdfjsLib.GlobalWorkerOptions.workerSrc = PDF_WORKER_SRC
 
 /**
  * Extrae texto plano de un PDF en buffer.
@@ -9,6 +13,10 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = ""
  * Si el PDF está escaneado (sin capa de texto) devuelve cadena vacía.
  */
 export async function extractTextFromPDF(buffer: ArrayBuffer): Promise<string> {
+  if (!pdfjsLib.GlobalWorkerOptions.workerSrc) {
+    pdfjsLib.GlobalWorkerOptions.workerSrc = PDF_WORKER_SRC
+  }
+
   const pdf = await pdfjsLib.getDocument({
     data: new Uint8Array(buffer),
     useWorkerFetch: false,
@@ -34,5 +42,4 @@ export async function extractTextFromPDF(buffer: ArrayBuffer): Promise<string> {
   return pages.join("\n\n")
 }
 
-/** Umbral mínimo de caracteres para considerar que el PDF tiene texto extraíble */
-export const MIN_TEXT_LENGTH = 50
+export { MIN_TEXT_LENGTH }

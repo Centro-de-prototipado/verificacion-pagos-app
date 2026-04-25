@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from "zod"
 
 export const ContractSchema = z.object({
   contractType: z
@@ -7,7 +7,9 @@ export const ContractSchema = z.object({
   orderNumber: z.string().describe("Número de la orden o contrato"),
   contractorName: z
     .string()
-    .describe("Nombre completo del contratista tal como aparece en el documento"),
+    .describe(
+      "Nombre completo del contratista tal como aparece en el documento"
+    ),
   documentType: z
     .enum(["CC", "NIT", "CE"])
     .describe("Tipo de documento de identidad del contratista"),
@@ -15,8 +17,14 @@ export const ContractSchema = z.object({
   totalValueBeforeTax: z
     .number()
     .describe(
-      "Valor total del contrato en COP antes de descuentos e impuestos, como número sin separadores de miles",
+      "Valor total del contrato en COP antes de descuentos e impuestos, como número sin separadores de miles"
     ),
+  startDate: z
+    .string()
+    .describe("Fecha de inicio del contrato en formato DD/MM/YYYY"),
+  endDate: z
+    .string()
+    .describe("Fecha de terminación del contrato en formato DD/MM/YYYY"),
   activityReport: z.object({
     required: z
       .boolean()
@@ -25,9 +33,9 @@ export const ContractSchema = z.object({
       .number()
       .nullable()
       .describe(
-        "Frecuencia del informe en número de meses; null si no se requiere informe",
+        "Frecuencia del informe en número de meses; null si no se requiere informe"
       ),
   }),
-});
+})
 
-export type ContractExtracted = z.infer<typeof ContractSchema>;
+export type ContractExtracted = z.infer<typeof ContractSchema>

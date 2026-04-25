@@ -14,9 +14,11 @@ import { Progress } from "@/components/ui/progress"
 import { Separator } from "@/components/ui/separator"
 import { STEPS_CONFIG } from "@/components/wizard/steps-config"
 import { StepIndicator } from "@/components/wizard/step-indicator"
-import { ComingSoonStep } from "@/components/wizard/coming-soon-step"
 import { Step1 } from "@/components/wizard/step-1"
 import { Step2 } from "@/components/wizard/step-2"
+import { Step3 } from "@/components/wizard/step-3"
+import { Step4 } from "@/components/wizard/step-4"
+import { Step5 } from "@/components/wizard/step-5"
 
 export default function VerificarPage() {
   const { step, setStep, reset } = useWizardStore()
@@ -28,7 +30,7 @@ export default function VerificarPage() {
   }, [step, setStep])
 
   return (
-    <div className="mx-auto flex min-h-svh max-w-2xl flex-col gap-6 px-4 py-8 sm:px-6">
+    <div className="mx-auto flex min-h-svh max-w-4xl flex-col gap-6 px-4 py-8 sm:px-6">
       {/* ── Header ── */}
       <header className="flex items-center justify-between gap-4">
         <Button variant="ghost" size="sm" asChild>
@@ -94,8 +96,9 @@ export default function VerificarPage() {
       <main>
         {step === 1 && <Step1 />}
         {step === 2 && <Step2 />}
-        {step === 3 && <ComingSoonStep number={3} />}
-        {step === 4 && <ComingSoonStep number={4} />}
+        {step === 3 && <Step3 />}
+        {step === 4 && <Step4 />}
+        {step === 5 && <Step5 />}
       </main>
 
       {/* ── Back button ── */}

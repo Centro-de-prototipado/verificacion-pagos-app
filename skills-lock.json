@@ -6,6 +6,11 @@
       "sourceType": "github",
       "computedHash": "81af098a4ce6f0e323c1bd02b8e79df3bbaed57cbf1c4060f58ddc95de5545a1"
     },
+    "pdf": {
+      "source": "anthropics/skills",
+      "sourceType": "github",
+      "computedHash": "37226d4220d844377e6b2a386c51a011df4cd130855ff0b80bcc22f9c28abd57"
+    },
     "shadcn": {
       "source": "shadcn/ui",
       "sourceType": "github",

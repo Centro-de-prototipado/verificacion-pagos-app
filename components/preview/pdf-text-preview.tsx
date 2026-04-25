@@ -9,7 +9,7 @@ import {
 } from "lucide-react"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import { MIN_TEXT_LENGTH } from "@/lib/pdf/extract-text"
+import { MIN_TEXT_LENGTH } from "@/lib/constants/pdf"
 import { cn } from "@/lib/utils"
 
 interface PdfTextPreviewProps {

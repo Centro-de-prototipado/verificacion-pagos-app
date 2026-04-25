@@ -1,5 +1,6 @@
 import {
   BrainCircuitIcon,
+  ClipboardListIcon,
   DownloadIcon,
   ShieldCheckIcon,
   UploadIcon,
@@ -28,12 +29,18 @@ export const STEPS_CONFIG: readonly StepConfig[] = [
   },
   {
     number: 3,
+    label: "Revisión",
+    icon: ClipboardListIcon,
+    description: "Confirma que los datos extraídos sean correctos",
+  },
+  {
+    number: 4,
     label: "Validación",
     icon: ShieldCheckIcon,
     description: "Se verifican los aportes a seguridad social",
   },
   {
-    number: 4,
+    number: 5,
     label: "Resultado",
     icon: DownloadIcon,
     description: "Descarga los formatos listos para firma",
