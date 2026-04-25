@@ -33,7 +33,6 @@ export function ManualForm({
   onContractCountChange,
 }: ManualFormProps) {
   const form = useForm<ManualFormInput>({
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     resolver: zodResolver(ManualFormSchema as any) as Resolver<ManualFormInput>,
     mode: "onBlur",
     defaultValues: {
@@ -48,6 +47,10 @@ export function ManualForm({
       quipuCompany: "",
       institutionalEmail: "",
       amendmentNumber: "",
+      supervisorName: "",
+      supervisorDocumentNumber: "",
+      supervisorEmail: "",
+      supervisorPhone: "",
       ...defaultValues,
     },
   })
@@ -234,16 +237,16 @@ export function ManualForm({
             render={({ field, fieldState }) => (
               <Field data-invalid={fieldState.invalid || undefined}>
                 <FieldLabel htmlFor={field.name}>
-                  Correo institucional
+                  Correo
                 </FieldLabel>
                 <FieldDescription>
-                  Tu cuenta de correo @unal.edu.co
+                  Correo de contacto del contratista
                 </FieldDescription>
                 <Input
                   {...field}
                   id={field.name}
                   type="email"
-                  placeholder="usuario@unal.edu.co"
+                  placeholder="correo@ejemplo.com"
                   aria-invalid={fieldState.invalid}
                 />
                 {fieldState.invalid && (
@@ -270,7 +273,7 @@ export function ManualForm({
                 <Input
                   {...field}
                   id={field.name}
-                  placeholder="Ej. 1"
+                  placeholder="Ej. CSI 1/2026"
                   aria-invalid={fieldState.invalid}
                 />
                 {fieldState.invalid && (
@@ -302,6 +305,96 @@ export function ManualForm({
               </Field>
             )}
           />
+        </FieldGroup>
+      </FieldSet>
+
+      {/* ── Sección 4: Datos del interventor o supervisor ── */}
+      <FieldSet>
+        <FieldLegend>Interventor o supervisor</FieldLegend>
+        <FieldGroup>
+          <Controller
+            name="supervisorName"
+            control={form.control}
+            render={({ field, fieldState }) => (
+              <Field data-invalid={fieldState.invalid || undefined}>
+                <FieldLabel htmlFor={field.name}>Nombre completo</FieldLabel>
+                <FieldDescription>
+                  Interventor o supervisor que firma la constancia
+                </FieldDescription>
+                <Input
+                  {...field}
+                  id={field.name}
+                  placeholder="Nombre completo"
+                  aria-invalid={fieldState.invalid}
+                />
+                {fieldState.invalid && (
+                  <FieldError errors={[fieldState.error]} />
+                )}
+              </Field>
+            )}
+          />
+
+          <Controller
+            name="supervisorDocumentNumber"
+            control={form.control}
+            render={({ field, fieldState }) => (
+              <Field data-invalid={fieldState.invalid || undefined}>
+                <FieldLabel htmlFor={field.name}>No. Identificación</FieldLabel>
+                <Input
+                  {...field}
+                  id={field.name}
+                  inputMode="numeric"
+                  placeholder="Ej. 12345678"
+                  aria-invalid={fieldState.invalid}
+                />
+                {fieldState.invalid && (
+                  <FieldError errors={[fieldState.error]} />
+                )}
+              </Field>
+            )}
+          />
+
+          <div className="grid gap-4 sm:grid-cols-2">
+            <Controller
+              name="supervisorEmail"
+              control={form.control}
+              render={({ field, fieldState }) => (
+                <Field data-invalid={fieldState.invalid || undefined}>
+                  <FieldLabel htmlFor={field.name}>Correo electrónico</FieldLabel>
+                  <Input
+                    {...field}
+                    id={field.name}
+                    type="email"
+                    placeholder="supervisor@unal.edu.co"
+                    aria-invalid={fieldState.invalid}
+                  />
+                  {fieldState.invalid && (
+                    <FieldError errors={[fieldState.error]} />
+                  )}
+                </Field>
+              )}
+            />
+
+            <Controller
+              name="supervisorPhone"
+              control={form.control}
+              render={({ field, fieldState }) => (
+                <Field data-invalid={fieldState.invalid || undefined}>
+                  <FieldLabel htmlFor={field.name}>Teléfono</FieldLabel>
+                  <Input
+                    {...field}
+                    id={field.name}
+                    inputMode="tel"
+                    placeholder="Ej. 3001234567"
+                    aria-invalid={fieldState.invalid}
+                  />
+                  {fieldState.invalid && (
+                    <FieldError errors={[fieldState.error]} />
+                  )}
+                </Field>
+              )}
+            />
+          </div>
         </FieldGroup>
       </FieldSet>
 

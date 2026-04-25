@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { generateObject } from "ai"
 import type { ZodType } from "zod"
 
-import { ollamaModel } from "@/lib/ai/client"
+import { mistralModel } from "@/lib/ai/client"
 import { extractTextFromPDF } from "@/lib/pdf/extract-text"
 import { ARLSchema } from "@/lib/schemas/arl"
 import { ContractSchema } from "@/lib/schemas/contract"
@@ -46,7 +46,7 @@ async function extractWithSchema<T>({
 
   try {
     const { object } = await generateObject({
-      model: ollamaModel,
+      model: mistralModel,
       schema,
       prompt: buildPrompt(),
       maxOutputTokens,
@@ -55,7 +55,7 @@ async function extractWithSchema<T>({
   } catch (firstError) {
     try {
       const { object } = await generateObject({
-        model: ollamaModel,
+        model: mistralModel,
         schema,
         prompt: buildPrompt(
           "Reintento: responde solo con valores extraídos literalmente del PDF. Si falta un dato, infiérelo con cautela manteniendo el formato exacto del esquema."

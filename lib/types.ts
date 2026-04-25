@@ -1,6 +1,6 @@
 // ─── Primitives ───────────────────────────────────────────────────────────────
 
-export type WizardStep = 1 | 2 | 3 | 4 | 5
+export type WizardStep = 1 | 2 | 3 | 4
 
 export type ContractType =
   | "OSE"
@@ -40,6 +40,11 @@ export interface ManualFormData {
   payrollPeriod: string
   paymentNumber: number
   amountToCharge: number
+  // Interventor / supervisor (required for Format 053)
+  supervisorName: string
+  supervisorDocumentNumber: string
+  supervisorEmail: string
+  supervisorPhone: string
 }
 
 // ─── Uploaded documents ───────────────────────────────────────────────────────
@@ -157,9 +162,16 @@ export interface Format053Data {
   // Pago
   paymentNumber: number
   paymentType: "Parcial" | "Final" | "Único"
+  /** True when paymentRequestPeriod matches the last execution month of the contract */
+  isLastExecutionMonth: boolean
   amountToCharge: number
   // Informe de actividades
   activityReportReceived: boolean | "N/A"
+  // Interventor / supervisor
+  supervisorName: string
+  supervisorDocumentNumber: string
+  supervisorEmail: string
+  supervisorPhone: string
   // Fecha de expedición (current date)
   expeditionDate: string
 }

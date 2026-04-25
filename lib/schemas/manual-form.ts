@@ -43,10 +43,26 @@ export const ManualFormSchema = z.object({
   // ── Contratista ───────────────────────────────────────────────────────────
   institutionalEmail: z
     .string()
-    .email("Correo electrónico inválido")
-    .regex(/@unal\.edu\.co$/, "Debe ser un correo @unal.edu.co"),
+    .email("Correo electrónico inválido"),
 
   isPensioner: z.boolean(),
+
+  // ── Interventor / Supervisor ──────────────────────────────────────────────
+  supervisorName: z
+    .string()
+    .min(1, "Nombre del interventor o supervisor requerido"),
+
+  supervisorDocumentNumber: z
+    .string()
+    .min(1, "Número de identificación del supervisor requerido"),
+
+  supervisorEmail: z
+    .string()
+    .email("Correo del supervisor inválido"),
+
+  supervisorPhone: z
+    .string()
+    .min(1, "Teléfono del supervisor requerido"),
 })
 
 export type ManualFormInput = z.infer<typeof ManualFormSchema>

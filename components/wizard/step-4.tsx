@@ -258,7 +258,7 @@ export function Step4() {
         <Button
           className="w-fit"
           disabled={!summary || summary.blocked}
-          onClick={() => setStep(5 as WizardStep)}
+          onClick={() => setStep(4 as WizardStep)}
         >
           Continuar — Generar PDF
         </Button>

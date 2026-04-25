@@ -13,16 +13,9 @@ Herramienta web **mediadora sin base de datos** para contratistas de la Universi
 
 ---
 
-## 2. Despliegue y acceso
+## 2. Paso 1 — Configuración inicial
 
-- Servidor institucional proporcionado por la UNAL.
-- Sin autenticación — cualquier persona con el enlace puede usarla.
-- Uso esperado: mensual, una vez por periodo de cobro.
-- Se pueden usar **cookies del navegador** para pre-llenar campos frecuentes (correo, QUIPU) en visitas posteriores.
-
----
-
-## 3. Paso 1 — Configuración inicial
+**Acceso:** Servidor institucional UNAL, sin autenticación. Uso esperado mensual. Los campos frecuentes (correo, QUIPU) se pueden pre-llenar con cookies del navegador.
 
 El usuario responde dos preguntas antes de subir nada:
 
@@ -32,7 +25,7 @@ El usuario responde dos preguntas antes de subir nada:
 
 ---
 
-## 4. Paso 2 — Documentos que se suben
+## 3. Paso 2 — Documentos que se suben
 
 ### Siempre obligatorios
 
@@ -52,7 +45,7 @@ La app pide adicionalmente la **planilla del mes siguiente** (ver validaciones).
 
 ---
 
-## 5. Paso 3 — Extracción IA: qué se saca de cada documento y a dónde va
+## 4. Paso 3 — Extracción IA: qué se saca de cada documento y a dónde va
 
 Esta es la sección crítica. Para cada documento se detalla exactamente qué datos extrae la IA y en qué casilla de qué formato aparece ese dato.
 
@@ -109,23 +102,19 @@ Esta es la sección crítica. Para cada documento se detalla exactamente qué da
 
 ---
 
-## 5.4 Revisión y corrección de datos extraídos (después de la IA)
+### 4.4 Revisión y corrección de datos extraídos
 
-Antes de pasar al formulario manual, la app **muestra al usuario todos los datos que la IA extrajo** de los documentos. El usuario los puede revisar y corregir manualmente si detecta errores (por ejemplo, fechas invertidas por el modelo).
-
-- Cada campo extraído se presenta en pantalla con su valor.
-- Cualquier campo puede ser editado antes de continuar.
-- Solo cuando el usuario confirme los datos, la app avanza al paso siguiente.
+Una vez terminada la extracción, la app **muestra al usuario todos los datos extraídos** para que los revise. El usuario puede corregir cualquier campo antes de continuar (por ejemplo, fechas invertidas por el modelo). Solo al confirmar, la app avanza.
 
 ---
 
-## 6. Paso 4 — Datos que ingresa manualmente el usuario
+## 5. Paso 4 — Datos que ingresa manualmente el usuario
 
 Estos datos no están en ningún documento PDF:
 
 | # | Campo | Obligatorio | Detalle |
 |---|---|---|---|
-| 1 | Correo institucional | Sí | Email universitario del contratista |
+| 1 | Correo | Sí | Cualquier correo del contratista |
 | 2 | ¿Es pensionado? | Sí | Sí / No — afecta cálculo de pensión y FSP |
 | 3 | Empresa en QUIPU | Sí | Código numérico (ej. `4013`) |
 | 4 | Número de otro sí | No | Solo si el contrato fue modificado. Es **solo informativo**, no cambia cálculos. |
@@ -133,10 +122,14 @@ Estos datos no están en ningún documento PDF:
 | 6 | Periodo de la planilla | Sí | Mes de la planilla cargada, formato `MM/YYYY`. Debe coincidir con lo extraído del PDF. |
 | 7 | Número del pago | Sí | Consecutivo: 1, 2, 3… |
 | 8 | Valor a cobrar | Sí | Monto exacto que va a recibir en este periodo |
+| 9 | Nombre del interventor o supervisor | Sí | Quien firma la constancia 053 |
+| 10 | No. identificación del supervisor | Sí | Cédula o documento del supervisor |
+| 11 | Correo electrónico del supervisor | Sí | Correo del interventor o supervisor |
+| 12 | Teléfono del supervisor | Sí | Teléfono de contacto del supervisor |
 
 ---
 
-## 7. Paso 5 — Validaciones matemáticas (sin IA, 100% TypeScript)
+## 6. Paso 5 — Validaciones matemáticas (sin IA, 100% TypeScript)
 
 ### 7.1 Cálculo de aportes
 
@@ -182,7 +175,7 @@ Total_Aportes    = salud + pensión* + FSP* + ARL
 
 ---
 
-## 8. Paso 6 — Informe de actividades (solo si aplica)
+## 7. Paso 6 — Informe de actividades (solo si aplica)
 
 Se activa cuando el contrato dice **"ENTREGAR UN INFORME DE EJECUCIÓN DE ACTIVIDADES CADA # MESES"** y el pago actual es múltiplo de esa frecuencia desde el inicio del contrato (normalmente cada 3 meses).
 
@@ -196,19 +189,23 @@ El usuario sube el PDF del formato `U.FT.12.011.020`. La app verifica:
 
 ---
 
-## 9. Paso 7 — Diligenciamiento de los dos formatos
+## 8. Paso 7 — Diligenciamiento de los dos formatos
 
 Los formatos generados deben ser **idénticos** a los originales de la universidad: mismo diseño, casillas, imágenes y distribución.
 
 ---
 
-### 9.1 Formato 053 — Constancia de Cumplimiento Contractual
+### 8.1 Formato 053 — Constancia de Cumplimiento Contractual
 
 Mapa completo de casillas:
 
 | Casilla del formato | Valor que se pone | Origen |
 |---|---|---|
 | Tipo de contrato | `OSE`, `OPS`, etc. | Extraído del contrato (IA) |
+| Nombre interventor/supervisor | nombre completo | Manual |
+| No. identificación supervisor | número de documento | Manual |
+| Correo electrónico supervisor | correo | Manual |
+| Teléfono supervisor | número de teléfono | Manual |
 | Número de la orden contractual | ej. `14` | Extraído del contrato (IA) |
 | Año | año actual del sistema | Sistema |
 | Número de otro sí | el número ingresado, o vacío | Manual (opcional) |
@@ -225,7 +222,7 @@ Mapa completo de casillas:
 
 ---
 
-### 9.2 Formato 069 — Certificación Determinación Cedular
+### 8.2 Formato 069 — Certificación Determinación Cedular
 
 Mapa completo de casillas:
 
@@ -235,7 +232,7 @@ Mapa completo de casillas:
 | Nombre completo del contratista | nombre extraído | Contrato (IA) |
 | Tipo de documento | `CC` o `NIT` | Contrato (IA) |
 | Número de identificación | cédula o NIT | Contrato (IA) |
-| Correo institucional | correo ingresado | Manual |
+| Correo | correo ingresado | Manual |
 | Empresa QUIPU | ej. `4013` | Manual |
 | Tipo de orden contractual | `OSE`, `OPS`, etc. | Contrato (IA) |
 | Número de orden contractual | ej. `14` | Contrato (IA) |
@@ -253,6 +250,16 @@ Mapa completo de casillas:
 | Aportes ARL | valor fijo por clase de riesgo | Calculado |
 | **Declaración Formal (SI / NO)** | regla cedular (ver abajo) | Calculado |
 
+#### Tipo de pago — lógica automática
+
+```
+paymentsToRequest === 1                                   →  "Único"
+isLastExecutionMonth OR paymentNumber === paymentsToRequest  →  "Final"   (si paymentsToRequest > 1)
+else                                                      →  "Parcial"
+```
+
+`isLastExecutionMonth` = `true` cuando el mes/año del periodo de solicitud coincide con el mes/año de la fecha fin del contrato (ARL). Cuando se detecta automáticamente el último mes, el sistema marca el checkbox correcto sin intervención del usuario.
+
 #### Regla cedular exacta
 
 ```
@@ -263,7 +270,7 @@ numeroPago ≥ 2  AND  periodoSolicitud = periodoPlanilla  →  "SI"
 
 ---
 
-## 10. Paso 8 — PDF final unificado
+## 9. Paso 8 — PDF final unificado
 
 ### Orden de páginas (estricto)
 
@@ -287,7 +294,7 @@ Ejemplo: `4013AnexosOSE14.pdf`
 
 ---
 
-## 11. Mapa completo: dato → origen → destino
+## 10. Mapa completo: dato → origen → destino
 
 Resumen de todos los datos del sistema, de dónde vienen y a dónde van:
 
@@ -311,7 +318,7 @@ Resumen de todos los datos del sistema, de dónde vienen y a dónde van:
 | Valor contrato sin impuestos | Contrato (IA) | — | — | ✅ + cálculos |
 | ¿Requiere informe? (bool) | Contrato (IA) | ✅ (activa flujo informe) | — | — |
 | Frecuencia informe (meses) | Contrato (IA) | ✅ (cuándo pedirlo) | — | — |
-| Correo institucional | Manual | — | — | ✅ |
+| Correo | Manual | — | — | ✅ |
 | ¿Es pensionado? | Manual | ✅ (modifica cálculos) | — | ✅ |
 | Empresa QUIPU | Manual | — | ✅ | ✅ |
 | Número de otro sí | Manual (opcional) | — | ✅ | — |
@@ -330,7 +337,7 @@ Resumen de todos los datos del sistema, de dónde vienen y a dónde van:
 
 ---
 
-## 12. Dudas pendientes — requieren respuesta del stakeholder
+## 11. Dudas pendientes — requieren respuesta del stakeholder
 
 El notebook no contiene respuesta para estos puntos. Deben resolverse antes de implementar esas partes:
 

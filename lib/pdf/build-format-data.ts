@@ -63,16 +63,32 @@ export function buildFormat053Data(
   manual: ManualFormData,
   summary: ValidationSummary
 ): Format053Data {
-  const { paymentSheet, contract } = extracted
+  const { paymentSheet, contract, arl } = extracted
   const year = manual.paymentRequestPeriod.split("/")[1]
   const today = todayDDMMYYYY()
 
   const paymentsToRequest = manual.paymentsToRequest
   const paymentNumber = manual.paymentNumber
-  const paymentType =
+
+  // Detect last execution month: paymentRequestPeriod MM/YYYY matches ARL endDate MM/YYYY
+  const isLastExecutionMonth = (() => {
+    const endDate = arl?.endDate ?? contract?.endDate ?? ""
+    if (!endDate) return false
+    // Handle both DD/MM/YYYY and YYYY-MM-DD (ISO) formats
+    let endMM: string, endYYYY: string
+    if (endDate.includes("-")) {
+      ;[endYYYY, endMM] = endDate.split("-")
+    } else {
+      ;[, endMM, endYYYY] = endDate.split("/")
+    }
+    const [reqMM, reqYYYY] = manual.paymentRequestPeriod.split("/")
+    return reqMM === endMM && reqYYYY === endYYYY
+  })()
+
+  const paymentType: "Parcial" | "Final" | "Único" =
     paymentsToRequest === 1
       ? "Único"
-      : paymentNumber === paymentsToRequest
+      : isLastExecutionMonth || paymentNumber === paymentsToRequest
         ? "Final"
         : "Parcial"
 
@@ -84,14 +100,19 @@ export function buildFormat053Data(
       : undefined,
     quipuCompany: manual.quipuCompany,
     contractorName: contract!.contractorName,
-    documentNumber: `${contract!.documentType} ${contract!.documentNumber}`,
+    documentNumber: contract!.documentNumber,
     sheetNumber: paymentSheet!.sheetNumber,
     paymentDate: paymentSheet!.paymentDate,
     payrollPeriodName: periodToMonthName(manual.payrollPeriod),
     paymentNumber,
     paymentType,
+    isLastExecutionMonth,
     amountToCharge: manual.amountToCharge,
     activityReportReceived: summary.activityReportReceived,
+    supervisorName: manual.supervisorName,
+    supervisorDocumentNumber: manual.supervisorDocumentNumber,
+    supervisorEmail: manual.supervisorEmail,
+    supervisorPhone: manual.supervisorPhone,
     expeditionDate: formatExpeditionDate(today),
   }
 }

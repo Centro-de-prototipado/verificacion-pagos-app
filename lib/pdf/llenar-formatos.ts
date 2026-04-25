@@ -61,6 +61,7 @@ export async function llenarConstancia053(
   )
 
   const doc = await PDFDocument.load(templateBytes)
+  doc.getForm().flatten()
   const [font, fontBold] = await Promise.all([
     doc.embedFont(StandardFonts.Helvetica),
     doc.embedFont(StandardFonts.HelveticaBold),
@@ -223,6 +224,29 @@ export async function llenarConstancia053(
   blank(445, 501, 140, 32)
   draw(datos.expeditionDate, 445, 511, 9)
 
+  // "para escribir una fecha." wraps to x=36, top=520.9 (second line of date field)
+  blank(36, 517, 100, 16)
+
+  // ── Sección del interventor / supervisor ─────────────────────────────────
+  //
+  // "[FIRMA]" placeholder top=547.6, x=36–69
+  // Underline "____…____"  top=559.8, x=36–215 (signature line — kept)
+  // Placeholder "[NOMBRE INTERVENTOR O SUPERVISOR]" top=572, x=36–202
+  // Placeholder "[No. Identificación]"              top=584.2, x=36–114
+  // Label "Correo electrónico:"                    top=596.5, x=36–114 → valor x=116
+  // Label "Teléfono:"                              top=608.7, x=36–73  → valor x=75
+
+  blank(36, 544, 60, 16)
+  blank(36, 568, 220, 14)
+  draw(datos.supervisorName, 36, 577, 8, true)
+
+  blank(36, 580, 120, 14)
+  draw(datos.supervisorDocumentNumber, 36, 589, 8)
+
+  draw(datos.supervisorEmail, 116, 601, 8)
+
+  draw(datos.supervisorPhone, 75, 613, 8)
+
   return doc.save()
 }
 
@@ -245,6 +269,7 @@ export async function llenarCertificacion069(
   )
 
   const doc = await PDFDocument.load(templateBytes)
+  doc.getForm().flatten()
   const [font, fontBold] = await Promise.all([
     doc.embedFont(StandardFonts.Helvetica),
     doc.embedFont(StandardFonts.HelveticaBold),
