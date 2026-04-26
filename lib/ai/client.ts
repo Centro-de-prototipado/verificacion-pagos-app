@@ -6,19 +6,29 @@ import type { LanguageModel } from "ai"
 
 type GenerateTextParams = Parameters<typeof generateText>[0]
 
-function isRateLimitError(err: unknown): boolean {
+function isRetryableError(err: unknown): boolean {
   const msg = err instanceof Error ? err.message : String(err)
-  return /429|rate.?limit|quota.?exceed|too.?many.?request/i.test(msg)
+  return /429|402|rate.?limit|quota.?exceed|too.?many.?request|more credits|can only afford|insufficient.*(credit|balance|quota)/i.test(
+    msg
+  )
 }
 
 function buildProviders(): LanguageModel[] {
   const list: LanguageModel[] = []
 
+  // Mistral first — paid tier, reliable
+  if (process.env.MISTRAL_API_KEY) {
+    const mistral = createMistral({ apiKey: process.env.MISTRAL_API_KEY })
+    list.push(mistral(process.env.MISTRAL_MODEL ?? "mistral-large-latest"))
+  }
+
+  // Groq second — fast, free tier
   if (process.env.GROQ_API_KEY) {
     const groq = createGroq({ apiKey: process.env.GROQ_API_KEY })
     list.push(groq(process.env.GROQ_MODEL ?? "llama-3.3-70b-versatile"))
   }
 
+  // OpenRouter keys as final fallbacks
   const orModel =
     process.env.OPENROUTER_MODEL ?? "meta-llama/llama-3.3-70b-instruct"
   for (const key of [
@@ -31,11 +41,6 @@ function buildProviders(): LanguageModel[] {
       baseURL: "https://openrouter.ai/api/v1",
     })
     list.push(or(orModel))
-  }
-
-  if (process.env.MISTRAL_API_KEY) {
-    const mistral = createMistral({ apiKey: process.env.MISTRAL_API_KEY })
-    list.push(mistral(process.env.MISTRAL_MODEL ?? "mistral-large-latest"))
   }
 
   return list
@@ -54,16 +59,9 @@ export async function generateWithFallback(
       return await generateText({ ...params, model } as GenerateTextParams)
     } catch (err) {
       lastError = err
-      if (isRateLimitError(err)) continue
+      if (isRetryableError(err)) continue
       throw err
     }
   }
   throw lastError
 }
-
-// Keep named export for any code that still references it directly
-export const groqModel = (() => {
-  if (!process.env.GROQ_API_KEY) return null
-  const groq = createGroq({ apiKey: process.env.GROQ_API_KEY })
-  return groq(process.env.GROQ_MODEL ?? "llama-3.3-70b-versatile")
-})()

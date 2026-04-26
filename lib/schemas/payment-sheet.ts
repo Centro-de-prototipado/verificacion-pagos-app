@@ -20,4 +20,3 @@ export const PaymentSheetSchema = z.object({
 })
 
 export type PaymentSheetExtracted = z.infer<typeof PaymentSheetSchema>
-// https://www.gerencie.com/fecha-para-el-pago-de-la-seguridad-social.html?digitos=09

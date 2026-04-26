@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect } from "react"
+import { useEffect, useState, useRef } from "react"
 import { Controller, useForm, type Resolver } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import {
@@ -19,6 +19,67 @@ import {
 import { Input } from "@/components/ui/input"
 import { Switch } from "@/components/ui/switch"
 import { Button } from "@/components/ui/button"
+
+// ── Helpers ──────────────────────────────────────────────────────────────────
+
+const COP = new Intl.NumberFormat("es-CO")
+
+/** Input that displays COP-formatted number while storing a plain number. */
+function CurrencyInput({
+  value,
+  onChange,
+  onBlur,
+  id,
+  "aria-invalid": ariaInvalid,
+}: {
+  value: number | string
+  onChange: (n: number | string) => void
+  onBlur?: () => void
+  id?: string
+  "aria-invalid"?: boolean
+}) {
+  const [display, setDisplay] = useState(() =>
+    value ? COP.format(Number(value)) : ""
+  )
+  const prevValue = useRef(value)
+
+  useEffect(() => {
+    if (value !== prevValue.current && value && !isNaN(Number(value))) {
+      setDisplay(COP.format(Number(value)))
+    }
+    prevValue.current = value
+  }, [value])
+
+  return (
+    <Input
+      id={id}
+      value={`$ ${display}`}
+      onChange={(e) => {
+        const raw = e.target.value.replace(/\D/g, "")
+        setDisplay(raw ? COP.format(Number(raw)) : "")
+        onChange(raw ? Number(raw) : ("" as unknown as number))
+      }}
+      onBlur={onBlur}
+      inputMode="numeric"
+      placeholder="3.500.000"
+      className="pl-7"
+      aria-invalid={ariaInvalid}
+    />
+  )
+}
+
+/** Auto-inserts "/" after 2 digits for MM/YYYY period fields. */
+function handlePeriodInput(
+  e: React.ChangeEvent<HTMLInputElement>,
+  onChange: (v: string) => void
+) {
+  let val = e.target.value.replace(/[^\d/]/g, "")
+  if (val.length === 2 && !val.includes("/")) val += "/"
+  if (val.length > 7) val = val.slice(0, 7)
+  onChange(val)
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 
 interface ManualFormProps {
   defaultValues?: Partial<ManualFormInput>
@@ -128,20 +189,13 @@ export function ManualForm({
             control={form.control}
             render={({ field, fieldState }) => (
               <Field data-invalid={fieldState.invalid || undefined}>
-                <FieldLabel htmlFor={field.name}>
-                  Valor a cobrar (COP)
-                </FieldLabel>
-                <FieldDescription>
-                  Monto en pesos colombianos que vas a facturar en esta
-                  solicitud
-                </FieldDescription>
-                <Input
-                  {...field}
+                <FieldLabel htmlFor={field.name}>Valor a cobrar</FieldLabel>
+                <FieldDescription>Pesos colombianos</FieldDescription>
+                <CurrencyInput
                   id={field.name}
-                  type="number"
-                  min={1}
-                  inputMode="numeric"
-                  placeholder="Ej. 3 500 000"
+                  value={field.value}
+                  onChange={field.onChange}
+                  onBlur={field.onBlur}
                   aria-invalid={fieldState.invalid}
                 />
                 {fieldState.invalid && (
@@ -160,11 +214,17 @@ export function ManualForm({
                   <FieldLabel htmlFor={field.name}>
                     Período de solicitud
                   </FieldLabel>
-                  <FieldDescription>Mes que estás cobrando</FieldDescription>
+                  <FieldDescription>
+                    Mes que estás cobrando —{" "}
+                    <span className="font-mono">MM/AAAA</span>
+                  </FieldDescription>
                   <Input
                     {...field}
                     id={field.name}
-                    placeholder="MM/YYYY — ej. 04/2026"
+                    placeholder="03/2026"
+                    maxLength={7}
+                    inputMode="numeric"
+                    onChange={(e) => handlePeriodInput(e, field.onChange)}
                     aria-invalid={fieldState.invalid}
                   />
                   {fieldState.invalid && (
@@ -183,12 +243,16 @@ export function ManualForm({
                     Período de la planilla
                   </FieldLabel>
                   <FieldDescription>
-                    Mes que cubre tu planilla SS
+                    Mes cotizado en tu planilla SS —{" "}
+                    <span className="font-mono">MM/AAAA</span>
                   </FieldDescription>
                   <Input
                     {...field}
                     id={field.name}
-                    placeholder="MM/YYYY — ej. 03/2026"
+                    placeholder="02/2026"
+                    maxLength={7}
+                    inputMode="numeric"
+                    onChange={(e) => handlePeriodInput(e, field.onChange)}
                     aria-invalid={fieldState.invalid}
                   />
                   {fieldState.invalid && (

@@ -16,7 +16,13 @@ import {
   detectIssuer,
   joinSplitDates,
 } from "@/lib/pdf/parsers/keyword-extractor"
-import type { ExtractedData, RawPDFText } from "@/lib/types"
+import {
+  smartSlice,
+  fillFromCandidates,
+  computeConfidence,
+} from "@/lib/pdf/extract-helpers"
+import { CONTRACT_TYPES_PROMPT } from "@/lib/constants/contracts"
+import type { ExtractedData, RawPDFText, ConfidenceMap } from "@/lib/types"
 
 export const runtime = "nodejs"
 
@@ -29,10 +35,6 @@ interface ProfileHint {
 }
 
 // ─── Core extraction helper ───────────────────────────────────────────────────
-
-const CONTRACT_TYPES =
-  "OCA, OCO, ODC, ODO, OPS, OSE, OSU, CCO, CDA, CDC, CDO, CIS, CON, COV, CPS, CSE, CSU, " +
-  "OEF, OFA, OFC, OFO, OFS, OOF, OSF, OUF, CAF, CCF, CIF, COF, CPF, CSF, CTF, CUF, CVF"
 
 async function extractWithValidation<T>({
   text,
@@ -57,13 +59,16 @@ async function extractWithValidation<T>({
 
   const extraSection = extraInstructions ? `\n${extraInstructions}\n` : ""
 
+  // For multi-page documents include both start and end so page-2 data isn't lost
+  const textSnippet = smartSlice(text, 5000)
+
   const prompt = `Estás validando la extracción de un documento: ${docLabel}.
 
 El sistema detectó estos candidatos automáticamente (algunos pueden ser nulos o incorrectos):
 ${JSON.stringify(candidates, null, 2)}
 ${profileSection}${extraSection}
-Texto del documento (primeras 4000 caracteres):
-${text.slice(0, 4000)}
+Texto del documento:
+${textSnippet}
 
 Instrucciones:
 - Verifica cada candidato contra el texto real del documento.
@@ -79,10 +84,9 @@ Instrucciones:
     })
     return output
   } catch {
-    // Retry once with truncated prompt, cycling through providers again
     const { output } = await generateWithFallback({
       output: Output.object({ schema }),
-      prompt: `Extrae datos de este documento (${docLabel}) y devuelve el JSON del esquema.\n\nTexto:\n${text.slice(0, 2000)}`,
+      prompt: `Extrae datos de este documento (${docLabel}) y devuelve el JSON del esquema.\n\nTexto:\n${smartSlice(text, 2500)}`,
     })
     return output
   }
@@ -141,12 +145,18 @@ export async function POST(request: NextRequest) {
   }
 
   try {
+    // Compute keyword candidates upfront so we can merge and score confidence later
+    const pilaCandidate = extractPILACandidates(cleanText.paymentSheet)
+    const arlCandidate = extractARLCandidates(cleanText.arl)
+    const contractCand = extractContractCandidates(cleanText.contract)
+    const contract2Cand = extractContractCandidates(cleanText.contract2)
+
     const [r0, r1, r2, r3] = await Promise.allSettled([
       extractWithValidation<PaymentSheetExtracted>({
         text: cleanText.paymentSheet,
         schema: PaymentSheetSchema,
         docLabel: "Planilla PILA de seguridad social",
-        candidates: extractPILACandidates(cleanText.paymentSheet),
+        candidates: pilaCandidate,
         profileExample: findProfile(profiles, "pila", issuerKeys.paymentSheet),
         extraInstructions:
           "Reglas críticas: " +
@@ -166,44 +176,157 @@ export async function POST(request: NextRequest) {
         text: cleanText.arl,
         schema: ARLSchema,
         docLabel: "Certificado de afiliación ARL",
-        candidates: extractARLCandidates(cleanText.arl),
+        candidates: arlCandidate,
         profileExample: findProfile(profiles, "arl", issuerKeys.arl),
       }),
       extractWithValidation<ContractExtracted>({
         text: cleanText.contract,
         schema: ContractSchema,
         docLabel: "Contrato UNAL (contrato 1)",
-        candidates: extractContractCandidates(cleanText.contract),
+        candidates: contractCand,
         profileExample: findProfile(profiles, "contract", "unal"),
         extraInstructions:
-          `Tipos de contrato válidos (usa solo estas siglas exactas): ${CONTRACT_TYPES}. ` +
+          `Tipos de contrato válidos (usa solo estas siglas exactas): ${CONTRACT_TYPES_PROMPT}. ` +
           "NO extraigas startDate ni endDate del contrato — se tomarán del certificado ARL.",
       }),
       extractWithValidation<ContractExtracted>({
         text: cleanText.contract2,
         schema: ContractSchema,
         docLabel: "Contrato UNAL (contrato 2)",
-        candidates: extractContractCandidates(cleanText.contract2),
+        candidates: contract2Cand,
         profileExample: findProfile(profiles, "contract", "unal"),
         extraInstructions:
-          `Tipos de contrato válidos (usa solo estas siglas exactas): ${CONTRACT_TYPES}. ` +
+          `Tipos de contrato válidos (usa solo estas siglas exactas): ${CONTRACT_TYPES_PROMPT}. ` +
           "NO extraigas startDate ni endDate del contrato — se tomarán del certificado ARL.",
       }),
     ])
 
     const warnings: string[] = []
+    const confidence: Record<string, ConfidenceMap> = {}
 
-    const paymentSheet = r0.status === "fulfilled" ? r0.value : null
-    if (r0.status === "rejected") warnings.push(`Planilla: ${r0.reason}`)
+    const aiPS =
+      r0.status === "fulfilled"
+        ? (r0.value as Record<string, unknown> | null)
+        : null
+    const aiARL =
+      r1.status === "fulfilled"
+        ? (r1.value as Record<string, unknown> | null)
+        : null
+    const aiC1 =
+      r2.status === "fulfilled"
+        ? (r2.value as Record<string, unknown> | null)
+        : null
+    const aiC2 =
+      r3.status === "fulfilled"
+        ? (r3.value as Record<string, unknown> | null)
+        : null
 
-    const arl = r1.status === "fulfilled" ? r1.value : null
-    if (r1.status === "rejected") warnings.push(`ARL: ${r1.reason}`)
+    // ── Planilla ──────────────────────────────────────────────────────────────
+    const psRaw = fillFromCandidates(
+      aiPS,
+      pilaCandidate as Record<string, unknown>
+    )
+    const paymentSheet = psRaw as PaymentSheetExtracted | null
 
-    const contract = r2.status === "fulfilled" ? r2.value : null
-    if (r2.status === "rejected") warnings.push(`Contrato: ${r2.reason}`)
+    if (r0.status === "rejected") {
+      warnings.push(`Planilla — error de extracción: ${r0.reason}`)
+    } else if (!aiPS) {
+      const len = cleanText.paymentSheet.trim().length
+      warnings.push(
+        len === 0
+          ? "Planilla — el PDF no contiene texto extraíble (¿es un PDF escaneado o protegido?)"
+          : `Planilla — la IA no pudo interpretar el documento (${len} caracteres extraídos)`
+      )
+    } else {
+      if (!psRaw?.sheetNumber)
+        warnings.push("Planilla — número de planilla no encontrado")
+      if (!psRaw?.paymentDate)
+        warnings.push("Planilla — fecha de pago no encontrada")
+      if (!psRaw?.period)
+        warnings.push("Planilla — período de cotización no encontrado")
+    }
+    if (psRaw)
+      confidence.paymentSheet = computeConfidence(
+        pilaCandidate as Record<string, unknown>,
+        psRaw
+      )
 
-    const contract2 = r3.status === "fulfilled" ? r3.value : null
-    if (r3.status === "rejected") warnings.push(`Contrato 2: ${r3.reason}`)
+    // ── ARL ───────────────────────────────────────────────────────────────────
+    const arlRaw = fillFromCandidates(
+      aiARL,
+      arlCandidate as Record<string, unknown>
+    )
+    const arl = arlRaw as ARLExtracted | null
+
+    if (r1.status === "rejected") {
+      warnings.push(`ARL — error de extracción: ${r1.reason}`)
+    } else if (!aiARL) {
+      const len = cleanText.arl.trim().length
+      warnings.push(
+        len === 0
+          ? "ARL — el PDF no contiene texto extraíble (¿es un PDF escaneado o protegido?)"
+          : `ARL — la IA no pudo interpretar el documento (${len} caracteres extraídos)`
+      )
+    } else {
+      if (!arlRaw?.startDate)
+        warnings.push("ARL — fecha de inicio de cobertura no encontrada")
+      if (!arlRaw?.endDate)
+        warnings.push("ARL — fecha de fin de cobertura no encontrada")
+    }
+    if (arlRaw)
+      confidence.arl = computeConfidence(
+        arlCandidate as Record<string, unknown>,
+        arlRaw
+      )
+
+    // ── Contrato 1 ────────────────────────────────────────────────────────────
+    const c1Raw = fillFromCandidates(
+      aiC1,
+      contractCand as Record<string, unknown>
+    )
+    const contract = c1Raw as ContractExtracted | null
+
+    if (r2.status === "rejected") {
+      warnings.push(`Contrato — error de extracción: ${r2.reason}`)
+    } else if (!aiC1) {
+      const len = cleanText.contract.trim().length
+      warnings.push(
+        len === 0
+          ? "Contrato — el PDF no contiene texto extraíble (¿es un PDF escaneado o protegido?)"
+          : `Contrato — la IA no pudo interpretar el documento (${len} caracteres extraídos)`
+      )
+    } else {
+      if (!c1Raw?.orderNumber)
+        warnings.push("Contrato — número de orden no encontrado")
+      if (!c1Raw?.documentNumber)
+        warnings.push("Contrato — número de documento no encontrado")
+    }
+    if (c1Raw)
+      confidence.contract = computeConfidence(
+        contractCand as Record<string, unknown>,
+        c1Raw
+      )
+
+    // ── Contrato 2 ────────────────────────────────────────────────────────────
+    const c2Raw = fillFromCandidates(
+      aiC2,
+      contract2Cand as Record<string, unknown>
+    )
+    const contract2 = c2Raw as ContractExtracted | null
+
+    if (r3.status === "rejected" && cleanText.contract2)
+      warnings.push(`Contrato 2 — error de extracción: ${r3.reason}`)
+    else if (
+      r3.status === "fulfilled" &&
+      !aiC2 &&
+      cleanText.contract2.trim().length > 0
+    )
+      warnings.push("Contrato 2 — la IA no pudo interpretar el documento")
+    if (c2Raw)
+      confidence.contract2 = computeConfidence(
+        contract2Cand as Record<string, unknown>,
+        c2Raw
+      )
 
     const extractedData: ExtractedData = {
       paymentSheet,
@@ -212,7 +335,12 @@ export async function POST(request: NextRequest) {
       ...(contract2 ? { contract2 } : {}),
     }
 
-    return NextResponse.json({ ...extractedData, warnings, issuerKeys })
+    return NextResponse.json({
+      ...extractedData,
+      warnings,
+      issuerKeys,
+      confidence,
+    })
   } catch (error) {
     const message =
       error instanceof Error

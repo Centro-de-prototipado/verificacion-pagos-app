@@ -3,8 +3,9 @@ import { readFile } from "fs/promises"
 import { generate } from "@pdfme/generator"
 import type { Template } from "@pdfme/common"
 import { PDFDocument } from "pdf-lib"
-import type { ContractType, Format053Data, Format069Data } from "@/lib/types"
-import { SEDE, DEPENDENCIA } from "@/lib/validations/constantes"
+import type { Format053Data, Format069Data } from "@/lib/types"
+import { SEDE, DEPENDENCIA } from "@/lib/constants/institution"
+import { CONTRACT_LABELS } from "@/lib/constants/contracts"
 
 const TEMPLATES_DIR = path.join(process.cwd(), "lib", "templates")
 
@@ -14,47 +15,6 @@ function num(value: number): string {
 
 function peso(value: number): string {
   return value > 0 ? `$ ${num(value)}` : "$ -"
-}
-
-const CONTRACT_LABELS: Record<ContractType, string> = {
-  // Órdenes contractuales
-  OCA: "OCA - Orden contractual de arrendamiento",
-  OCO: "OCO - Orden contractual de consultoría",
-  ODC: "ODC - Orden contractual de compra",
-  ODO: "ODO - Orden contractual de obra",
-  OPS: "OPS - Orden contractual de prestación de servicios personales de apoyo a la gestión",
-  OSE: "OSE - Orden contractual de servicios",
-  OSU: "OSU - Orden contractual de suministros",
-  // Contratos
-  CCO: "CCO - Contrato de consultoría",
-  CDA: "CDA - Contrato de arrendamiento",
-  CDC: "CDC - Contrato de compra venta",
-  CDO: "CDO - Contrato de obra",
-  CIS: "CIS - Contrato de intermediación de seguros",
-  CON: "CON - Contrato",
-  COV: "COV - Convenio",
-  CPS: "CPS - Contrato de prestación de servicios personales de apoyo a la gestión",
-  CSE: "CSE - Contrato de servicios",
-  CSU: "CSU - Contrato de suministro",
-  // Órdenes de vigencia futura
-  OEF: "OEF - Orden contractual de servicios Vigencia Futura",
-  OFA: "OFA - Orden contractual de arrendamiento Vigencia Futura",
-  OFC: "OFC - Orden contractual de compra Vigencia Futura",
-  OFO: "OFO - Orden contractual de consultoría Vigencia Futura",
-  OFS: "OFS - Orden contractual de prestación de servicios Vigencia Futura",
-  OOF: "OOF - Orden contractual de obra Vigencia Futura",
-  OSF: "OSF - Orden contractual de prestación de servicios Vigencia Futura",
-  OUF: "OUF - Orden contractual de suministro Vigencia Futura",
-  // Contratos de vigencia futura
-  CAF: "CAF - Contrato de vigencia futura de arrendamiento",
-  CCF: "CCF - Contrato de vigencia futura de consultoría",
-  CIF: "CIF - Contrato de vigencia futura de intermediación de seguros",
-  COF: "COF - Contrato de vigencia futura de obra",
-  CPF: "CPF - Contrato de vigencia futura de prestación de servicios",
-  CSF: "CSF - Contrato de vigencia futura de servicios",
-  CTF: "CTF - Contrato de vigencia futura",
-  CUF: "CUF - Contrato de vigencia futura de suministro",
-  CVF: "CVF - Contrato de vigencia futura de compra venta",
 }
 
 async function loadTemplate(name: string): Promise<Template | null> {

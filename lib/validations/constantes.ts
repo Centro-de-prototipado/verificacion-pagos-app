@@ -39,15 +39,6 @@ export const ARL_FIJA_POR_CLASE: Record<string, number> = {
  */
 export const GAVELA_DIAS_ARL = 2
 
-/** Sede fija para la UNAL Manizales */
-export const SEDE = "SEDE MANIZALES"
-
-/** Dependencia fija */
-export const DEPENDENCIA = "DIRECCION DE INVESTIGACION Y EXTENSION"
-
-/** Ciudad fija para el pie del formato 053 */
-export const CIUDAD = "Manizales"
-
 /**
  * Umbral en UVT para la nota de anexos del formato 069.
  * Si ingresos mensuales < 95 UVT no se exigen documentos de deducciones.

@@ -12,6 +12,8 @@ import {
 } from "@/lib/validations/fecha-limite"
 import type {
   ARLData,
+  ConfidenceLevel,
+  ConfidenceMap,
   ContractData,
   ContractType,
   DocumentType,
@@ -33,6 +35,55 @@ type ExtractionStatus =
   | "loading-ai"
   | "ready"
   | "error"
+  | "manual"
+
+// ─── Confidence indicator ─────────────────────────────────────────────────────
+
+const CONFIDENCE_CONFIG = {
+  high: {
+    cls: "bg-green-500",
+    title: "Extraído con seguridad — no necesita revisión",
+  },
+  medium: {
+    cls: "bg-amber-400",
+    title: "Confianza media — revisa que el valor sea correcto",
+  },
+  low: {
+    cls: "bg-red-400",
+    title: "No encontrado — ingresa el valor manualmente",
+  },
+} as const
+
+function ConfidenceDot({ level }: { level?: ConfidenceLevel }) {
+  if (!level) return null
+  const { cls, title } = CONFIDENCE_CONFIG[level]
+  return (
+    <span
+      className={`inline-block size-2 shrink-0 rounded-full ${cls}`}
+      title={title}
+    />
+  )
+}
+
+function ConfidenceLegend() {
+  return (
+    <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] text-muted-foreground">
+      <span className="font-medium">Color de confianza:</span>
+      {(["high", "medium", "low"] as ConfidenceLevel[]).map((lvl) => (
+        <span key={lvl} className="flex items-center gap-1.5">
+          <span
+            className={`inline-block size-2 rounded-full ${CONFIDENCE_CONFIG[lvl].cls}`}
+          />
+          {lvl === "high"
+            ? "Correcto"
+            : lvl === "medium"
+              ? "Verificar"
+              : "Ingresar manualmente"}
+        </span>
+      ))}
+    </div>
+  )
+}
 
 // ─── Editable field primitives ────────────────────────────────────────────────
 
@@ -43,6 +94,7 @@ function EditField({
   type = "text",
   highlight,
   placeholder,
+  confidence,
 }: {
   label: string
   value: string
@@ -50,6 +102,7 @@ function EditField({
   type?: "text" | "number"
   highlight?: "green" | "red"
   placeholder?: string
+  confidence?: ConfidenceLevel
 }) {
   const color =
     highlight === "green"
@@ -60,7 +113,10 @@ function EditField({
 
   return (
     <div className="flex flex-col gap-0.5 rounded-lg border px-3 py-2">
-      <span className="text-xs text-muted-foreground">{label}</span>
+      <div className="flex items-center gap-1.5">
+        <span className="text-xs text-muted-foreground">{label}</span>
+        <ConfidenceDot level={confidence} />
+      </div>
       <input
         type={type}
         value={value}
@@ -77,15 +133,20 @@ function EditSelect<T extends string>({
   value,
   onChange,
   options,
+  confidence,
 }: {
   label: string
   value: T
   onChange: (v: T) => void
   options: { value: T; label: string }[]
+  confidence?: ConfidenceLevel
 }) {
   return (
     <div className="flex flex-col gap-0.5 rounded-lg border px-3 py-2">
-      <span className="text-xs text-muted-foreground">{label}</span>
+      <div className="flex items-center gap-1.5">
+        <span className="text-xs text-muted-foreground">{label}</span>
+        <ConfidenceDot level={confidence} />
+      </div>
       <select
         value={value}
         onChange={(e) => onChange(e.target.value as T)}
@@ -112,15 +173,20 @@ function MoneyField({
   label,
   value,
   onChange,
+  confidence,
 }: {
   label: string
   value: number
   onChange: (v: number) => void
+  confidence?: ConfidenceLevel
 }) {
   const [focused, setFocused] = useState(false)
   return (
     <div className="flex flex-col gap-0.5 rounded-lg border px-3 py-2">
-      <span className="text-xs text-muted-foreground">{label}</span>
+      <div className="flex items-center gap-1.5">
+        <span className="text-xs text-muted-foreground">{label}</span>
+        <ConfidenceDot level={confidence} />
+      </div>
       <input
         type={focused ? "number" : "text"}
         value={focused ? value || "" : value ? COP.format(value) : ""}
@@ -139,27 +205,55 @@ function MoneyField({
 function DocSection({
   title,
   failed,
+  warnings,
   children,
 }: {
   title: string
   failed?: boolean
+  warnings?: string[]
   children: React.ReactNode
 }) {
+  const hasWarnings = warnings && warnings.length > 0
   return (
     <div
-      className={`flex flex-col gap-3 rounded-xl border px-4 py-4 ${failed ? "border-destructive/40 bg-destructive/5" : "bg-muted/20"}`}
+      className={`flex flex-col gap-3 rounded-xl border px-4 py-4 ${
+        failed
+          ? "border-amber-300/70 bg-amber-50/50 dark:border-amber-700/50 dark:bg-amber-950/20"
+          : hasWarnings
+            ? "border-amber-200/60 bg-amber-50/30 dark:border-amber-800/40 dark:bg-amber-950/10"
+            : "bg-muted/20"
+      }`}
     >
-      <div className="flex items-center gap-2">
+      <div className="flex flex-col gap-1">
+        <div className="flex items-center gap-2">
+          {(failed || hasWarnings) && (
+            <AlertCircleIcon className="size-3.5 shrink-0 text-amber-500" />
+          )}
+          <p
+            className={`text-xs font-semibold tracking-wide uppercase ${failed || hasWarnings ? "text-amber-600 dark:text-amber-400" : "text-muted-foreground"}`}
+          >
+            {title}
+          </p>
+        </div>
         {failed && (
-          <AlertCircleIcon className="size-3.5 shrink-0 text-destructive" />
+          <p className="pl-5 text-[11px] text-amber-700 dark:text-amber-400">
+            No se pudo extraer — completa los campos a mano, son editables.
+          </p>
         )}
-        <p
-          className={`text-xs font-semibold tracking-wide uppercase ${failed ? "text-destructive" : "text-muted-foreground"}`}
-        >
-          {title}
-          {failed && " — no se pudo extraer"}
-        </p>
       </div>
+      {hasWarnings && (
+        <ul className="flex flex-col gap-0.5">
+          {warnings!.map((w) => (
+            <li
+              key={w}
+              className="flex items-start gap-1.5 text-[11px] text-amber-700 dark:text-amber-400"
+            >
+              <span className="mt-0.5 shrink-0">⚠</span>
+              <span>{w.replace(/^[^—]+—\s*/, "")}</span>
+            </li>
+          ))}
+        </ul>
+      )}
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">{children}</div>
     </div>
   )
@@ -171,10 +265,14 @@ function PlanillaEditor({
   data,
   onChange,
   deadlineCalcNote,
+  warnings,
+  confidenceMap,
 }: {
   data: PaymentSheetData | null
   onChange: (d: PaymentSheetData) => void
   deadlineCalcNote?: string
+  warnings?: string[]
+  confidenceMap?: ConfidenceMap
 }) {
   const empty: PaymentSheetData = {
     sheetNumber: "",
@@ -185,18 +283,21 @@ function PlanillaEditor({
   }
   const d = data ?? empty
   const set = (patch: Partial<PaymentSheetData>) => onChange({ ...d, ...patch })
+  const c = confidenceMap
 
   return (
-    <DocSection title="Planilla PILA" failed={!data}>
+    <DocSection title="Planilla PILA" failed={!data} warnings={warnings}>
       <EditField
         label="Número de planilla"
         value={d.sheetNumber}
         onChange={(v) => set({ sheetNumber: v })}
+        confidence={c?.sheetNumber}
       />
       <EditField
         label="Fecha de pago"
         value={d.paymentDate}
         onChange={(v) => set({ paymentDate: v })}
+        confidence={c?.paymentDate}
       />
       <div className="flex flex-col gap-0.5">
         <EditField
@@ -204,6 +305,7 @@ function PlanillaEditor({
           value={d.paymentDeadline ?? ""}
           onChange={(v) => set({ paymentDeadline: v || null })}
           placeholder="No encontrada — se calculará automáticamente"
+          confidence={c?.paymentDeadline}
         />
         {deadlineCalcNote && (
           <p className="pl-1 text-[11px] text-muted-foreground">
@@ -215,11 +317,13 @@ function PlanillaEditor({
         label="Período (MM/YYYY)"
         value={d.period}
         onChange={(v) => set({ period: v })}
+        confidence={c?.period}
       />
       <MoneyField
         label="Valor total pagado"
         value={d.totalAmountPaid}
         onChange={(v) => set({ totalAmountPaid: v })}
+        confidence={c?.totalAmountPaid}
       />
     </DocSection>
   )
@@ -243,9 +347,13 @@ const RISK_OPTIONS: { value: RiskClass; label: string }[] = [
 function ARLEditor({
   data,
   onChange,
+  warnings,
+  confidenceMap,
 }: {
   data: ARLData | null
   onChange: (d: ARLData) => void
+  warnings?: string[]
+  confidenceMap?: ConfidenceMap
 }) {
   const empty: ARLData = {
     startDate: "",
@@ -256,36 +364,42 @@ function ARLEditor({
   }
   const d = data ?? empty
   const set = (patch: Partial<ARLData>) => onChange({ ...d, ...patch })
+  const c = confidenceMap
 
   return (
-    <DocSection title="Certificado ARL" failed={!data}>
+    <DocSection title="Certificado ARL" failed={!data} warnings={warnings}>
       <EditField
         label="Inicio cobertura"
         value={d.startDate}
         onChange={(v) => set({ startDate: v })}
+        confidence={c?.startDate}
       />
       <EditField
         label="Fin cobertura"
         value={d.endDate}
         onChange={(v) => set({ endDate: v })}
+        confidence={c?.endDate}
       />
       <EditSelect
         label="Estado cobertura"
         value={d.coverageStatus}
         onChange={(v) => set({ coverageStatus: v })}
         options={COVERAGE_OPTIONS}
+        confidence={c?.coverageStatus}
       />
       <EditSelect
         label="Clase de riesgo"
         value={d.riskClass}
         onChange={(v) => set({ riskClass: v as RiskClass })}
         options={RISK_OPTIONS}
+        confidence={c?.riskClass}
       />
       <EditField
         label="Tasa cotización (%)"
         type="number"
         value={String(d.cotizationRate)}
         onChange={(v) => set({ cotizationRate: Number(v) || 0 })}
+        confidence={c?.cotizationRate}
       />
     </DocSection>
   )
@@ -341,10 +455,14 @@ function ContractEditor({
   data,
   title,
   onChange,
+  warnings,
+  confidenceMap,
 }: {
   data: ContractData | null
   title: string
   onChange: (d: ContractData) => void
+  warnings?: string[]
+  confidenceMap?: ConfidenceMap
 }) {
   const empty: ContractData = {
     contractType: "OSE",
@@ -359,50 +477,59 @@ function ContractEditor({
   }
   const d = data ?? empty
   const set = (patch: Partial<ContractData>) => onChange({ ...d, ...patch })
+  const c = confidenceMap
 
   return (
-    <DocSection title={title} failed={!data}>
+    <DocSection title={title} failed={!data} warnings={warnings}>
       <EditSelect
         label="Tipo de contrato"
         value={d.contractType}
         onChange={(v) => set({ contractType: v as ContractType })}
         options={CONTRACT_TYPE_OPTIONS}
+        confidence={c?.contractType}
       />
       <EditField
         label="Número de orden"
         value={d.orderNumber}
         onChange={(v) => set({ orderNumber: v })}
+        confidence={c?.orderNumber}
       />
       <EditField
         label="Nombre contratista"
         value={d.contractorName}
         onChange={(v) => set({ contractorName: v })}
+        confidence={c?.contractorName}
       />
       <EditSelect
         label="Tipo documento"
         value={d.documentType}
         onChange={(v) => set({ documentType: v as DocumentType })}
         options={DOC_TYPE_OPTIONS}
+        confidence={c?.documentType}
       />
       <EditField
         label="Número documento"
         value={d.documentNumber}
         onChange={(v) => set({ documentNumber: v })}
+        confidence={c?.documentNumber}
       />
       <MoneyField
         label="Valor total sin impuestos"
         value={d.totalValueBeforeTax}
         onChange={(v) => set({ totalValueBeforeTax: v })}
+        confidence={c?.totalValueBeforeTax}
       />
       <EditField
         label="Fecha inicio"
         value={d.startDate}
         onChange={(v) => set({ startDate: v })}
+        confidence={c?.startDate}
       />
       <EditField
         label="Fecha fin"
         value={d.endDate}
         onChange={(v) => set({ endDate: v })}
+        confidence={c?.endDate}
       />
       <div className="flex flex-col gap-0.5 rounded-lg border px-3 py-2">
         <span className="text-xs text-muted-foreground">
@@ -474,6 +601,10 @@ export function Step2() {
   const [contract, setContract] = useState<ContractData | null>(null)
   const [contract2, setContract2] = useState<ContractData | null>(null)
   const [issuerKeys, setIssuerKeys] = useState<Record<string, string>>({})
+  const [warnings, setWarnings] = useState<string[]>([])
+  const [confidence, setConfidence] = useState<Record<string, ConfidenceMap>>(
+    {}
+  )
   const originalExtraction = useRef<ExtractedData | null>(null)
 
   // Note shown under deadline field so the user can verify the inputs used
@@ -612,21 +743,25 @@ export function Step2() {
       const extractedPayload = (await aiRes.json()) as ExtractedData & {
         warnings?: string[]
         issuerKeys?: Record<string, string>
+        confidence?: Record<string, ConfidenceMap>
       }
 
       const {
         warnings = [],
         issuerKeys: keys = {},
+        confidence: conf = {},
         ...extracted
       } = extractedPayload
       setExtractedData(extracted)
       setIssuerKeys(keys)
+      setWarnings(warnings)
+      setConfidence(conf)
       originalExtraction.current = extracted
       setStatus("ready")
 
       if (warnings.length > 0) {
-        toast.warning("Extracción IA con observaciones.", {
-          description: warnings.join(" · "),
+        toast.warning(`${warnings.length} observación(es) en la extracción.`, {
+          description: "Revisa los campos marcados abajo.",
         })
       }
     } catch (err) {
@@ -714,8 +849,14 @@ export function Step2() {
     setStep(3 as WizardStep)
   }
 
-  const allFailed = status === "ready" && !planilla && !arl && !contract
-  const someFailed = status === "ready" && (!planilla || !arl || !contract)
+  const isReady = status === "ready" || status === "manual"
+  const allFailed = isReady && !planilla && !arl && !contract
+  const someFailed = isReady && (!planilla || !arl || !contract)
+
+  const handleSkipToManual = () => {
+    setStatus("manual")
+    setErrorMessage(null)
+  }
 
   return (
     <div className="flex flex-col gap-8">
@@ -724,131 +865,150 @@ export function Step2() {
         <SectionHeader
           number={1}
           title="Procesamiento automático de documentos"
-          subtitle="El sistema extrae texto y luego ejecuta la extracción con IA."
-          done={status === "ready"}
+          subtitle="El sistema extrae el texto de los PDFs y los analiza con inteligencia artificial."
+          done={isReady}
         />
 
         {status === "loading-text" && (
-          <div className="flex flex-col items-center gap-3 rounded-xl border border-dashed py-10 pl-9 text-center">
+          <div className="flex flex-col items-center gap-3 rounded-xl border border-dashed py-10 text-center">
             <Loader2Icon className="size-8 animate-spin text-primary" />
             <div className="flex flex-col gap-1">
-              <p className="text-sm font-medium">
-                Extrayendo texto de los PDFs…
-              </p>
+              <p className="text-sm font-medium">Leyendo los archivos PDF…</p>
               <p className="text-xs text-muted-foreground">
-                Esto puede tardar unos segundos según el tamaño de los archivos.
+                Puede tardar unos segundos según el tamaño de los documentos.
               </p>
             </div>
           </div>
         )}
 
         {status === "loading-ai" && (
-          <div className="flex flex-col items-center gap-3 rounded-xl border border-dashed py-10 pl-9 text-center">
+          <div className="flex flex-col items-center gap-3 rounded-xl border border-dashed py-10 text-center">
             <Loader2Icon className="size-8 animate-spin text-primary" />
             <div className="flex flex-col gap-1">
-              <p className="text-sm font-medium">Extrayendo datos con IA…</p>
+              <p className="text-sm font-medium">
+                Analizando documentos con IA…
+              </p>
               <p className="text-xs text-muted-foreground">
                 En cuanto termine, los datos aparecerán abajo para que los
-                revises.
+                revises y corrijas.
               </p>
             </div>
           </div>
         )}
 
         {status === "error" && (
-          <div className="flex flex-col gap-3 pl-9">
-            <Alert variant="destructive">
-              <AlertDescription>
-                {errorMessage ?? "Ocurrió un error al procesar los documentos."}
+          <div className="flex flex-col gap-3">
+            <Alert className="border-amber-300 bg-amber-50/60 dark:border-amber-700 dark:bg-amber-950/30">
+              <AlertCircleIcon className="size-4 text-amber-600" />
+              <AlertDescription className="text-amber-800 dark:text-amber-300">
+                <strong>La extracción automática no funcionó.</strong>{" "}
+                {errorMessage ?? "Ocurrió un error al procesar los documentos."}{" "}
+                Puedes reintentar o continuar ingresando los datos tú mismo.
               </AlertDescription>
             </Alert>
-            <Button
-              variant="outline"
-              size="sm"
-              className="w-fit gap-2"
-              onClick={processStep}
-            >
-              <RefreshCwIcon className="size-4" />
-              Reintentar
-            </Button>
+            <div className="flex flex-wrap gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                className="gap-2"
+                onClick={processStep}
+              >
+                <RefreshCwIcon className="size-4" />
+                Reintentar
+              </Button>
+              <Button variant="ghost" size="sm" onClick={handleSkipToManual}>
+                Ingresar datos manualmente →
+              </Button>
+            </div>
           </div>
         )}
       </div>
 
-      {/* ② Datos extraídos (aparecen al terminar la extracción) */}
-      {status === "ready" && (
+      {/* ② Datos (aparecen al terminar la extracción o en modo manual) */}
+      {isReady && (
         <>
           <Separator />
 
           <div className="flex flex-col gap-4">
             <SectionHeader
               number={2}
-              title="Datos extraídos por la IA"
-              subtitle="Revisa y corrige los valores si es necesario. Los campos son editables."
+              title="Revisa y completa los datos"
+              subtitle="Todos los campos son editables. Haz clic sobre cualquier valor para corregirlo."
             />
 
-            {allFailed ? (
-              <Alert variant="destructive" className="ml-9">
-                <AlertDescription>
-                  La IA no pudo extraer datos de ningún documento. Reintentar el
-                  proceso automático.
+            {allFailed && (
+              <Alert className="border-amber-300 bg-amber-50/60 dark:border-amber-700 dark:bg-amber-950/30">
+                <AlertCircleIcon className="size-4 text-amber-600" />
+                <AlertDescription className="text-amber-800 dark:text-amber-300">
+                  <strong>La IA no encontró datos en los documentos.</strong> No
+                  te preocupes — puedes completar todos los campos a mano en los
+                  formularios de abajo. Los campos están marcados en naranja
+                  para que sepas cuáles necesitan tu atención.
                 </AlertDescription>
               </Alert>
-            ) : (
-              <div className="flex flex-col gap-3 pl-9">
-                <PlanillaEditor
-                  data={planilla}
-                  onChange={setPlanilla}
-                  deadlineCalcNote={deadlineCalcNote}
-                />
-                <ARLEditor data={arl} onChange={setArl} />
-                <ContractEditor
-                  data={contract}
-                  title={
-                    manualData?.contractCount === "2"
-                      ? "Contrato 1"
-                      : "Contrato"
-                  }
-                  onChange={setContract}
-                />
-                {manualData?.contractCount === "2" && (
-                  <ContractEditor
-                    data={contract2}
-                    title="Contrato 2"
-                    onChange={setContract2}
-                  />
-                )}
-              </div>
             )}
+
+            <div className="flex flex-col gap-3">
+              {!allFailed && <ConfidenceLegend />}
+              <PlanillaEditor
+                data={planilla}
+                onChange={setPlanilla}
+                deadlineCalcNote={deadlineCalcNote}
+                warnings={warnings.filter((w) => w.startsWith("Planilla"))}
+                confidenceMap={confidence.paymentSheet}
+              />
+              <ARLEditor
+                data={arl}
+                onChange={setArl}
+                warnings={warnings.filter((w) => w.startsWith("ARL"))}
+                confidenceMap={confidence.arl}
+              />
+              <ContractEditor
+                data={contract}
+                title={
+                  manualData?.contractCount === "2" ? "Contrato 1" : "Contrato"
+                }
+                onChange={setContract}
+                warnings={warnings.filter((w) => w.startsWith("Contrato —"))}
+                confidenceMap={confidence.contract}
+              />
+              {manualData?.contractCount === "2" && (
+                <ContractEditor
+                  data={contract2}
+                  title="Contrato 2"
+                  onChange={setContract2}
+                  warnings={warnings.filter((w) => w.startsWith("Contrato 2"))}
+                  confidenceMap={confidence.contract2}
+                />
+              )}
+            </div>
           </div>
 
           <div className="flex flex-col gap-3">
             {someFailed && !allFailed && (
-              <Alert className="ml-9">
-                <AlertDescription>
-                  Algunos documentos no se pudieron extraer (marcados en rojo).
-                  Puedes editar los campos vacíos manualmente antes de
-                  continuar.
+              <Alert className="border-amber-300 bg-amber-50/60 dark:border-amber-700 dark:bg-amber-950/30">
+                <AlertCircleIcon className="size-4 text-amber-600" />
+                <AlertDescription className="text-amber-800 dark:text-amber-300">
+                  Algunos documentos no se pudieron leer automáticamente
+                  (aparecen en naranja). Completa los campos vacíos manualmente
+                  — son todos editables.
                 </AlertDescription>
               </Alert>
             )}
-            <div className="flex gap-3">
-              <Button
-                variant="outline"
-                size="sm"
-                className="w-fit gap-2"
-                onClick={processStep}
-              >
-                <RefreshCwIcon className="size-4" />
-                Reintentar extracción
-              </Button>
-              <Button
-                size="sm"
-                className="w-fit"
-                disabled={allFailed}
-                onClick={handleConfirm}
-              >
-                Confirmar datos y continuar
+            <div className="flex flex-wrap gap-3">
+              {status !== "manual" && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="gap-2"
+                  onClick={processStep}
+                >
+                  <RefreshCwIcon className="size-4" />
+                  Reintentar extracción
+                </Button>
+              )}
+              <Button size="sm" onClick={handleConfirm}>
+                Confirmar datos y continuar →
               </Button>
             </div>
           </div>

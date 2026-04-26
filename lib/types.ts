@@ -2,6 +2,11 @@
 
 export type WizardStep = 1 | 2 | 3 | 4
 
+// ─── Extraction confidence ────────────────────────────────────────────────────
+
+export type ConfidenceLevel = "high" | "medium" | "low"
+export type ConfidenceMap = Record<string, ConfidenceLevel>
+
 export type ContractType =
   // Órdenes contractuales vigentes
   | "OCA"

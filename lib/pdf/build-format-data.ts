@@ -4,32 +4,9 @@ import type {
   Format053Data,
   Format069Data,
   ContributionCalculation,
-  RiskClass,
 } from "@/lib/types"
 import type { ValidationSummary } from "@/lib/validations"
-
-const SPANISH_MONTHS: Record<string, string> = {
-  "01": "enero",
-  "02": "febrero",
-  "03": "marzo",
-  "04": "abril",
-  "05": "mayo",
-  "06": "junio",
-  "07": "julio",
-  "08": "agosto",
-  "09": "septiembre",
-  "10": "octubre",
-  "11": "noviembre",
-  "12": "diciembre",
-}
-
-const RISK_CLASS_LABELS: Record<RiskClass, string> = {
-  I: "I",
-  II: "II",
-  III: "III",
-  IV: "IV",
-  V: "V",
-}
+import { SPANISH_MONTHS } from "@/lib/constants/months"
 
 /** DD/MM/YYYY → "DD de mes de YYYY" for expedition date */
 function formatExpeditionDate(ddmmyyyy: string): string {
@@ -142,7 +119,7 @@ export function buildFormat069Data(
     contractTotalValue: contract!.totalValueBeforeTax,
     startDate: contract!.startDate,
     endDate: contract!.endDate,
-    riskClassLabel: RISK_CLASS_LABELS[arl!.riskClass],
+    riskClassLabel: arl!.riskClass,
     ...(contract2
       ? {
           contract2Type: contract2.contractType,
