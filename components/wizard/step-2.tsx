@@ -1,8 +1,19 @@
 "use client"
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react"
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { toast } from "sonner"
-import { AlertCircleIcon, Loader2Icon, RefreshCwIcon } from "lucide-react"
+import {
+  AlertCircleIcon,
+  CheckCircle2Icon,
+  CircleDashedIcon,
+  Loader2Icon,
+  ReceiptTextIcon,
+  RefreshCwIcon,
+  ScrollTextIcon,
+  ShieldCheckIcon,
+  SparklesIcon,
+  XCircleIcon,
+} from "lucide-react"
 
 import { useWizardStore } from "@/lib/store"
 import { getAllProfiles, saveProfile } from "@/lib/pdf/document-profiles"
@@ -26,6 +37,7 @@ import type {
 
 import { Button } from "@/components/ui/button"
 import { Alert, AlertDescription } from "@/components/ui/alert"
+import { Progress } from "@/components/ui/progress"
 import { Separator } from "@/components/ui/separator"
 import { SectionHeader } from "./section-header"
 
@@ -585,7 +597,7 @@ function ContractEditor({
 export function Step2() {
   const {
     documents,
-    rawText,
+
     setRawText,
     extractedData,
     setExtractedData,
@@ -595,6 +607,19 @@ export function Step2() {
 
   const [status, setStatus] = useState<ExtractionStatus>("idle")
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
+
+  // Per-document extraction progress shown during loading-ai
+  type DocStatus = "waiting" | "trying" | "done" | "failed"
+  type DocProgress = { status: DocStatus; model?: string; finalModel?: string }
+  const [docProgress, setDocProgress] = useState<Record<string, DocProgress>>(
+    {}
+  )
+
+  const updateDoc = (doc: string, patch: Partial<DocProgress>) =>
+    setDocProgress((prev) => ({
+      ...prev,
+      [doc]: { ...prev[doc], status: "waiting", ...patch },
+    }))
 
   const [planilla, setPlanilla] = useState<PaymentSheetData | null>(null)
   const [arl, setArl] = useState<ARLData | null>(null)
@@ -726,13 +751,16 @@ export function Step2() {
         })
       )
 
+      // Reset doc progress for the new run
+      setDocProgress({})
+
       const aiRes = await fetch("/api/extract", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ rawText: rawData, profiles: savedProfiles }),
       })
 
-      if (!aiRes.ok) {
+      if (!aiRes.ok || !aiRes.body) {
         const details = await parseApiError(
           aiRes,
           `Error del servidor en extracción IA: ${aiRes.status}`
@@ -740,11 +768,59 @@ export function Step2() {
         throw new Error(details)
       }
 
-      const extractedPayload = (await aiRes.json()) as ExtractedData & {
-        warnings?: string[]
-        issuerKeys?: Record<string, string>
-        confidence?: Record<string, ConfidenceMap>
+      // Read streaming NDJSON events
+      const reader = aiRes.body.getReader()
+      const decoder = new TextDecoder()
+      let buffer = ""
+      let extractedPayload:
+        | (ExtractedData & {
+            warnings?: string[]
+            issuerKeys?: Record<string, string>
+            confidence?: Record<string, ConfidenceMap>
+          })
+        | null = null
+
+      outer: while (true) {
+        const { done, value } = await reader.read()
+        if (done) break
+        buffer += decoder.decode(value, { stream: true })
+        const lines = buffer.split("\n")
+        buffer = lines.pop() ?? ""
+        for (const line of lines) {
+          if (!line.trim()) continue
+          const event = JSON.parse(line) as {
+            type: string
+            doc?: string
+            model?: string
+            data?: ExtractedData
+            warnings?: string[]
+            issuerKeys?: Record<string, string>
+            confidence?: Record<string, ConfidenceMap>
+            message?: string
+            details?: string
+          }
+          if (event.type === "trying" && event.doc && event.model) {
+            updateDoc(event.doc, { status: "trying", model: event.model })
+          } else if (event.type === "failed" && event.doc) {
+            updateDoc(event.doc, { status: "trying" }) // still trying, just this model failed
+          } else if (event.type === "success" && event.doc && event.model) {
+            updateDoc(event.doc, { status: "done", finalModel: event.model })
+          } else if (event.type === "result" && event.data) {
+            extractedPayload = {
+              ...event.data,
+              warnings: event.warnings,
+              issuerKeys: event.issuerKeys,
+              confidence: event.confidence,
+            }
+          } else if (event.type === "error") {
+            throw new Error(
+              event.details ?? event.message ?? "Error en extracción IA"
+            )
+          }
+        }
       }
+
+      if (!extractedPayload) throw new Error("La IA no devolvió datos.")
 
       const {
         warnings = [],
@@ -881,20 +957,147 @@ export function Step2() {
           </div>
         )}
 
-        {status === "loading-ai" && (
-          <div className="flex flex-col items-center gap-3 rounded-xl border border-dashed py-10 text-center">
-            <Loader2Icon className="size-8 animate-spin text-primary" />
-            <div className="flex flex-col gap-1">
-              <p className="text-sm font-medium">
-                Analizando documentos con IA…
-              </p>
-              <p className="text-xs text-muted-foreground">
-                En cuanto termine, los datos aparecerán abajo para que los
-                revises y corrijas.
-              </p>
-            </div>
-          </div>
-        )}
+        {status === "loading-ai" &&
+          (() => {
+            const docs = [
+              {
+                key: "paymentSheet",
+                label: "Planilla PILA",
+                Icon: ReceiptTextIcon,
+              },
+              { key: "arl", label: "Certificado ARL", Icon: ShieldCheckIcon },
+              { key: "contract", label: "Contrato 1", Icon: ScrollTextIcon },
+              ...(documents.contract2
+                ? [
+                    {
+                      key: "contract2",
+                      label: "Contrato 2",
+                      Icon: ScrollTextIcon,
+                    },
+                  ]
+                : []),
+            ] as { key: string; label: string; Icon: React.ElementType }[]
+            const doneCount = docs.filter(
+              (d) => docProgress[d.key]?.status === "done"
+            ).length
+            return (
+              <div className="flex flex-col items-center gap-6 rounded-2xl border border-dashed px-6 py-10">
+                {/* Header */}
+                <div className="flex flex-col items-center gap-3 text-center">
+                  <div className="relative flex size-14 items-center justify-center rounded-2xl bg-primary/10">
+                    <SparklesIcon className="size-6 text-primary" />
+                  </div>
+                  <div className="flex flex-col gap-0.5">
+                    <p className="text-sm font-semibold">
+                      Analizando con inteligencia artificial
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      {doneCount} de {docs.length} documentos completados
+                    </p>
+                  </div>
+                  <div className="w-48">
+                    <Progress
+                      value={(doneCount / docs.length) * 100}
+                      className="h-1.5"
+                    />
+                  </div>
+                </div>
+
+                {/* Doc cards */}
+                <div className="flex w-full gap-3">
+                  {docs.map(({ key, label, Icon }) => {
+                    const p = docProgress[key]
+                    const isDone = p?.status === "done"
+                    const isTrying = p?.status === "trying"
+                    const isFailed = p?.status === "failed"
+                    return (
+                      <div
+                        key={key}
+                        className={`flex flex-col items-center gap-3 rounded-xl border p-5 text-center transition-all duration-300 ${
+                          isDone
+                            ? "border-green-200 bg-green-50/70 dark:border-green-800 dark:bg-green-950/30"
+                            : isTrying
+                              ? "border-primary/40 bg-primary/5 shadow-sm"
+                              : isFailed
+                                ? "border-amber-200 bg-amber-50/60 dark:border-amber-800 dark:bg-amber-950/30"
+                                : "border-border bg-muted/20"
+                        }`}
+                      >
+                        {/* Icon with status badge */}
+                        <div className="relative">
+                          <div
+                            className={`flex size-11 items-center justify-center rounded-xl transition-colors duration-300 ${
+                              isDone
+                                ? "bg-green-100 dark:bg-green-900/50"
+                                : isTrying
+                                  ? "bg-primary/10"
+                                  : "bg-muted"
+                            }`}
+                          >
+                            <Icon
+                              className={`size-5 transition-colors duration-300 ${
+                                isDone
+                                  ? "text-green-600 dark:text-green-400"
+                                  : isTrying
+                                    ? "text-primary"
+                                    : "text-muted-foreground/60"
+                              }`}
+                            />
+                          </div>
+                          <div className="absolute -right-1.5 -bottom-1.5">
+                            {isDone ? (
+                              <CheckCircle2Icon className="size-4.5 fill-white text-green-500 dark:fill-background" />
+                            ) : isTrying ? (
+                              <Loader2Icon className="size-4.5 animate-spin text-primary" />
+                            ) : isFailed ? (
+                              <XCircleIcon className="size-4.5 fill-white text-amber-500 dark:fill-background" />
+                            ) : (
+                              <CircleDashedIcon className="size-4.5 text-muted-foreground/30" />
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Label + model */}
+                        <div className="flex flex-col gap-0.5">
+                          <p className="text-xs font-semibold">{label}</p>
+                          <p className="line-clamp-2 text-[10px] leading-tight text-muted-foreground">
+                            {!p || p.status === "waiting"
+                              ? "En cola…"
+                              : isTrying
+                                ? p.model
+                                : isDone
+                                  ? p.finalModel
+                                  : "Sin respuesta"}
+                          </p>
+                        </div>
+
+                        {/* Status pill */}
+                        <span
+                          className={`rounded-full px-2.5 py-0.5 text-[10px] font-semibold tracking-wide ${
+                            isDone
+                              ? "bg-green-100 text-green-700 dark:bg-green-900/60 dark:text-green-300"
+                              : isTrying
+                                ? "bg-primary/10 text-primary"
+                                : isFailed
+                                  ? "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300"
+                                  : "bg-muted text-muted-foreground"
+                          }`}
+                        >
+                          {isDone
+                            ? "Listo"
+                            : isTrying
+                              ? "Analizando"
+                              : isFailed
+                                ? "Sin respuesta"
+                                : "En cola"}
+                        </span>
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
+            )
+          })()}
 
         {status === "error" && (
           <div className="flex flex-col gap-3">

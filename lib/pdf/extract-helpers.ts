@@ -3,8 +3,10 @@ import type { ConfidenceLevel, ConfidenceMap } from "@/lib/types"
 /**
  * Returns up to `max` chars from a document, combining the first 70% and the
  * last 30% so that page-2 content in multi-page PDFs is always included.
+ * Default is 12 000 chars — modern models have 128k context and most documents
+ * fit entirely within this window without any truncation.
  */
-export function smartSlice(text: string, max = 5000): string {
+export function smartSlice(text: string, max = 12_000): string {
   if (text.length <= max) return text
   const head = Math.floor(max * 0.7)
   const tail = max - head
