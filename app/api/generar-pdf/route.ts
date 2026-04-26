@@ -81,6 +81,13 @@ export async function POST(request: NextRequest) {
       llenarCertificacion069(datos069),
     ])
 
+    if (!bytes053 && !bytes069) {
+      return NextResponse.json(
+        { error: "No se encontró ningún template (053 ni 069)." },
+        { status: 500 }
+      )
+    }
+
     const mergedBytes = await unificarPDFs({
       bytes053,
       bytes069,

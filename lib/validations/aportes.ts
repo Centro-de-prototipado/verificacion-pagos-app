@@ -5,7 +5,12 @@ import {
   SMMLV_2026,
 } from "./constantes"
 import { calcularMesesContrato } from "./fechas"
-import type { ARLData, ContractData, ContributionCalculation, ValidationResult } from "@/lib/types"
+import type {
+  ARLData,
+  ContractData,
+  ContributionCalculation,
+  ValidationResult,
+} from "@/lib/types"
 
 /**
  * Calcula el valor mensualizado de un contrato.
@@ -115,10 +120,13 @@ export function calcularContribuciones(
   const calculationBase = calcularBaseEfectiva(ibc)
 
   const healthContribution = calcularAporteSalud(calculationBase)
-  const pensionContribution = isPensioner ? 0 : calcularAportePension(calculationBase)
+  const pensionContribution = isPensioner
+    ? 0
+    : calcularAportePension(calculationBase)
   const arlContribution = calcularAporteARL(arl.cotizationRate, calculationBase)
   const solidarityFund = 0 // FSP pendiente confirmar: aplica cuando IBC > 4 SMMLV
-  const totalObligatory = healthContribution + pensionContribution + arlContribution + solidarityFund
+  const totalObligatory =
+    healthContribution + pensionContribution + arlContribution + solidarityFund
 
   return {
     calculationBase,

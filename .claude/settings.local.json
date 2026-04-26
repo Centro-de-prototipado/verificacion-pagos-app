@@ -53,7 +53,9 @@
       "WebFetch(domain:joyfill.io)",
       "WebFetch(domain:www.danielolawoyin.com)",
       "WebFetch(domain:www.nutrient.io)",
-      "Bash(npm uninstall *)"
+      "Bash(npm uninstall *)",
+      "Bash(npx next *)",
+      "Bash(grep -E \"^react$\")"
     ]
   }
 }

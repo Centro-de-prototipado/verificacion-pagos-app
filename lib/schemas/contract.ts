@@ -1,9 +1,56 @@
 import { z } from "zod"
 
+// Normalizes any date to DD/MM/YYYY (accepts both DD/MM/YYYY and ISO input)
+const toDMY = (v: string) => {
+  const iso = v.match(/^(\d{4})[\/\-](\d{2})[\/\-](\d{2})$/)
+  return iso ? `${iso[3]}/${iso[2]}/${iso[1]}` : v
+}
+
 export const ContractSchema = z.object({
   contractType: z
-    .enum(["OSE", "OPS", "OCE", "OFS", "OCO", "ODS", "ODO", "OCU"])
-    .describe("Tipo de orden o contrato"),
+    .enum([
+      // Órdenes contractuales
+      "OCA",
+      "OCO",
+      "ODC",
+      "ODO",
+      "OPS",
+      "OSE",
+      "OSU",
+      // Contratos
+      "CCO",
+      "CDA",
+      "CDC",
+      "CDO",
+      "CIS",
+      "CON",
+      "COV",
+      "CPS",
+      "CSE",
+      "CSU",
+      // Órdenes vigencia futura
+      "OEF",
+      "OFA",
+      "OFC",
+      "OFO",
+      "OFS",
+      "OOF",
+      "OSF",
+      "OUF",
+      // Contratos vigencia futura
+      "CAF",
+      "CCF",
+      "CIF",
+      "COF",
+      "CPF",
+      "CSF",
+      "CTF",
+      "CUF",
+      "CVF",
+    ])
+    .describe(
+      "Tipo de orden o contrato. Busca la sigla de 3 letras: OSE, OPS, CCO, etc."
+    ),
   orderNumber: z.string().describe("Número de la orden o contrato"),
   contractorName: z
     .string()
@@ -21,9 +68,11 @@ export const ContractSchema = z.object({
     ),
   startDate: z
     .string()
+    .transform(toDMY)
     .describe("Fecha de inicio del contrato en formato DD/MM/YYYY"),
   endDate: z
     .string()
+    .transform(toDMY)
     .describe("Fecha de terminación del contrato en formato DD/MM/YYYY"),
   activityReport: z.object({
     required: z

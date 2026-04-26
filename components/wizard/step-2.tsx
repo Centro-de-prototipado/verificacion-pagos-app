@@ -1,10 +1,15 @@
 "use client"
 
-import { useCallback, useEffect, useState } from "react"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { toast } from "sonner"
 import { AlertCircleIcon, Loader2Icon, RefreshCwIcon } from "lucide-react"
 
 import { useWizardStore } from "@/lib/store"
+import { getAllProfiles, saveProfile } from "@/lib/pdf/document-profiles"
+import {
+  calcularFechaLimite,
+  diasHabilAsignados,
+} from "@/lib/validations/fecha-limite"
 import type {
   ARLData,
   ContractData,
@@ -22,7 +27,12 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Separator } from "@/components/ui/separator"
 import { SectionHeader } from "./section-header"
 
-type ExtractionStatus = "idle" | "loading-text" | "loading-ai" | "ready" | "error"
+type ExtractionStatus =
+  | "idle"
+  | "loading-text"
+  | "loading-ai"
+  | "ready"
+  | "error"
 
 // ─── Editable field primitives ────────────────────────────────────────────────
 
@@ -32,12 +42,14 @@ function EditField({
   onChange,
   type = "text",
   highlight,
+  placeholder,
 }: {
   label: string
   value: string
   onChange: (v: string) => void
   type?: "text" | "number"
   highlight?: "green" | "red"
+  placeholder?: string
 }) {
   const color =
     highlight === "green"
@@ -53,6 +65,7 @@ function EditField({
         type={type}
         value={value}
         onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder}
         className={`w-full bg-transparent text-sm font-medium outline-none placeholder:text-muted-foreground/50 ${color}`}
       />
     </div>
@@ -88,6 +101,39 @@ function EditSelect<T extends string>({
   )
 }
 
+const COP = new Intl.NumberFormat("es-CO", {
+  style: "currency",
+  currency: "COP",
+  minimumFractionDigits: 0,
+  maximumFractionDigits: 0,
+})
+
+function MoneyField({
+  label,
+  value,
+  onChange,
+}: {
+  label: string
+  value: number
+  onChange: (v: number) => void
+}) {
+  const [focused, setFocused] = useState(false)
+  return (
+    <div className="flex flex-col gap-0.5 rounded-lg border px-3 py-2">
+      <span className="text-xs text-muted-foreground">{label}</span>
+      <input
+        type={focused ? "number" : "text"}
+        value={focused ? value || "" : value ? COP.format(value) : ""}
+        onChange={(e) => onChange(Number(e.target.value) || 0)}
+        onFocus={() => setFocused(true)}
+        onBlur={() => setFocused(false)}
+        placeholder="$ 0"
+        className="w-full bg-transparent text-sm font-medium outline-none placeholder:text-muted-foreground/50"
+      />
+    </div>
+  )
+}
+
 // ─── Section wrapper ──────────────────────────────────────────────────────────
 
 function DocSection({
@@ -104,9 +150,11 @@ function DocSection({
       className={`flex flex-col gap-3 rounded-xl border px-4 py-4 ${failed ? "border-destructive/40 bg-destructive/5" : "bg-muted/20"}`}
     >
       <div className="flex items-center gap-2">
-        {failed && <AlertCircleIcon className="size-3.5 shrink-0 text-destructive" />}
+        {failed && (
+          <AlertCircleIcon className="size-3.5 shrink-0 text-destructive" />
+        )}
         <p
-          className={`text-xs font-semibold uppercase tracking-wide ${failed ? "text-destructive" : "text-muted-foreground"}`}
+          className={`text-xs font-semibold tracking-wide uppercase ${failed ? "text-destructive" : "text-muted-foreground"}`}
         >
           {title}
           {failed && " — no se pudo extraer"}
@@ -122,14 +170,16 @@ function DocSection({
 function PlanillaEditor({
   data,
   onChange,
+  deadlineCalcNote,
 }: {
   data: PaymentSheetData | null
   onChange: (d: PaymentSheetData) => void
+  deadlineCalcNote?: string
 }) {
   const empty: PaymentSheetData = {
     sheetNumber: "",
     paymentDate: "",
-    paymentDeadline: "",
+    paymentDeadline: null,
     period: "",
     totalAmountPaid: 0,
   }
@@ -148,31 +198,39 @@ function PlanillaEditor({
         value={d.paymentDate}
         onChange={(v) => set({ paymentDate: v })}
       />
-      <EditField
-        label="Fecha límite de pago"
-        value={d.paymentDeadline}
-        onChange={(v) => set({ paymentDeadline: v })}
-      />
+      <div className="flex flex-col gap-0.5">
+        <EditField
+          label="Fecha límite de pago"
+          value={d.paymentDeadline ?? ""}
+          onChange={(v) => set({ paymentDeadline: v || null })}
+          placeholder="No encontrada — se calculará automáticamente"
+        />
+        {deadlineCalcNote && (
+          <p className="pl-1 text-[11px] text-muted-foreground">
+            {deadlineCalcNote}
+          </p>
+        )}
+      </div>
       <EditField
         label="Período (MM/YYYY)"
         value={d.period}
         onChange={(v) => set({ period: v })}
       />
-      <EditField
+      <MoneyField
         label="Valor total pagado"
-        type="number"
-        value={String(d.totalAmountPaid)}
-        onChange={(v) => set({ totalAmountPaid: Number(v) || 0 })}
+        value={d.totalAmountPaid}
+        onChange={(v) => set({ totalAmountPaid: v })}
       />
     </DocSection>
   )
 }
 
-const COVERAGE_OPTIONS: { value: ARLData["coverageStatus"]; label: string }[] = [
-  { value: "ACTIVA", label: "ACTIVA" },
-  { value: "INACTIVA", label: "INACTIVA" },
-  { value: "SUSPENDIDA", label: "SUSPENDIDA" },
-]
+const COVERAGE_OPTIONS: { value: ARLData["coverageStatus"]; label: string }[] =
+  [
+    { value: "ACTIVA", label: "ACTIVA" },
+    { value: "INACTIVA", label: "INACTIVA" },
+    { value: "SUSPENDIDA", label: "SUSPENDIDA" },
+  ]
 
 const RISK_OPTIONS: { value: RiskClass; label: string }[] = [
   { value: "I", label: "Riesgo I" },
@@ -234,7 +292,43 @@ function ARLEditor({
 }
 
 const CONTRACT_TYPE_OPTIONS: { value: ContractType; label: string }[] = [
-  "OSE", "OPS", "OCE", "OFS", "OCO", "ODS", "ODO", "OCU",
+  // Órdenes contractuales
+  "OCA",
+  "OCO",
+  "ODC",
+  "ODO",
+  "OPS",
+  "OSE",
+  "OSU",
+  // Contratos
+  "CCO",
+  "CDA",
+  "CDC",
+  "CDO",
+  "CIS",
+  "CON",
+  "COV",
+  "CPS",
+  "CSE",
+  "CSU",
+  // Vigencia futura
+  "OEF",
+  "OFA",
+  "OFC",
+  "OFO",
+  "OFS",
+  "OOF",
+  "OSF",
+  "OUF",
+  "CAF",
+  "CCF",
+  "CIF",
+  "COF",
+  "CPF",
+  "CSF",
+  "CTF",
+  "CUF",
+  "CVF",
 ].map((t) => ({ value: t as ContractType, label: t }))
 
 const DOC_TYPE_OPTIONS: { value: DocumentType; label: string }[] = [
@@ -295,11 +389,10 @@ function ContractEditor({
         value={d.documentNumber}
         onChange={(v) => set({ documentNumber: v })}
       />
-      <EditField
+      <MoneyField
         label="Valor total sin impuestos"
-        type="number"
-        value={String(d.totalValueBeforeTax)}
-        onChange={(v) => set({ totalValueBeforeTax: Number(v) || 0 })}
+        value={d.totalValueBeforeTax}
+        onChange={(v) => set({ totalValueBeforeTax: v })}
       />
       <EditField
         label="Fecha inicio"
@@ -312,7 +405,9 @@ function ContractEditor({
         onChange={(v) => set({ endDate: v })}
       />
       <div className="flex flex-col gap-0.5 rounded-lg border px-3 py-2">
-        <span className="text-xs text-muted-foreground">Informe de actividades</span>
+        <span className="text-xs text-muted-foreground">
+          Informe de actividades
+        </span>
         <div className="flex items-center gap-2">
           <select
             value={d.activityReport.required ? "si" : "no"}
@@ -321,7 +416,9 @@ function ContractEditor({
                 activityReport: {
                   required: e.target.value === "si",
                   frequencyMonths:
-                    e.target.value === "si" ? (d.activityReport.frequencyMonths ?? 3) : null,
+                    e.target.value === "si"
+                      ? (d.activityReport.frequencyMonths ?? 3)
+                      : null,
                 },
               })
             }
@@ -376,20 +473,80 @@ export function Step2() {
   const [arl, setArl] = useState<ARLData | null>(null)
   const [contract, setContract] = useState<ContractData | null>(null)
   const [contract2, setContract2] = useState<ContractData | null>(null)
+  const [issuerKeys, setIssuerKeys] = useState<Record<string, string>>({})
+  const originalExtraction = useRef<ExtractedData | null>(null)
 
-  // Populate editors once extraction finishes
-  useEffect(() => {
-    if (extractedData) {
-      setPlanilla(extractedData.paymentSheet)
-      setArl(extractedData.arl)
-      setContract(extractedData.contract)
-      setContract2(extractedData.contract2)
+  // Note shown under deadline field so the user can verify the inputs used
+  const deadlineCalcNote = useMemo(() => {
+    const period = planilla?.period
+    const docNumber = contract?.documentNumber
+    if (!period || !docNumber) return undefined
+    try {
+      const last2 = docNumber.replace(/\D/g, "").slice(-2)
+      const n = diasHabilAsignados(docNumber)
+      return `Calculada: período ${period} · últimos 2 dígitos ${last2} → día hábil ${n}`
+    } catch {
+      return undefined
     }
+  }, [planilla?.period, contract?.documentNumber])
+
+  // Populate editors once extraction finishes; calculate and validate paymentDeadline
+  useEffect(() => {
+    if (!extractedData) return
+    const ps = extractedData.paymentSheet
+    const ct = extractedData.contract
+
+    let paymentDate = ps?.paymentDate ?? ""
+    let deadline = ps?.paymentDeadline ?? null
+
+    if (ps?.period && ct?.documentNumber) {
+      try {
+        // The calculated deadline is authoritative (Decreto 780/2016)
+        const calculated = calcularFechaLimite(ps.period, ct.documentNumber)
+
+        // If the extracted paymentDate matches the calculated deadline, the two
+        // date fields were captured in reverse order — swap them back.
+        if (paymentDate === calculated) {
+          paymentDate = deadline ?? ""
+          deadline = calculated
+        } else {
+          deadline = calculated
+        }
+      } catch {
+        // malformed period or documentNumber — leave as-is
+      }
+    }
+
+    setPlanilla(ps ? { ...ps, paymentDate, paymentDeadline: deadline } : null)
+
+    const arlData = extractedData.arl
+
+    // Convert an ARL ISO date (YYYY-MM-DD) to DD/MM/YYYY for contract fields
+    const arlToDMY = (iso: string) => {
+      const [y, m, d] = iso.split("-")
+      return `${d}/${m}/${y}`
+    }
+
+    // Contract start/end always come from the ARL certificate — the ARL coverage
+    // period is the same as the contract period, and ARL dates are reliably extracted.
+    const applyARLDates = (c: typeof ct) => {
+      if (!c) return null
+      return {
+        ...c,
+        startDate: arlData ? arlToDMY(arlData.startDate) : c.startDate,
+        endDate: arlData ? arlToDMY(arlData.endDate) : c.endDate,
+      }
+    }
+
+    setArl(arlData)
+    setContract(applyARLDates(ct))
+    setContract2(applyARLDates(extractedData.contract2 ?? null))
   }, [extractedData])
 
   const buildFormData = useCallback(() => {
     const formData = new FormData()
-    if (documents.paymentSheet) formData.append("paymentSheet", documents.paymentSheet)
+    if (documents.paymentSheet)
+      formData.append("paymentSheet", documents.paymentSheet)
     if (documents.arl) formData.append("arl", documents.arl)
     if (documents.contract) formData.append("contract", documents.contract)
     if (documents.contract2) formData.append("contract2", documents.contract2)
@@ -402,7 +559,10 @@ export function Step2() {
 
     const parseApiError = async (res: Response, fallback: string) => {
       try {
-        const payload = (await res.json()) as { error?: string; details?: string }
+        const payload = (await res.json()) as {
+          error?: string
+          details?: string
+        }
         return payload.details ?? payload.error ?? fallback
       } catch {
         return fallback
@@ -427,10 +587,18 @@ export function Step2() {
       setRawText(rawData)
       setStatus("loading-ai")
 
+      const savedProfiles = getAllProfiles().map(
+        ({ docType, issuer, example }) => ({
+          docType,
+          issuer,
+          example,
+        })
+      )
+
       const aiRes = await fetch("/api/extract", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ rawText: rawData }),
+        body: JSON.stringify({ rawText: rawData, profiles: savedProfiles }),
       })
 
       if (!aiRes.ok) {
@@ -443,10 +611,17 @@ export function Step2() {
 
       const extractedPayload = (await aiRes.json()) as ExtractedData & {
         warnings?: string[]
+        issuerKeys?: Record<string, string>
       }
 
-      const { warnings = [], ...extracted } = extractedPayload
+      const {
+        warnings = [],
+        issuerKeys: keys = {},
+        ...extracted
+      } = extractedPayload
       setExtractedData(extracted)
+      setIssuerKeys(keys)
+      originalExtraction.current = extracted
       setStatus("ready")
 
       if (warnings.length > 0) {
@@ -456,10 +631,14 @@ export function Step2() {
       }
     } catch (err) {
       const message =
-        err instanceof Error ? err.message : "Error desconocido al procesar los PDFs."
+        err instanceof Error
+          ? err.message
+          : "Error desconocido al procesar los PDFs."
       setErrorMessage(message)
       setStatus("error")
-      toast.error("No se pudo completar la extracción.", { description: message })
+      toast.error("No se pudo completar la extracción.", {
+        description: message,
+      })
     }
   }, [buildFormData, setExtractedData, setRawText])
 
@@ -469,6 +648,68 @@ export function Step2() {
   }, [])
 
   const handleConfirm = () => {
+    // Cross-validate: detect fields the user changed vs AI output
+    const orig = originalExtraction.current
+    const changed: string[] = []
+    if (orig) {
+      const ps = orig.paymentSheet
+      if (ps && planilla) {
+        if (ps.sheetNumber !== planilla.sheetNumber) changed.push("N° planilla")
+        if (ps.paymentDate !== planilla.paymentDate)
+          changed.push("Fecha de pago")
+        if (ps.period !== planilla.period) changed.push("Período")
+        if (ps.totalAmountPaid !== planilla.totalAmountPaid)
+          changed.push("Valor total")
+      }
+      const ar = orig.arl
+      if (ar && arl) {
+        if (ar.startDate !== arl.startDate) changed.push("Inicio ARL")
+        if (ar.endDate !== arl.endDate) changed.push("Fin ARL")
+        if (ar.coverageStatus !== arl.coverageStatus) changed.push("Estado ARL")
+        if (ar.riskClass !== arl.riskClass) changed.push("Clase riesgo")
+        if (ar.cotizationRate !== arl.cotizationRate) changed.push("Tasa ARL")
+      }
+      const ct = orig.contract
+      if (ct && contract) {
+        if (ct.contractType !== contract.contractType)
+          changed.push("Tipo contrato")
+        if (ct.orderNumber !== contract.orderNumber) changed.push("N° orden")
+        if (ct.contractorName !== contract.contractorName)
+          changed.push("Nombre contratista")
+        if (ct.documentNumber !== contract.documentNumber)
+          changed.push("N° documento")
+        if (ct.totalValueBeforeTax !== contract.totalValueBeforeTax)
+          changed.push("Valor contrato")
+        if (ct.startDate !== contract.startDate) changed.push("Inicio contrato")
+        if (ct.endDate !== contract.endDate) changed.push("Fin contrato")
+      }
+    }
+    if (changed.length > 0) {
+      toast.info("Correcciones guardadas.", {
+        description: `Campos modificados: ${changed.join(", ")}`,
+      })
+    }
+
+    // Save document profiles to localStorage for future extractions
+    if (issuerKeys.paymentSheet && planilla)
+      saveProfile(
+        "pila",
+        issuerKeys.paymentSheet,
+        planilla as unknown as Record<string, unknown>
+      )
+    if (issuerKeys.arl && arl)
+      saveProfile(
+        "arl",
+        issuerKeys.arl,
+        arl as unknown as Record<string, unknown>
+      )
+    if (issuerKeys.contract && contract)
+      saveProfile(
+        "contract",
+        issuerKeys.contract,
+        contract as unknown as Record<string, unknown>
+      )
+
     setExtractedData({ paymentSheet: planilla, arl, contract, contract2 })
     setStep(3 as WizardStep)
   }
@@ -491,7 +732,9 @@ export function Step2() {
           <div className="flex flex-col items-center gap-3 rounded-xl border border-dashed py-10 pl-9 text-center">
             <Loader2Icon className="size-8 animate-spin text-primary" />
             <div className="flex flex-col gap-1">
-              <p className="text-sm font-medium">Extrayendo texto de los PDFs…</p>
+              <p className="text-sm font-medium">
+                Extrayendo texto de los PDFs…
+              </p>
               <p className="text-xs text-muted-foreground">
                 Esto puede tardar unos segundos según el tamaño de los archivos.
               </p>
@@ -505,7 +748,8 @@ export function Step2() {
             <div className="flex flex-col gap-1">
               <p className="text-sm font-medium">Extrayendo datos con IA…</p>
               <p className="text-xs text-muted-foreground">
-                En cuanto termine, los datos aparecerán abajo para que los revises.
+                En cuanto termine, los datos aparecerán abajo para que los
+                revises.
               </p>
             </div>
           </div>
@@ -546,16 +790,25 @@ export function Step2() {
             {allFailed ? (
               <Alert variant="destructive" className="ml-9">
                 <AlertDescription>
-                  La IA no pudo extraer datos de ningún documento. Reintentar el proceso automático.
+                  La IA no pudo extraer datos de ningún documento. Reintentar el
+                  proceso automático.
                 </AlertDescription>
               </Alert>
             ) : (
               <div className="flex flex-col gap-3 pl-9">
-                <PlanillaEditor data={planilla} onChange={setPlanilla} />
+                <PlanillaEditor
+                  data={planilla}
+                  onChange={setPlanilla}
+                  deadlineCalcNote={deadlineCalcNote}
+                />
                 <ARLEditor data={arl} onChange={setArl} />
                 <ContractEditor
                   data={contract}
-                  title={manualData?.contractCount === "2" ? "Contrato 1" : "Contrato"}
+                  title={
+                    manualData?.contractCount === "2"
+                      ? "Contrato 1"
+                      : "Contrato"
+                  }
                   onChange={setContract}
                 />
                 {manualData?.contractCount === "2" && (
@@ -573,7 +826,9 @@ export function Step2() {
             {someFailed && !allFailed && (
               <Alert className="ml-9">
                 <AlertDescription>
-                  Algunos documentos no se pudieron extraer (marcados en rojo). Puedes editar los campos vacíos manualmente antes de continuar.
+                  Algunos documentos no se pudieron extraer (marcados en rojo).
+                  Puedes editar los campos vacíos manualmente antes de
+                  continuar.
                 </AlertDescription>
               </Alert>
             )}

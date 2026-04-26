@@ -5,9 +5,14 @@ import type {
   ContributionCalculation,
 } from "@/lib/types"
 import { validarFechaPago, validarGavelaARL } from "./fechas"
+import { calcularFechaLimite } from "./fecha-limite"
 import { validarInformeActividades, resolverInforme053 } from "./informe"
 import { calcularDeclaracionCedular } from "./cedular"
-import { calcularContribuciones, combineContributions, validarPago } from "./aportes"
+import {
+  calcularContribuciones,
+  combineContributions,
+  validarPago,
+} from "./aportes"
 
 export interface ValidationSummary {
   results: ValidationResult[]
@@ -94,7 +99,12 @@ export function runValidations(
   }
 
   // ── 3. Fecha de pago dentro del plazo ────────────────────────────────────
-  const fechaPagoResult = validarFechaPago(paymentSheet)
+  // Si la planilla no trae fecha límite, se calcula por fórmula oficial
+  // (Decreto 780/2016): últimos 2 dígitos del documento → día hábil del mes siguiente
+  const deadlineCalc = paymentSheet.period
+    ? calcularFechaLimite(paymentSheet.period, contract.documentNumber)
+    : undefined
+  const fechaPagoResult = validarFechaPago(paymentSheet, deadlineCalc)
   const isLatePayment = !fechaPagoResult.ok
   results.push(fechaPagoResult)
 
@@ -130,7 +140,9 @@ export function runValidations(
     ? combineContributions(contributions1, contributions2)
     : contributions1
   // contributions1 is always set — exported for per-contract UI breakdown
-  results.push(validarPago(contributions.totalObligatory, paymentSheet.totalAmountPaid))
+  results.push(
+    validarPago(contributions.totalObligatory, paymentSheet.totalAmountPaid)
+  )
 
   // ── 6. Declaración cedular ────────────────────────────────────────────────
   const formalDeclaration = calcularDeclaracionCedular(

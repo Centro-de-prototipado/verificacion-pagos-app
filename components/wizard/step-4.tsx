@@ -10,7 +10,11 @@ import {
 
 import { useWizardStore } from "@/lib/store"
 import { runValidations } from "@/lib/validations"
-import type { ContributionCalculation, ValidationResult, WizardStep } from "@/lib/types"
+import type {
+  ContributionCalculation,
+  ValidationResult,
+  WizardStep,
+} from "@/lib/types"
 import { DocumentDropzone } from "@/components/upload/document-dropzone"
 
 import { Button } from "@/components/ui/button"
@@ -44,7 +48,7 @@ function ResultRow({ result }: { result: ValidationResult }) {
     <div className="flex items-start gap-3 rounded-lg border px-4 py-3">
       <Icon className={`mt-0.5 size-4 shrink-0 ${color}`} />
       <div className="flex min-w-0 flex-col gap-0.5">
-        <span className="text-xs font-medium uppercase text-muted-foreground">
+        <span className="text-xs font-medium text-muted-foreground uppercase">
           {typeLabel[result.type]}
         </span>
         <p className="text-sm leading-snug">{result.message}</p>
@@ -77,7 +81,7 @@ function ContributionGrid({
     <div className="flex flex-col gap-2">
       {label && (
         <p
-          className={`text-xs font-semibold uppercase tracking-wide ${highlight ? "text-primary" : "text-muted-foreground"}`}
+          className={`text-xs font-semibold tracking-wide uppercase ${highlight ? "text-primary" : "text-muted-foreground"}`}
         >
           {label}
         </p>
@@ -86,7 +90,10 @@ function ContributionGrid({
         className={`grid grid-cols-2 gap-2 sm:grid-cols-3 ${highlight ? "rounded-lg border border-primary/20 bg-primary/5 p-3" : ""}`}
       >
         {rows.map(([l, v]) => (
-          <div key={l} className="flex flex-col gap-1 rounded-lg border px-3 py-2">
+          <div
+            key={l}
+            className="flex flex-col gap-1 rounded-lg border px-3 py-2"
+          >
             <span className="text-xs text-muted-foreground">{l}</span>
             <span className="font-mono text-sm font-semibold">
               ${v.toLocaleString("es-CO")}
@@ -148,7 +155,10 @@ export function Step4() {
               checked={informeRecibido}
               onCheckedChange={setInformeRecibido}
             />
-            <label htmlFor="informe-recibido" className="cursor-pointer text-sm">
+            <label
+              htmlFor="informe-recibido"
+              className="cursor-pointer text-sm"
+            >
               Informe de actividades recibido y verificado
             </label>
           </div>
@@ -220,8 +230,14 @@ export function Step4() {
           />
           {summary.contributions2 ? (
             <div className="flex flex-col gap-4 pl-9">
-              <ContributionGrid label="Contrato 1" contributions={summary.contributions1!} />
-              <ContributionGrid label="Contrato 2" contributions={summary.contributions2} />
+              <ContributionGrid
+                label="Contrato 1"
+                contributions={summary.contributions1!}
+              />
+              <ContributionGrid
+                label="Contrato 2"
+                contributions={summary.contributions2}
+              />
               <ContributionGrid
                 label="Total combinado"
                 contributions={summary.contributions}
@@ -241,7 +257,8 @@ export function Step4() {
         {summary?.blocked && (
           <Alert variant="destructive">
             <AlertDescription>
-              Hay validaciones bloqueantes. Corrige los problemas antes de generar el PDF.
+              Hay validaciones bloqueantes. Corrige los problemas antes de
+              generar el PDF.
             </AlertDescription>
           </Alert>
         )}

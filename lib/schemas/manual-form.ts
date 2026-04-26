@@ -41,9 +41,7 @@ export const ManualFormSchema = z.object({
     .regex(periodRegex, "Usa el formato MM/YYYY — ej. 03/2026"),
 
   // ── Contratista ───────────────────────────────────────────────────────────
-  institutionalEmail: z
-    .string()
-    .email("Correo electrónico inválido"),
+  institutionalEmail: z.string().email("Correo electrónico inválido"),
 
   isPensioner: z.boolean(),
 
@@ -56,13 +54,9 @@ export const ManualFormSchema = z.object({
     .string()
     .min(1, "Número de identificación del supervisor requerido"),
 
-  supervisorEmail: z
-    .string()
-    .email("Correo del supervisor inválido"),
+  supervisorEmail: z.string().email("Correo del supervisor inválido"),
 
-  supervisorPhone: z
-    .string()
-    .min(1, "Teléfono del supervisor requerido"),
+  supervisorPhone: z.string().min(1, "Teléfono del supervisor requerido"),
 })
 
 export type ManualFormInput = z.infer<typeof ManualFormSchema>

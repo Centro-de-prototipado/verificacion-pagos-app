@@ -1,35 +1,69 @@
 import { createGroq } from "@ai-sdk/groq"
-import { createMistral } from "@ai-sdk/mistral"
 import { createOpenAI } from "@ai-sdk/openai"
-import { createOpenRouter } from "@openrouter/ai-sdk-provider"
+import { createMistral } from "@ai-sdk/mistral"
+import { generateText } from "ai"
+import type { LanguageModel } from "ai"
 
-const openrouter = createOpenRouter({
-  apiKey: process.env.OPENROUTER_API_KEY ?? "",
-})
+type GenerateTextParams = Parameters<typeof generateText>[0]
 
-const groq = createGroq({
-  apiKey: process.env.GROQ_API_KEY ?? "",
-})
+function isRateLimitError(err: unknown): boolean {
+  const msg = err instanceof Error ? err.message : String(err)
+  return /429|rate.?limit|quota.?exceed|too.?many.?request/i.test(msg)
+}
 
-const mistral = createMistral({
-  apiKey: process.env.MISTRAL_API_KEY ?? "",
-})
+function buildProviders(): LanguageModel[] {
+  const list: LanguageModel[] = []
 
-export const geminiFlash = openrouter.chat(
-  process.env.OPENROUTER_MODEL ?? "google/gemini-2.5-flash"
-)
+  if (process.env.GROQ_API_KEY) {
+    const groq = createGroq({ apiKey: process.env.GROQ_API_KEY })
+    list.push(groq(process.env.GROQ_MODEL ?? "llama-3.3-70b-versatile"))
+  }
 
-export const groqModel = groq(
-  process.env.GROQ_MODEL ?? "llama-3.3-70b-versatile"
-)
+  const orModel =
+    process.env.OPENROUTER_MODEL ?? "meta-llama/llama-3.3-70b-instruct"
+  for (const key of [
+    process.env.OPENROUTER_API_KEY,
+    process.env.OPENROUTER_API_KEY_2,
+  ]) {
+    if (!key) continue
+    const or = createOpenAI({
+      apiKey: key,
+      baseURL: "https://openrouter.ai/api/v1",
+    })
+    list.push(or(orModel))
+  }
 
-export const mistralModel = mistral(
-  process.env.MISTRAL_MODEL ?? "mistral-small-latest"
-)
+  if (process.env.MISTRAL_API_KEY) {
+    const mistral = createMistral({ apiKey: process.env.MISTRAL_API_KEY })
+    list.push(mistral(process.env.MISTRAL_MODEL ?? "mistral-large-latest"))
+  }
 
-const ollama = createOpenAI({
-  baseURL: process.env.OLLAMA_BASE_URL ?? "http://localhost:11434/v1",
-  apiKey: "ollama",
-})
+  return list
+}
 
-export const ollamaModel = ollama(process.env.OLLAMA_MODEL ?? "devstral-2")
+/** Like generateText but rotates through configured providers on rate-limit errors. */
+export async function generateWithFallback(
+  params: Omit<GenerateTextParams, "model">
+): Promise<Awaited<ReturnType<typeof generateText>>> {
+  const providers = buildProviders()
+  if (providers.length === 0) throw new Error("No AI providers configured.")
+
+  let lastError: unknown
+  for (const model of providers) {
+    try {
+      return await generateText({ ...params, model } as GenerateTextParams)
+    } catch (err) {
+      lastError = err
+      if (isRateLimitError(err)) continue
+      throw err
+    }
+  }
+  throw lastError
+}
+
+// Keep named export for any code that still references it directly
+export const groqModel = (() => {
+  if (!process.env.GROQ_API_KEY) return null
+  const groq = createGroq({ apiKey: process.env.GROQ_API_KEY })
+  return groq(process.env.GROQ_MODEL ?? "llama-3.3-70b-versatile")
+})()

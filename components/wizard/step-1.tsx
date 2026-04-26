@@ -38,7 +38,7 @@ const REQUIRED_DOCUMENTS = [
     stepNumber: 3,
     label: "Contrato u Orden",
     description: "Orden de prestación de servicios",
-    hint: "OSE, OPS, OCE u otro tipo de orden UNAL",
+    hint: "OSE, OPS, CCO u otro tipo de contrato UNAL",
   },
 ] as const
 

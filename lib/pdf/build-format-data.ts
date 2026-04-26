@@ -96,13 +96,13 @@ export function buildFormat053Data(
     contractType: contract!.contractType,
     orderNumberYear: `${contract!.orderNumber}/${year}`,
     amendmentLabel: manual.amendmentNumber
-      ? `CSI ${manual.amendmentNumber}/${year}`
+      ? `${manual.amendmentNumber}`
       : undefined,
     quipuCompany: manual.quipuCompany,
     contractorName: contract!.contractorName,
     documentNumber: contract!.documentNumber,
     sheetNumber: paymentSheet!.sheetNumber,
-    paymentDate: paymentSheet!.paymentDate,
+    paymentDate: paymentSheet!.paymentDeadline ?? paymentSheet!.paymentDate,
     payrollPeriodName: periodToMonthName(manual.payrollPeriod),
     paymentNumber,
     paymentType,

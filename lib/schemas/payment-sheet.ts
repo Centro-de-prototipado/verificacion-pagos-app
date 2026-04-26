@@ -7,9 +7,10 @@ export const PaymentSheetSchema = z.object({
     .describe("Fecha de pago efectivo en formato DD/MM/YYYY"),
   paymentDeadline: z
     .string()
-    .optional()
-    .default("")
-    .describe("Fecha límite de pago en formato DD/MM/YYYY (opcional — puede no figurar en la planilla)"),
+    .nullable()
+    .describe(
+      "Fecha límite de pago en formato DD/MM/YYYY. Null si no figura en la planilla."
+    ),
   period: z.string().describe("Período de cotización en formato MM/YYYY"),
   totalAmountPaid: z
     .number()

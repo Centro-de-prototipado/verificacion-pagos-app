@@ -1,200 +1,209 @@
 import { NextRequest, NextResponse } from "next/server"
-import { generateObject } from "ai"
+import { Output } from "ai"
 import type { ZodType } from "zod"
 
-import { mistralModel } from "@/lib/ai/client"
-import { extractTextFromPDF } from "@/lib/pdf/extract-text"
+import { generateWithFallback } from "@/lib/ai/client"
 import { ARLSchema } from "@/lib/schemas/arl"
 import { ContractSchema } from "@/lib/schemas/contract"
 import { PaymentSheetSchema } from "@/lib/schemas/payment-sheet"
+import type { ARLExtracted } from "@/lib/schemas/arl"
+import type { ContractExtracted } from "@/lib/schemas/contract"
+import type { PaymentSheetExtracted } from "@/lib/schemas/payment-sheet"
+import {
+  extractARLCandidates,
+  extractPILACandidates,
+  extractContractCandidates,
+  detectIssuer,
+  joinSplitDates,
+} from "@/lib/pdf/parsers/keyword-extractor"
 import type { ExtractedData, RawPDFText } from "@/lib/types"
 
 export const runtime = "nodejs"
 
-const PDF_KEYS = ["paymentSheet", "arl", "contract", "contract2"] as const
+// ─── Profile hint shape (sent by the client) ─────────────────────────────────
 
-const DEFAULT_MAX_OUTPUT_TOKENS = 1200
-
-function resolveMaxOutputTokens(): number {
-  const rawValue = process.env.OPENROUTER_MAX_OUTPUT_TOKENS
-  const parsed = rawValue ? Number.parseInt(rawValue, 10) : NaN
-
-  if (Number.isInteger(parsed) && parsed > 0) {
-    return parsed
-  }
-
-  return DEFAULT_MAX_OUTPUT_TOKENS
+interface ProfileHint {
+  docType: string
+  issuer: string
+  example: Record<string, unknown>
 }
 
-type PDFKey = (typeof PDF_KEYS)[number]
+// ─── Core extraction helper ───────────────────────────────────────────────────
 
-async function extractWithSchema<T>({
+const CONTRACT_TYPES =
+  "OCA, OCO, ODC, ODO, OPS, OSE, OSU, CCO, CDA, CDC, CDO, CIS, CON, COV, CPS, CSE, CSU, " +
+  "OEF, OFA, OFC, OFO, OFS, OOF, OSF, OUF, CAF, CCF, CIF, COF, CPF, CSF, CTF, CUF, CVF"
+
+async function extractWithValidation<T>({
   text,
   schema,
-  instructions,
-  maxOutputTokens,
+  docLabel,
+  candidates,
+  profileExample,
+  extraInstructions,
 }: {
   text: string
   schema: ZodType<T>
-  instructions: string
-  maxOutputTokens: number
+  docLabel: string
+  candidates: Record<string, unknown>
+  profileExample?: Record<string, unknown>
+  extraInstructions?: string
 }): Promise<T | null> {
   if (!text.trim()) return null
 
-  const buildPrompt = (extraGuidance?: string) =>
-    `${instructions}\n\nTexto del documento:\n${text}${extraGuidance ? `\n\n${extraGuidance}` : ""}`
+  const profileSection = profileExample
+    ? `\nEjemplo de extracción confirmada anteriormente para este mismo emisor:\n${JSON.stringify(profileExample, null, 2)}\n`
+    : ""
+
+  const extraSection = extraInstructions ? `\n${extraInstructions}\n` : ""
+
+  const prompt = `Estás validando la extracción de un documento: ${docLabel}.
+
+El sistema detectó estos candidatos automáticamente (algunos pueden ser nulos o incorrectos):
+${JSON.stringify(candidates, null, 2)}
+${profileSection}${extraSection}
+Texto del documento (primeras 4000 caracteres):
+${text.slice(0, 4000)}
+
+Instrucciones:
+- Verifica cada candidato contra el texto real del documento.
+- Si un candidato es correcto, mantenlo exactamente igual.
+- Si es incorrecto o nulo, corrígelo con el valor real del documento.
+- Respeta los formatos del esquema (fechas en DD/MM/YYYY, montos como número sin separadores).
+- Si un campo no aparece en el texto y no es requerido, usa el valor por defecto del esquema.`
 
   try {
-    const { object } = await generateObject({
-      model: mistralModel,
-      schema,
-      prompt: buildPrompt(),
-      maxOutputTokens,
+    const { output } = await generateWithFallback({
+      output: Output.object({ schema }),
+      prompt,
     })
-    return object
-  } catch (firstError) {
-    try {
-      const { object } = await generateObject({
-        model: mistralModel,
-        schema,
-        prompt: buildPrompt(
-          "Reintento: responde solo con valores extraídos literalmente del PDF. Si falta un dato, infiérelo con cautela manteniendo el formato exacto del esquema."
-        ),
-        maxOutputTokens,
-      })
-      return object
-    } catch (retryError) {
-      throw retryError instanceof Error
-        ? retryError
-        : new Error(String(retryError))
-    }
+    return output
+  } catch {
+    // Retry once with truncated prompt, cycling through providers again
+    const { output } = await generateWithFallback({
+      output: Output.object({ schema }),
+      prompt: `Extrae datos de este documento (${docLabel}) y devuelve el JSON del esquema.\n\nTexto:\n${text.slice(0, 2000)}`,
+    })
+    return output
   }
 }
 
-function getFile(formData: FormData, key: PDFKey): File | null {
-  const value = formData.get(key)
-  return value instanceof File ? value : null
+// ─── Request parsing ──────────────────────────────────────────────────────────
+
+async function parseRequest(
+  request: NextRequest
+): Promise<{ rawText: RawPDFText; profiles: ProfileHint[] }> {
+  const body = (await request.json()) as {
+    rawText?: RawPDFText
+    profiles?: ProfileHint[]
+  }
+  if (!body.rawText) throw new Error("El body debe incluir rawText.")
+  return { rawText: body.rawText, profiles: body.profiles ?? [] }
 }
 
-async function getRawTextFromMultipart(
-  formData: FormData
-): Promise<RawPDFText> {
-  const paymentSheetFile = getFile(formData, "paymentSheet")
-  const arlFile = getFile(formData, "arl")
-  const contractFile = getFile(formData, "contract")
-  const contract2File = getFile(formData, "contract2")
-
-  if (!paymentSheetFile || !arlFile || !contractFile) {
-    throw new Error(
-      "Debes enviar paymentSheet, arl y contract. contract2 es opcional."
-    )
-  }
-
-  const [paymentSheet, arl, contract, contract2] = await Promise.all([
-    extractTextFromPDF(await paymentSheetFile.arrayBuffer()),
-    extractTextFromPDF(await arlFile.arrayBuffer()),
-    extractTextFromPDF(await contractFile.arrayBuffer()),
-    contract2File ? extractTextFromPDF(await contract2File.arrayBuffer()) : "",
-  ])
-
-  return {
-    paymentSheet,
-    arl,
-    contract,
-    ...(contract2 ? { contract2 } : {}),
-  }
+function findProfile(
+  profiles: ProfileHint[],
+  docType: string,
+  issuer: string
+): Record<string, unknown> | undefined {
+  return profiles.find((p) => p.docType === docType && p.issuer === issuer)
+    ?.example
 }
 
-async function getRawText(request: NextRequest): Promise<RawPDFText> {
-  const contentType = request.headers.get("content-type") ?? ""
-
-  if (contentType.includes("application/json")) {
-    const body = (await request.json()) as { rawText?: RawPDFText }
-    if (!body.rawText) {
-      throw new Error("El body JSON debe incluir rawText.")
-    }
-    return body.rawText
-  }
-
-  const formData = await request.formData()
-  return getRawTextFromMultipart(formData)
-}
+// ─── Route handler ────────────────────────────────────────────────────────────
 
 export async function POST(request: NextRequest) {
   let rawText: RawPDFText
+  let profiles: ProfileHint[]
 
   try {
-    rawText = await getRawText(request)
+    ;({ rawText, profiles } = await parseRequest(request))
   } catch (error) {
     const message =
       error instanceof Error ? error.message : "No se pudo leer la solicitud."
-
     return NextResponse.json({ error: message }, { status: 400 })
   }
 
-  try {
-    const maxOutputTokens = resolveMaxOutputTokens()
+  // Detect issuers from raw text
+  const issuerKeys = {
+    paymentSheet: detectIssuer(rawText.paymentSheet, "pila"),
+    arl: detectIssuer(rawText.arl, "arl"),
+    contract: "unal",
+    ...(rawText.contract2 ? { contract2: "unal" } : {}),
+  }
 
-    const results = await Promise.allSettled([
-      extractWithSchema({
-        text: rawText.paymentSheet,
+  // Normalize all texts before any processing — fixes dates split across lines by PDF extraction
+  const cleanText = {
+    paymentSheet: joinSplitDates(rawText.paymentSheet),
+    arl: joinSplitDates(rawText.arl),
+    contract: joinSplitDates(rawText.contract),
+    contract2: rawText.contract2 ? joinSplitDates(rawText.contract2) : "",
+  }
+
+  try {
+    const [r0, r1, r2, r3] = await Promise.allSettled([
+      extractWithValidation<PaymentSheetExtracted>({
+        text: cleanText.paymentSheet,
         schema: PaymentSheetSchema,
-        instructions:
-          "Extrae datos de la planilla PILA y devuelve un objeto JSON que cumpla exactamente el esquema.",
-        maxOutputTokens,
+        docLabel: "Planilla PILA de seguridad social",
+        candidates: extractPILACandidates(cleanText.paymentSheet),
+        profileExample: findProfile(profiles, "pila", issuerKeys.paymentSheet),
+        extraInstructions:
+          "Reglas críticas: " +
+          "(1) sheetNumber: si el candidato contiene varios números separados por ' / ' " +
+          "(formato SOI/Aportes en Línea donde hay múltiples filas), elige el número de planilla " +
+          "que corresponda al contratista identificado en el documento (cruza con su CC/NIT si aparece). " +
+          "Si no puedes determinar cuál es, usa el último de la lista. " +
+          "El número de planilla en SOI es de 10 dígitos y aparece DESPUÉS de la 'Clave Pago' (8-9 dígitos) en la tabla. " +
+          "NO uses la Clave Pago ni fechas ni montos como número de planilla. " +
+          "(2) 'period' es el MES COTIZADO en formato MM/YYYY (ej: '03/2026'), NO el mes de pago; " +
+          "es siempre el mes inmediatamente anterior a paymentDate. " +
+          "(3) paymentDate es la fecha en que se realizó el pago. " +
+          "(4) paymentDeadline es la fecha límite máxima, siempre en el mes siguiente al período. " +
+          "Si paymentDate y paymentDeadline parecen invertidos, corrígelos: paymentDeadline ≥ paymentDate.",
       }),
-      extractWithSchema({
-        text: rawText.arl,
+      extractWithValidation<ARLExtracted>({
+        text: cleanText.arl,
         schema: ARLSchema,
-        instructions:
-          "Extrae datos del certificado ARL y devuelve un objeto JSON que cumpla exactamente el esquema.",
-        maxOutputTokens,
+        docLabel: "Certificado de afiliación ARL",
+        candidates: extractARLCandidates(cleanText.arl),
+        profileExample: findProfile(profiles, "arl", issuerKeys.arl),
       }),
-      extractWithSchema({
-        text: rawText.contract,
+      extractWithValidation<ContractExtracted>({
+        text: cleanText.contract,
         schema: ContractSchema,
-        instructions:
-          "Extrae datos del contrato y devuelve un objeto JSON que cumpla exactamente el esquema.",
-        maxOutputTokens,
+        docLabel: "Contrato UNAL (contrato 1)",
+        candidates: extractContractCandidates(cleanText.contract),
+        profileExample: findProfile(profiles, "contract", "unal"),
+        extraInstructions:
+          `Tipos de contrato válidos (usa solo estas siglas exactas): ${CONTRACT_TYPES}. ` +
+          "NO extraigas startDate ni endDate del contrato — se tomarán del certificado ARL.",
       }),
-      extractWithSchema({
-        text: rawText.contract2 ?? "",
+      extractWithValidation<ContractExtracted>({
+        text: cleanText.contract2,
         schema: ContractSchema,
-        instructions:
-          "Extrae datos del segundo contrato y devuelve un objeto JSON que cumpla exactamente el esquema.",
-        maxOutputTokens,
+        docLabel: "Contrato UNAL (contrato 2)",
+        candidates: extractContractCandidates(cleanText.contract2),
+        profileExample: findProfile(profiles, "contract", "unal"),
+        extraInstructions:
+          `Tipos de contrato válidos (usa solo estas siglas exactas): ${CONTRACT_TYPES}. ` +
+          "NO extraigas startDate ni endDate del contrato — se tomarán del certificado ARL.",
       }),
     ])
 
-    const [paymentSheetResult, arlResult, contractResult, contract2Result] =
-      results
-
     const warnings: string[] = []
 
-    const paymentSheet =
-      paymentSheetResult.status === "fulfilled"
-        ? paymentSheetResult.value
-        : null
-    if (paymentSheetResult.status === "rejected") {
-      warnings.push(`Planilla: ${paymentSheetResult.reason}`)
-    }
+    const paymentSheet = r0.status === "fulfilled" ? r0.value : null
+    if (r0.status === "rejected") warnings.push(`Planilla: ${r0.reason}`)
 
-    const arl = arlResult.status === "fulfilled" ? arlResult.value : null
-    if (arlResult.status === "rejected") {
-      warnings.push(`ARL: ${arlResult.reason}`)
-    }
+    const arl = r1.status === "fulfilled" ? r1.value : null
+    if (r1.status === "rejected") warnings.push(`ARL: ${r1.reason}`)
 
-    const contract =
-      contractResult.status === "fulfilled" ? contractResult.value : null
-    if (contractResult.status === "rejected") {
-      warnings.push(`Contrato: ${contractResult.reason}`)
-    }
+    const contract = r2.status === "fulfilled" ? r2.value : null
+    if (r2.status === "rejected") warnings.push(`Contrato: ${r2.reason}`)
 
-    const contract2 =
-      contract2Result.status === "fulfilled" ? contract2Result.value : null
-    if (contract2Result.status === "rejected") {
-      warnings.push(`Contrato 2: ${contract2Result.reason}`)
-    }
+    const contract2 = r3.status === "fulfilled" ? r3.value : null
+    if (r3.status === "rejected") warnings.push(`Contrato 2: ${r3.reason}`)
 
     const extractedData: ExtractedData = {
       paymentSheet,
@@ -203,16 +212,12 @@ export async function POST(request: NextRequest) {
       ...(contract2 ? { contract2 } : {}),
     }
 
-    return NextResponse.json({
-      ...extractedData,
-      warnings,
-    })
+    return NextResponse.json({ ...extractedData, warnings, issuerKeys })
   } catch (error) {
     const message =
       error instanceof Error
         ? error.message
         : "Error desconocido al extraer datos con IA."
-
     return NextResponse.json(
       { error: "Falló la extracción estructurada con IA.", details: message },
       { status: 500 }

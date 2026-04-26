@@ -9,28 +9,35 @@ function parseDDMMYYYY(date: string): Date {
 
 /**
  * Valida que la fecha de pago de la planilla no exceda el plazo permitido.
- * Regla: paymentDate ≤ paymentDeadline.
+ * @param sheet         Datos de la planilla
+ * @param deadlineCalc  Fecha límite calculada por fórmula (DD/MM/YYYY) — se usa
+ *                      si sheet.paymentDeadline es null
  */
-export function validarFechaPago(sheet: PaymentSheetData): ValidationResult {
-  if (!sheet.paymentDeadline) {
+export function validarFechaPago(
+  sheet: PaymentSheetData,
+  deadlineCalc?: string
+): ValidationResult {
+  const deadline = sheet.paymentDeadline ?? deadlineCalc ?? null
+  if (!deadline) {
     return {
       ok: true,
       blocking: false,
       type: "date",
-      message: "Fecha límite de pago no disponible — no se verificó extemporaneidad.",
+      message:
+        "Fecha límite de pago no disponible — no se verificó extemporaneidad.",
     }
   }
   const fechaPago = parseDDMMYYYY(sheet.paymentDate)
-  const plazo = parseDDMMYYYY(sheet.paymentDeadline)
+  const plazo = parseDDMMYYYY(deadline)
   const ok = fechaPago <= plazo
+  const source = sheet.paymentDeadline ? "" : " (calculada)"
   return {
     ok,
-    // Pago vencido no bloquea — requiere adjuntar planilla del mes siguiente
     blocking: false,
     type: "date",
     message: ok
-      ? "Pago de planilla realizado dentro del plazo."
-      : `Planilla pagada el ${sheet.paymentDate} excede el plazo ${sheet.paymentDeadline}. Pago extemporáneo — adjunta la planilla del mes siguiente.`,
+      ? `Pago de planilla realizado dentro del plazo${source} (${deadline}).`
+      : `Planilla pagada el ${sheet.paymentDate} excede el plazo${source} ${deadline}. Pago extemporáneo — adjunta la planilla del mes siguiente.`,
   }
 }
 

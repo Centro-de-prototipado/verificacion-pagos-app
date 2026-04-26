@@ -236,9 +236,7 @@ export function ManualForm({
             control={form.control}
             render={({ field, fieldState }) => (
               <Field data-invalid={fieldState.invalid || undefined}>
-                <FieldLabel htmlFor={field.name}>
-                  Correo
-                </FieldLabel>
+                <FieldLabel htmlFor={field.name}>Correo</FieldLabel>
                 <FieldDescription>
                   Correo de contacto del contratista
                 </FieldDescription>
@@ -360,7 +358,9 @@ export function ManualForm({
               control={form.control}
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid || undefined}>
-                  <FieldLabel htmlFor={field.name}>Correo electrónico</FieldLabel>
+                  <FieldLabel htmlFor={field.name}>
+                    Correo electrónico
+                  </FieldLabel>
                   <Input
                     {...field}
                     id={field.name}

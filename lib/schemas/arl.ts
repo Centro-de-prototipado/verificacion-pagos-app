@@ -1,11 +1,19 @@
 import { z } from "zod"
 
+// Normalizes any date to YYYY-MM-DD (accepts both ISO and DD/MM/YYYY input)
+const toISO = (v: string) => {
+  const dmy = v.match(/^(\d{2})[\/\-](\d{2})[\/\-](\d{4})$/)
+  return dmy ? `${dmy[3]}-${dmy[2]}-${dmy[1]}` : v
+}
+
 export const ARLSchema = z.object({
   startDate: z
     .string()
+    .transform(toISO)
     .describe("Fecha de inicio de la cobertura en formato YYYY-MM-DD"),
   endDate: z
     .string()
+    .transform(toISO)
     .describe("Fecha de fin de la cobertura en formato YYYY-MM-DD"),
   coverageStatus: z
     .enum(["ACTIVA", "INACTIVA", "SUSPENDIDA"])

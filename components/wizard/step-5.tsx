@@ -30,7 +30,12 @@ export function Step5() {
       : "Anexos.pdf"
 
   const generarPDF = async () => {
-    if (!extractedData || !manualData || !documents.paymentSheet || !documents.arl) {
+    if (
+      !extractedData ||
+      !manualData ||
+      !documents.paymentSheet ||
+      !documents.arl
+    ) {
       toast.error("Faltan documentos o datos para generar el PDF.")
       return
     }
@@ -60,7 +65,9 @@ export function Step5() {
           details?: string
         }
         throw new Error(
-          payload.details ?? payload.error ?? `Error del servidor: ${res.status}`
+          payload.details ??
+            payload.error ??
+            `Error del servidor: ${res.status}`
         )
       }
 
@@ -70,7 +77,9 @@ export function Step5() {
       toast.success("PDF generado correctamente.", { description: filename })
     } catch (err) {
       const message =
-        err instanceof Error ? err.message : "Error desconocido al generar el PDF."
+        err instanceof Error
+          ? err.message
+          : "Error desconocido al generar el PDF."
       setErrorMessage(message)
       setStatus("error")
       toast.error("No se pudo generar el PDF.", { description: message })
@@ -102,12 +111,19 @@ export function Step5() {
           <div className="flex flex-col gap-2 rounded-lg border bg-muted/30 px-4 py-3 text-sm">
             <p className="font-medium">Contenido del PDF</p>
             <ul className="flex flex-col gap-1 text-muted-foreground">
-              <li>• U.FT.12.010.053 — Constancia de cumplimiento contractual</li>
-              <li>• U.FT.12.010.069 — Certificación determinación cedular</li>
+              <li>
+                • U.FT.12.010.053 — Constancia de cumplimiento contractual
+              </li>
+              <li className="text-amber-600 dark:text-amber-400">
+                • U.FT.12.010.069 — Certificación determinación cedular{" "}
+                <span className="font-medium">(template pendiente)</span>
+              </li>
               <li>• Planilla de seguridad social adjunta</li>
               <li>• Certificado ARL adjunto</li>
             </ul>
-            <p className="mt-1 font-mono text-xs text-muted-foreground">{filename}</p>
+            <p className="mt-1 font-mono text-xs text-muted-foreground">
+              {filename}
+            </p>
           </div>
 
           {status === "idle" && (
@@ -169,9 +185,13 @@ export function Step5() {
         <ol className="flex flex-col gap-2 pl-9 text-sm text-muted-foreground">
           <li>1. Revisa que todos los datos sean correctos.</li>
           <li>2. Imprime o comparte el PDF con el supervisor para su firma.</li>
-          <li>3. El supervisor firma los formatos 053 y 069 y los devuelve escaneados.</li>
           <li>
-            4. Adjunta el PDF firmado al proceso contractual en el sistema universitario.
+            3. El supervisor firma los formatos 053 y 069 y los devuelve
+            escaneados.
+          </li>
+          <li>
+            4. Adjunta el PDF firmado al proceso contractual en el sistema
+            universitario.
           </li>
         </ol>
       </div>

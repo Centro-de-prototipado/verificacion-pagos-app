@@ -3,14 +3,44 @@
 export type WizardStep = 1 | 2 | 3 | 4
 
 export type ContractType =
-  | "OSE"
-  | "OPS"
-  | "OCE"
-  | "OFS"
+  // Órdenes contractuales vigentes
+  | "OCA"
   | "OCO"
-  | "ODS"
+  | "ODC"
   | "ODO"
-  | "OCU"
+  | "OPS"
+  | "OSE"
+  | "OSU"
+  // Contratos vigentes
+  | "CCO"
+  | "CDA"
+  | "CDC"
+  | "CDO"
+  | "CIS"
+  | "CON"
+  | "COV"
+  | "CPS"
+  | "CSE"
+  | "CSU"
+  // Órdenes de vigencia futura
+  | "OEF"
+  | "OFA"
+  | "OFC"
+  | "OFO"
+  | "OFS"
+  | "OOF"
+  | "OSF"
+  | "OUF"
+  // Contratos de vigencia futura
+  | "CAF"
+  | "CCF"
+  | "CIF"
+  | "COF"
+  | "CPF"
+  | "CSF"
+  | "CTF"
+  | "CUF"
+  | "CVF"
 
 export type RiskClass = "I" | "II" | "III" | "IV" | "V"
 
@@ -64,7 +94,7 @@ export interface UploadedDocuments {
 export interface PaymentSheetData {
   sheetNumber: string
   paymentDate: string
-  paymentDeadline: string
+  paymentDeadline: string | null
   period: string
   totalAmountPaid: number
 }
