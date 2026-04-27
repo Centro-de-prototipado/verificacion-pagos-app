@@ -21,15 +21,19 @@ export async function POST(request: NextRequest) {
   let planillaBytes: Uint8Array
   let arlBytes: Uint8Array
   let planilla2Bytes: Uint8Array | undefined
+  let informeBytes: Uint8Array | undefined
+  let informeRecibidoRaw: FormDataEntryValue | null = null
 
   try {
     const formData = await request.formData()
 
     const extractedRaw = formData.get("extracted")
     const manualRaw = formData.get("manual")
+    informeRecibidoRaw = formData.get("informeRecibido")
     const planillaFile = formData.get("planilla")
     const arlFile = formData.get("arl")
     const planilla2File = formData.get("planilla2")
+    const informeFile = formData.get("informe")
 
     if (!extractedRaw || !manualRaw || !planillaFile || !arlFile) {
       return NextResponse.json(
@@ -50,6 +54,9 @@ export async function POST(request: NextRequest) {
         await (planilla2File as File).arrayBuffer()
       )
     }
+    if (informeFile) {
+      informeBytes = new Uint8Array(await (informeFile as File).arrayBuffer())
+    }
   } catch {
     return NextResponse.json(
       { error: "No se pudo leer la solicitud." },
@@ -59,7 +66,11 @@ export async function POST(request: NextRequest) {
 
   try {
     // Run validations — informe assumed received if required (validated in step 3)
-    const summary = runValidations(extracted, manual, false)
+    const summary = runValidations(
+      extracted,
+      manual,
+      informeRecibidoRaw === "true"
+    )
 
     if (!summary.contributions) {
       return NextResponse.json(
@@ -94,6 +105,7 @@ export async function POST(request: NextRequest) {
       bytesPlanilla: planillaBytes,
       bytesPlanilla2: planilla2Bytes,
       bytesARL: arlBytes,
+      bytesInforme: informeBytes,
     })
 
     const contract = extracted.contract!

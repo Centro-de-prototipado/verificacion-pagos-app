@@ -349,11 +349,11 @@ const COVERAGE_OPTIONS: { value: ARLData["coverageStatus"]; label: string }[] =
   ]
 
 const RISK_OPTIONS: { value: RiskClass; label: string }[] = [
-  { value: "I", label: "Riesgo I" },
-  { value: "II", label: "Riesgo II" },
-  { value: "III", label: "Riesgo III" },
-  { value: "IV", label: "Riesgo IV" },
-  { value: "V", label: "Riesgo V" },
+  { value: "I", label: "Riesgo 1" },
+  { value: "II", label: "Riesgo 2" },
+  { value: "III", label: "Riesgo 3" },
+  { value: "IV", label: "Riesgo 4" },
+  { value: "V", label: "Riesgo 5" },
 ]
 
 function ARLEditor({

@@ -46,6 +46,7 @@ const INITIAL_STATE = {
     contract: null,
     contract2: null,
     paymentSheet2: null,
+    activityReport: null,
   } satisfies UploadedDocuments,
   manualData: null,
   rawText: null,

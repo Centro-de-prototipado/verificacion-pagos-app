@@ -149,18 +149,30 @@ export function Step4() {
             title="Informe de actividades"
             subtitle={`El contrato exige informe cada ${contract!.activityReport.frequencyMonths} mes(es). Confirma si fue recibido.`}
           />
-          <div className="flex items-center gap-3 rounded-lg border px-4 py-3 pl-9">
-            <Switch
-              id="informe-recibido"
-              checked={informeRecibido}
-              onCheckedChange={setInformeRecibido}
-            />
-            <label
-              htmlFor="informe-recibido"
-              className="cursor-pointer text-sm"
-            >
-              Informe de actividades recibido y verificado
-            </label>
+          <div className="flex flex-col gap-3 pl-9">
+            <div className="flex items-center gap-3 rounded-lg border px-4 py-3">
+              <Switch
+                id="informe-recibido"
+                checked={informeRecibido}
+                onCheckedChange={setInformeRecibido}
+              />
+              <label
+                htmlFor="informe-recibido"
+                className="cursor-pointer text-sm"
+              >
+                Informe de actividades recibido y verificado
+              </label>
+            </div>
+            {informeRecibido && (
+              <DocumentDropzone
+                stepNumber={4}
+                label="Informe de actividades"
+                description="Carga el informe de actividades para incluirlo en el PDF final"
+                hint="Documento PDF con las actividades del período"
+                file={documents.activityReport ?? null}
+                onFileChange={(file) => setDocuments({ activityReport: file })}
+              />
+            )}
           </div>
         </div>
       )}

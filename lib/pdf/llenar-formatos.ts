@@ -71,8 +71,8 @@ export async function llenarConstancia053(
         fecha_expedicion: datos.expeditionDate,
         nombre_supervisor: datos.supervisorName,
         id_supervisor: datos.supervisorDocumentNumber,
-        correo_supervisor: datos.supervisorEmail,
-        telefono_supervisor: datos.supervisorPhone,
+        correo_supervisor: `Correo electronico: ${datos.supervisorEmail}`,
+        telefono_supervisor: `Teléfono: ${datos.supervisorPhone}`,
       },
     ],
   })
@@ -108,49 +108,47 @@ export async function llenarCertificacion069(
         codigo_quipu: datos.quipuCompany,
         tipo_contrato: datos.contractType,
         numero_orden: datos.orderNumber,
-        valor_total_contrato: `$ ${num(datos.contractTotalValue)}`,
+        valor_total_contrato: num(datos.contractTotalValue),
         fecha_inicio_contrato: datos.startDate,
         fecha_fin_contrato: datos.endDate,
-        clase_riesgo: datos.riskClassLabel,
+        clase_riesgo: `Riesgo ${datos.riskClassLabel}`,
         // Sección 2 — Contrato 2 (vacío si solo hay uno)
         tipo_contrato_2: datos.contract2Type ?? "",
         numero_orden_2: datos.contract2OrderNumber ?? "",
         valor_total_contrato_2:
           datos.contract2TotalValue != null
-            ? `$ ${num(datos.contract2TotalValue)}`
+            ? num(datos.contract2TotalValue)
             : "",
         fecha_inicio_contrato_2: datos.contract2StartDate ?? "",
         fecha_fin_contrato_2: datos.contract2EndDate ?? "",
         // Fila TOTAL de la tabla de contratos
-        valor_total_suma: `$ ${num(totalContractValue)}`,
+        valor_total_suma: num(totalContractValue),
         // Sección 3 — Períodos
         ref_deducciones: datos.deductionsContractRef,
         periodo_solicitud: datos.paymentRequestPeriod,
         periodo_planilla: datos.payrollPeriod,
         // Sección 4 — Aportes
-        aporte_salud: peso(datos.healthContribution),
-        aporte_pension: datos.isPensioner
-          ? ""
-          : peso(datos.pensionContribution),
-        fondo_solidaridad: datos.isPensioner ? "" : peso(datos.solidarityFund),
-        aporte_arl: peso(datos.arlContribution),
-        total_aportes: peso(datos.totalObligatory),
+        aporte_salud: num(datos.healthContribution),
+        aporte_pension: datos.isPensioner ? "" : num(datos.pensionContribution),
+        fondo_solidaridad: datos.isPensioner ? "" : num(datos.solidarityFund),
+        aporte_arl: num(datos.arlContribution),
+        total_aportes: num(datos.totalObligatory),
         // Sección 5 — Tabla mensualización (fila de datos)
-        valor_mensualizado: `$ ${num(datos.monthlyValue)}`,
+        valor_mensualizado: num(datos.monthlyValue),
         numero_meses: String(datos.contractMonths),
-        ibc: `$ ${num(datos.ibc)}`,
-        aporte_salud_tabla: peso(datos.healthContribution),
+        ibc: num(datos.ibc),
+        aporte_salud_tabla: num(datos.healthContribution),
         aporte_pension_tabla: datos.isPensioner
           ? ""
-          : peso(datos.pensionContribution),
+          : num(datos.pensionContribution),
         fondo_solidaridad_tabla: datos.isPensioner
           ? ""
-          : peso(datos.solidarityFund),
-        base_retencion: `$ ${num(datos.monthlyRetentionBase)}`,
+          : num(datos.solidarityFund),
+        base_retencion: num(datos.monthlyRetentionBase),
         // Sección 5 — Tabla mensualización (fila TOTAL)
-        valor_mensualizado_total: `$ ${num(datos.monthlyValue)}`,
-        calculo_base_total: `$ ${num(calculationBase)}`,
-        base_retencion_total: `$ ${num(datos.monthlyRetentionBase)}`,
+        valor_mensualizado_total: num(datos.monthlyValue),
+        calculo_base_total: num(calculationBase),
+        base_retencion_total: num(datos.monthlyRetentionBase),
         // Sección 6 — Declaración formal y firma
         declaracion_formal: datos.formalDeclaration,
         nombre_firmante: datos.signerName,
@@ -170,12 +168,14 @@ export async function unificarPDFs({
   bytesPlanilla,
   bytesPlanilla2,
   bytesARL,
+  bytesInforme,
 }: {
   bytes053?: Uint8Array | null
   bytes069?: Uint8Array | null
   bytesPlanilla: Uint8Array
   bytesPlanilla2?: Uint8Array
   bytesARL: Uint8Array
+  bytesInforme?: Uint8Array | null
 }): Promise<Uint8Array> {
   const merged = await PDFDocument.create()
 
@@ -190,6 +190,7 @@ export async function unificarPDFs({
   await copiar(bytesPlanilla)
   if (bytesPlanilla2) await copiar(bytesPlanilla2)
   await copiar(bytesARL)
+  if (bytesInforme) await copiar(bytesInforme)
 
   return merged.save()
 }

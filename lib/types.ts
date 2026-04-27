@@ -92,6 +92,8 @@ export interface UploadedDocuments {
   contract2?: File | null
   /** Next month's planilla — required when paymentSheet was paid after its deadline */
   paymentSheet2?: File | null
+  /** Optional activity report to append to the final PDF */
+  activityReport?: File | null
 }
 
 // ─── AI-extracted data (populated in Phase 3) ────────────────────────────────

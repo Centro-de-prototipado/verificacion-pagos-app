@@ -119,7 +119,9 @@ export function buildFormat069Data(
     contractTotalValue: contract!.totalValueBeforeTax,
     startDate: contract!.startDate,
     endDate: contract!.endDate,
-    riskClassLabel: arl!.riskClass,
+    riskClassLabel:
+      { I: "1", II: "2", III: "3", IV: "4", V: "5" }[arl!.riskClass] ??
+      arl!.riskClass,
     ...(contract2
       ? {
           contract2Type: contract2.contractType,

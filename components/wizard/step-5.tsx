@@ -14,7 +14,7 @@ import { SectionHeader } from "./section-header"
 type DownloadStatus = "idle" | "loading" | "ready" | "error"
 
 export function Step5() {
-  const { extractedData, manualData, documents } = useWizardStore()
+  const { extractedData, manualData, documents, informeRecibido } = useWizardStore()
 
   const [status, setStatus] = useState<DownloadStatus>("idle")
   const [pdfBlob, setPdfBlob] = useState<Blob | null>(null)
@@ -48,10 +48,14 @@ export function Step5() {
       const formData = new FormData()
       formData.append("extracted", JSON.stringify(extractedData))
       formData.append("manual", JSON.stringify(manualData))
+      formData.append("informeRecibido", String(informeRecibido))
       formData.append("planilla", documents.paymentSheet)
       formData.append("arl", documents.arl)
       if (documents.paymentSheet2) {
         formData.append("planilla2", documents.paymentSheet2)
+      }
+      if (documents.activityReport) {
+        formData.append("informe", documents.activityReport)
       }
 
       const res = await fetch("/api/generar-pdf", {
