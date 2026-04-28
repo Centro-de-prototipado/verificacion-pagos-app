@@ -14,7 +14,8 @@ import { SectionHeader } from "./section-header"
 type DownloadStatus = "idle" | "loading" | "ready" | "error"
 
 export function Step5() {
-  const { extractedData, manualData, documents, informeRecibido } = useWizardStore()
+  const { extractedData, manualData, documents, informeRecibido } =
+    useWizardStore()
 
   const [status, setStatus] = useState<DownloadStatus>("idle")
   const [pdfBlob, setPdfBlob] = useState<Blob | null>(null)

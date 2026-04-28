@@ -6,7 +6,7 @@ import type { LanguageModel } from "ai"
 
 type GenerateTextParams = Parameters<typeof generateText>[0]
 
-const COOLDOWN_MS = 10 * 60 * 1000  // only for rate-limits / credit errors
+const COOLDOWN_MS = 10 * 60 * 1000 // only for rate-limits / credit errors
 
 // Max output tokens — enough for any extraction schema in this app
 const MAX_TOKENS = 1200

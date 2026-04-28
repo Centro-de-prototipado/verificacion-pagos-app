@@ -62,7 +62,7 @@ function CurrencyInput({
       onBlur={onBlur}
       inputMode="numeric"
       placeholder="3.500.000"
-      className="pl-7"
+      className=""
       aria-invalid={ariaInvalid}
     />
   )
@@ -104,7 +104,7 @@ export function ManualForm({
       // Explicit empty strings so every input starts controlled, not undefined
       amountToCharge: "" as unknown as number,
       paymentRequestPeriod: "",
-      payrollPeriod: "",
+      paymentType: "Parcial" as "Parcial" | "Final" | "Único",
       quipuCompany: "",
       institutionalEmail: "",
       amendmentNumber: "",
@@ -117,6 +117,19 @@ export function ManualForm({
   })
 
   const contractCount = form.watch("contractCount")
+  const paymentsToRequest = form.watch("paymentsToRequest")
+  const paymentNumber = form.watch("paymentNumber")
+
+  // Auto-detect payment type whenever paymentNumber or paymentsToRequest change
+  useEffect(() => {
+    const auto: "Parcial" | "Final" | "Único" =
+      Number(paymentsToRequest) === 1
+        ? "Único"
+        : Number(paymentNumber) >= Number(paymentsToRequest)
+          ? "Final"
+          : "Parcial"
+    form.setValue("paymentType", auto, { shouldValidate: false })
+  }, [paymentsToRequest, paymentNumber]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // Notifica al padre cada vez que cambia contractCount
   useEffect(() => {
@@ -221,7 +234,7 @@ export function ManualForm({
                   <Input
                     {...field}
                     id={field.name}
-                    placeholder="03/2026"
+                    placeholder="04/2026"
                     maxLength={7}
                     inputMode="numeric"
                     onChange={(e) => handlePeriodInput(e, field.onChange)}
@@ -234,27 +247,33 @@ export function ManualForm({
               )}
             />
 
+            {/* Tipo de pago — auto-detected, user can override */}
             <Controller
-              name="payrollPeriod"
+              name="paymentType"
               control={form.control}
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid || undefined}>
-                  <FieldLabel htmlFor={field.name}>
-                    Período de la planilla
-                  </FieldLabel>
+                  <FieldLabel>Tipo de pago</FieldLabel>
                   <FieldDescription>
-                    Mes cotizado en tu planilla SS —{" "}
-                    <span className="font-mono">MM/AAAA</span>
+                    Se detecta automáticamente; ajusta si es necesario.
                   </FieldDescription>
-                  <Input
-                    {...field}
-                    id={field.name}
-                    placeholder="02/2026"
-                    maxLength={7}
-                    inputMode="numeric"
-                    onChange={(e) => handlePeriodInput(e, field.onChange)}
-                    aria-invalid={fieldState.invalid}
-                  />
+                  <div className="grid grid-cols-3 gap-2">
+                    {(["Parcial", "Final", "Único"] as const).map((val) => (
+                      <button
+                        key={val}
+                        type="button"
+                        onClick={() => field.onChange(val)}
+                        className={[
+                          "rounded-lg border-2 px-3 py-2 text-sm font-semibold transition-all focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
+                          field.value === val
+                            ? "border-primary bg-primary/10 text-primary"
+                            : "border-border text-foreground hover:border-primary/40",
+                        ].join(" ")}
+                      >
+                        {val}
+                      </button>
+                    ))}
+                  </div>
                   {fieldState.invalid && (
                     <FieldError errors={[fieldState.error]} />
                   )}

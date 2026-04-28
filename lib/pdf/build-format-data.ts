@@ -44,7 +44,6 @@ export function buildFormat053Data(
   const year = manual.paymentRequestPeriod.split("/")[1]
   const today = todayDDMMYYYY()
 
-  const paymentsToRequest = manual.paymentsToRequest
   const paymentNumber = manual.paymentNumber
 
   // Detect last execution month: paymentRequestPeriod MM/YYYY matches ARL endDate MM/YYYY
@@ -62,12 +61,7 @@ export function buildFormat053Data(
     return reqMM === endMM && reqYYYY === endYYYY
   })()
 
-  const paymentType: "Parcial" | "Final" | "Único" =
-    paymentsToRequest === 1
-      ? "Único"
-      : isLastExecutionMonth || paymentNumber === paymentsToRequest
-        ? "Final"
-        : "Parcial"
+  const paymentType = manual.paymentType
 
   return {
     contractType: contract!.contractType,
@@ -80,7 +74,7 @@ export function buildFormat053Data(
     documentNumber: contract!.documentNumber,
     sheetNumber: paymentSheet!.sheetNumber,
     paymentDate: paymentSheet!.paymentDeadline ?? paymentSheet!.paymentDate,
-    payrollPeriodName: periodToMonthName(manual.payrollPeriod),
+    payrollPeriodName: periodToMonthName(extracted.paymentSheet!.period),
     paymentNumber,
     paymentType,
     isLastExecutionMonth,
@@ -133,7 +127,7 @@ export function buildFormat069Data(
       : {}),
     deductionsContractRef,
     paymentRequestPeriod: periodToSpanish(manual.paymentRequestPeriod),
-    payrollPeriod: periodToSpanish(manual.payrollPeriod),
+    payrollPeriod: periodToSpanish(extracted.paymentSheet!.period),
     healthContribution: contributions.healthContribution,
     pensionContribution: contributions.pensionContribution,
     solidarityFund: contributions.solidarityFund,

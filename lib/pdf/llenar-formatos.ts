@@ -2,6 +2,7 @@ import path from "path"
 import { readFile } from "fs/promises"
 import { generate } from "@pdfme/generator"
 import type { Template } from "@pdfme/common"
+import { multiVariableText, text } from "@pdfme/schemas"
 import { PDFDocument } from "pdf-lib"
 import type { Format053Data, Format069Data } from "@/lib/types"
 import { SEDE, DEPENDENCIA } from "@/lib/constants/institution"
@@ -39,6 +40,7 @@ export async function llenarConstancia053(
 
   return generate({
     template,
+    plugins: { text, multiVariableText },
     inputs: [
       {
         sede: SEDE,
@@ -67,6 +69,15 @@ export async function llenarConstancia053(
         ch_excelente: "X",
         ch_informe_si: datos.activityReportReceived === true ? "X" : "",
         ch_informe_na: datos.activityReportReceived === "N/A" ? "X" : "",
+        parrafo_contratista: JSON.stringify({
+          numero_planilla: datos.sheetNumber,
+          fecha_pago_planilla: datos.paymentDate,
+          periodo_solicitud: datos.payrollPeriodName,
+        }),
+        fecha_lugar_expedicion: JSON.stringify({
+          ciudad: "Manizales",
+          fecha_expedicion: datos.expeditionDate,
+        }),
         ciudad: "Manizales",
         fecha_expedicion: datos.expeditionDate,
         nombre_supervisor: datos.supervisorName,
@@ -95,6 +106,7 @@ export async function llenarCertificacion069(
 
   return generate({
     template,
+    plugins: { text, multiVariableText },
     inputs: [
       {
         // Sección 1 — Datos generales

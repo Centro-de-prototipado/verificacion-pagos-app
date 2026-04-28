@@ -64,24 +64,7 @@ export function runValidations(
     }
   }
 
-  // ── 1. Período planilla vs manual ─────────────────────────────────────────
-  if (paymentSheet.period !== manual.payrollPeriod) {
-    results.push({
-      ok: false,
-      blocking: true,
-      type: "date",
-      message: `El período de la planilla (${paymentSheet.period}) no coincide con el período ingresado manualmente (${manual.payrollPeriod}). Verifica el período.`,
-    })
-  } else {
-    results.push({
-      ok: true,
-      blocking: false,
-      type: "date",
-      message: `Período de planilla coincide con el ingresado (${manual.payrollPeriod}).`,
-    })
-  }
-
-  // ── 2. Estado cobertura ARL ───────────────────────────────────────────────
+  // ── 1. Estado cobertura ARL ─────────────────────────────────────────────────────
   if (arl.coverageStatus !== "ACTIVA") {
     results.push({
       ok: false,
@@ -148,7 +131,7 @@ export function runValidations(
   const formalDeclaration = calcularDeclaracionCedular(
     manual.paymentNumber,
     manual.paymentRequestPeriod,
-    manual.payrollPeriod
+    paymentSheet.period
   )
 
   const activityReportReceived = resolverInforme053(

@@ -71,8 +71,8 @@ export interface ManualFormData {
   amendmentNumber?: string
   /** Format MM/YYYY — payment request period */
   paymentRequestPeriod: string
-  /** Format MM/YYYY — period covered by the social security payroll */
-  payrollPeriod: string
+  /** Parcial / Final / Único — set by user in form, auto-detected from paymentNumber vs paymentsToRequest */
+  paymentType: "Parcial" | "Final" | "Único"
   paymentNumber: number
   amountToCharge: number
   // Interventor / supervisor (required for Format 053)

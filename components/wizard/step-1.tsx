@@ -109,7 +109,11 @@ export function Step1() {
             <button
               key={val}
               type="button"
-              onClick={() => setContractCount(val)}
+              onClick={() => {
+                setContractCount(val)
+                // Clear second contract file when downgrading to 1 contract
+                if (val === "1") setDocuments({ contract2: null })
+              }}
               className={[
                 "flex flex-col items-center gap-1.5 rounded-xl border-2 px-4 py-5 text-center transition-all focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
                 contractCount === val

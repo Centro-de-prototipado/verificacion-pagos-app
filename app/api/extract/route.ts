@@ -198,7 +198,11 @@ export async function POST(request: NextRequest) {
           schema: PaymentSheetSchema,
           docLabel: "Planilla PILA de seguridad social",
           candidates: pilaCandidate,
-          profileExample: findProfile(profiles, "pila", issuerKeys.paymentSheet),
+          profileExample: findProfile(
+            profiles,
+            "pila",
+            issuerKeys.paymentSheet
+          ),
           snapshot,
           extraInstructions:
             "Reglas críticas: " +
@@ -208,10 +212,11 @@ export async function POST(request: NextRequest) {
             "Si no puedes determinar cuál es, usa el último de la lista. " +
             "El número de planilla en SOI es de 10 dígitos y aparece DESPUÉS de la 'Clave Pago' (8-9 dígitos) en la tabla. " +
             "NO uses la Clave Pago ni fechas ni montos como número de planilla. " +
-            "(2) 'period' es el MES COTIZADO en formato MM/YYYY (ej: '03/2026'), NO el mes de pago; " +
-            "es siempre el mes inmediatamente anterior a paymentDate. " +
-            "(3) paymentDate es la fecha en que se realizó el pago. " +
-            "(4) paymentDeadline es la fecha límite máxima, siempre en el mes siguiente al período. " +
+            "(2) 'period' es el MES COTIZADO tal como aparece literalmente en el documento, en formato MM/YYYY (ej: '04/2026'). " +
+            "NO deduzcas el período a partir de paymentDate ni lo modifiques — extráelo exactamente del texto. " +
+            "El período y la fecha de pago pueden coincidir en el mismo mes o diferir; usa siempre el valor explícito del documento. " +
+            "(3) paymentDate es la fecha en que se realizó el pago (DD/MM/YYYY). " +
+            "(4) paymentDeadline es la fecha límite máxima; suele estar en el mes siguiente al período cotizado. " +
             "Si paymentDate y paymentDeadline parecen invertidos, corrígelos: paymentDeadline ≥ paymentDate.",
           onProgress: makeOnProgress("paymentSheet"),
         }),
@@ -270,54 +275,104 @@ export async function POST(request: NextRequest) {
           ? (r3.value as Record<string, unknown> | null)
           : null
 
-      const psRaw = fillFromCandidates(aiPS, pilaCandidate as Record<string, unknown>)
+      const psRaw = fillFromCandidates(
+        aiPS,
+        pilaCandidate as Record<string, unknown>
+      )
       const paymentSheet = psRaw as PaymentSheetExtracted | null
-      if (r0.status === "rejected") warnings.push(`Planilla — error de extracción: ${r0.reason}`)
+      if (r0.status === "rejected")
+        warnings.push(`Planilla — error de extracción: ${r0.reason}`)
       else if (!aiPS) {
         const len = cleanText.paymentSheet.trim().length
-        warnings.push(len === 0
-          ? "Planilla — el PDF no contiene texto extraíble (¿es un PDF escaneado o protegido?)"
-          : `Planilla — la IA no pudo interpretar el documento (${len} caracteres extraídos)`)
+        warnings.push(
+          len === 0
+            ? "Planilla — el PDF no contiene texto extraíble (¿es un PDF escaneado o protegido?)"
+            : `Planilla — la IA no pudo interpretar el documento (${len} caracteres extraídos)`
+        )
       } else {
-        if (!psRaw?.sheetNumber) warnings.push("Planilla — número de planilla no encontrado")
-        if (!psRaw?.paymentDate) warnings.push("Planilla — fecha de pago no encontrada")
-        if (!psRaw?.period) warnings.push("Planilla — período de cotización no encontrado")
+        if (!psRaw?.sheetNumber)
+          warnings.push("Planilla — número de planilla no encontrado")
+        if (!psRaw?.paymentDate)
+          warnings.push("Planilla — fecha de pago no encontrada")
+        if (!psRaw?.period)
+          warnings.push("Planilla — período de cotización no encontrado")
       }
-      if (psRaw) confidence.paymentSheet = computeConfidence(pilaCandidate as Record<string, unknown>, psRaw)
+      if (psRaw)
+        confidence.paymentSheet = computeConfidence(
+          pilaCandidate as Record<string, unknown>,
+          psRaw
+        )
 
-      const arlRaw = fillFromCandidates(aiARL, arlCandidate as Record<string, unknown>)
+      const arlRaw = fillFromCandidates(
+        aiARL,
+        arlCandidate as Record<string, unknown>
+      )
       const arl = arlRaw as ARLExtracted | null
-      if (r1.status === "rejected") warnings.push(`ARL — error de extracción: ${r1.reason}`)
+      if (r1.status === "rejected")
+        warnings.push(`ARL — error de extracción: ${r1.reason}`)
       else if (!aiARL) {
         const len = cleanText.arl.trim().length
-        warnings.push(len === 0
-          ? "ARL — el PDF no contiene texto extraíble (¿es un PDF escaneado o protegido?)"
-          : `ARL — la IA no pudo interpretar el documento (${len} caracteres extraídos)`)
+        warnings.push(
+          len === 0
+            ? "ARL — el PDF no contiene texto extraíble (¿es un PDF escaneado o protegido?)"
+            : `ARL — la IA no pudo interpretar el documento (${len} caracteres extraídos)`
+        )
       } else {
-        if (!arlRaw?.startDate) warnings.push("ARL — fecha de inicio de cobertura no encontrada")
-        if (!arlRaw?.endDate) warnings.push("ARL — fecha de fin de cobertura no encontrada")
+        if (!arlRaw?.startDate)
+          warnings.push("ARL — fecha de inicio de cobertura no encontrada")
+        if (!arlRaw?.endDate)
+          warnings.push("ARL — fecha de fin de cobertura no encontrada")
       }
-      if (arlRaw) confidence.arl = computeConfidence(arlCandidate as Record<string, unknown>, arlRaw)
+      if (arlRaw)
+        confidence.arl = computeConfidence(
+          arlCandidate as Record<string, unknown>,
+          arlRaw
+        )
 
-      const c1Raw = fillFromCandidates(aiC1, contractCand as Record<string, unknown>)
+      const c1Raw = fillFromCandidates(
+        aiC1,
+        contractCand as Record<string, unknown>
+      )
       const contract = c1Raw as ContractExtracted | null
-      if (r2.status === "rejected") warnings.push(`Contrato — error de extracción: ${r2.reason}`)
+      if (r2.status === "rejected")
+        warnings.push(`Contrato — error de extracción: ${r2.reason}`)
       else if (!aiC1) {
         const len = cleanText.contract.trim().length
-        warnings.push(len === 0
-          ? "Contrato — el PDF no contiene texto extraíble (¿es un PDF escaneado o protegido?)"
-          : `Contrato — la IA no pudo interpretar el documento (${len} caracteres extraídos)`)
+        warnings.push(
+          len === 0
+            ? "Contrato — el PDF no contiene texto extraíble (¿es un PDF escaneado o protegido?)"
+            : `Contrato — la IA no pudo interpretar el documento (${len} caracteres extraídos)`
+        )
       } else {
-        if (!c1Raw?.orderNumber) warnings.push("Contrato — número de orden no encontrado")
-        if (!c1Raw?.documentNumber) warnings.push("Contrato — número de documento no encontrado")
+        if (!c1Raw?.orderNumber)
+          warnings.push("Contrato — número de orden no encontrado")
+        if (!c1Raw?.documentNumber)
+          warnings.push("Contrato — número de documento no encontrado")
       }
-      if (c1Raw) confidence.contract = computeConfidence(contractCand as Record<string, unknown>, c1Raw)
+      if (c1Raw)
+        confidence.contract = computeConfidence(
+          contractCand as Record<string, unknown>,
+          c1Raw
+        )
 
-      const c2Raw = fillFromCandidates(aiC2, contract2Cand as Record<string, unknown>)
+      const c2Raw = fillFromCandidates(
+        aiC2,
+        contract2Cand as Record<string, unknown>
+      )
       const contract2 = c2Raw as ContractExtracted | null
-      if (r3.status === "rejected" && cleanText.contract2) warnings.push(`Contrato 2 — error de extracción: ${r3.reason}`)
-      else if (r3.status === "fulfilled" && !aiC2 && cleanText.contract2.trim().length > 0) warnings.push("Contrato 2 — la IA no pudo interpretar el documento")
-      if (c2Raw) confidence.contract2 = computeConfidence(contract2Cand as Record<string, unknown>, c2Raw)
+      if (r3.status === "rejected" && cleanText.contract2)
+        warnings.push(`Contrato 2 — error de extracción: ${r3.reason}`)
+      else if (
+        r3.status === "fulfilled" &&
+        !aiC2 &&
+        cleanText.contract2.trim().length > 0
+      )
+        warnings.push("Contrato 2 — la IA no pudo interpretar el documento")
+      if (c2Raw)
+        confidence.contract2 = computeConfidence(
+          contract2Cand as Record<string, unknown>,
+          c2Raw
+        )
 
       const extractedData: ExtractedData = {
         paymentSheet,
@@ -326,11 +381,23 @@ export async function POST(request: NextRequest) {
         ...(contract2 ? { contract2 } : {}),
       }
 
-      send({ type: "result", data: extractedData, warnings, issuerKeys, confidence })
+      send({
+        type: "result",
+        data: extractedData,
+        warnings,
+        issuerKeys,
+        confidence,
+      })
     } catch (error) {
       const message =
-        error instanceof Error ? error.message : "Error desconocido al extraer datos con IA."
-      send({ type: "error", message: "Falló la extracción estructurada con IA.", details: message })
+        error instanceof Error
+          ? error.message
+          : "Error desconocido al extraer datos con IA."
+      send({
+        type: "error",
+        message: "Falló la extracción estructurada con IA.",
+        details: message,
+      })
     } finally {
       writer.close()
     }

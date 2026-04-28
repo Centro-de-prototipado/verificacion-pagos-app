@@ -36,9 +36,9 @@ export const ManualFormSchema = z.object({
     .string()
     .regex(periodRegex, "Usa el formato MM/YYYY — ej. 04/2026"),
 
-  payrollPeriod: z
-    .string()
-    .regex(periodRegex, "Usa el formato MM/YYYY — ej. 03/2026"),
+  paymentType: z.enum(["Parcial", "Final", "Único"], {
+    error: "Selecciona el tipo de pago",
+  }),
 
   // ── Contratista ───────────────────────────────────────────────────────────
   institutionalEmail: z.string().email("Correo electrónico inválido"),

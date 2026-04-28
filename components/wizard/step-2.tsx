@@ -646,6 +646,28 @@ export function Step2() {
     }
   }, [planilla?.period, contract?.documentNumber])
 
+  // The deadline is recalculated from official rules; when present, it should
+  // not be shown as low-confidence even if AI did not extract it.
+  const planillaConfidence = useMemo(() => {
+    const base = confidence.paymentSheet
+      ? { ...confidence.paymentSheet }
+      : undefined
+    if (!base) return base
+    if (
+      planilla?.paymentDeadline &&
+      planilla?.period &&
+      contract?.documentNumber
+    ) {
+      base.paymentDeadline = "high"
+    }
+    return base
+  }, [
+    confidence.paymentSheet,
+    planilla?.paymentDeadline,
+    planilla?.period,
+    contract?.documentNumber,
+  ])
+
   // Populate editors once extraction finishes; calculate and validate paymentDeadline
   useEffect(() => {
     if (!extractedData) return
@@ -1158,7 +1180,7 @@ export function Step2() {
                 onChange={setPlanilla}
                 deadlineCalcNote={deadlineCalcNote}
                 warnings={warnings.filter((w) => w.startsWith("Planilla"))}
-                confidenceMap={confidence.paymentSheet}
+                confidenceMap={planillaConfidence}
               />
               <ARLEditor
                 data={arl}
