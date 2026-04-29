@@ -1,7 +1,7 @@
 # Especificaciones de la App — Verificación de Pagos UNAL
 
-> Basado exclusivamente en las fuentes del notebook de stakeholders (Centro Prototipado).  
-> Validado con tres rondas de consultas. Última actualización: 2026-04-23.
+> Basado en las fuentes del notebook de stakeholders (Centro Prototipado) y en el estado actual de implementación.
+> Última actualización: 2026-04-29.
 
 ---
 
@@ -9,25 +9,29 @@
 
 Herramienta web **mediadora sin base de datos** para contratistas de la Universidad Nacional de Colombia. El usuario sube PDFs, ingresa datos mínimos, y la app verifica aportes a seguridad social y genera el paquete de cobro listo para firma del supervisor.
 
-**No guarda nada.** Procesa en memoria: entra la información, sale el PDF, no queda registro.
+**No guarda nada en servidor.** Procesa en memoria: entra la información, sale el PDF, no queda registro. Los perfiles de extracción por emisor se guardan en `localStorage` del navegador para mejorar futuras extracciones.
 
 ---
 
-## 2. Paso 1 — Configuración inicial
+## 2. Flujo de 4 pasos
 
-**Acceso:** Servidor institucional UNAL, sin autenticación. Uso esperado mensual. Los campos frecuentes (correo, QUIPU) se pueden pre-llenar con cookies del navegador.
-
-El usuario responde dos preguntas antes de subir nada:
-
-**¿Cuántos contratos va a tramitar?** → `1` ó `2` (máximo institucional)
-
-**¿Cuántos pagos va a solicitar?** → puede haber pagos acumulados de meses anteriores. Sin límite máximo definido.
+```
+Paso 1: Documentos   →   Paso 2: Extracción   →   Paso 3: Validación   →   Paso 4: Resultado
+```
 
 ---
 
-## 3. Paso 2 — Documentos que se suben
+## 3. Paso 1 — Documentos y datos manuales
 
-### Siempre obligatorios
+**Acceso:** Servidor institucional UNAL, sin autenticación. Los campos frecuentes se pueden pre-llenar con el estado guardado en el store.
+
+### 3.1 Configuración inicial
+
+| Pregunta | Opciones |
+|---|---|
+| ¿Cuántos contratos? | `1` ó `2` (máximo institucional) |
+
+### 3.2 Documentos obligatorios
 
 | # | Documento |
 |---|---|
@@ -35,256 +39,167 @@ El usuario responde dos preguntas antes de subir nada:
 | 2 | Certificado de afiliación ARL |
 | 3 | Contrato del contratista (PDF) |
 
-### Si hay 2 contratos
+Si hay 2 contratos, se sube también el **PDF del segundo contrato**. La planilla PILA y el ARL son los mismos para ambos contratos.
 
-Se sube además el **PDF del segundo contrato**. La planilla PILA y el certificado ARL son los mismos para los dos contratos.
-
-### Si la planilla está vencida
-
-La app pide adicionalmente la **planilla del mes siguiente** (ver validaciones).
-
----
-
-## 4. Paso 3 — Extracción IA: qué se saca de cada documento y a dónde va
-
-Esta es la sección crítica. Para cada documento se detalla exactamente qué datos extrae la IA y en qué casilla de qué formato aparece ese dato.
-
----
-
-### 5.1 Planilla PILA — datos extraídos
-
-| # | Dato extraído | Tipo | Uso en la app |
-|---|---|---|---|
-| 1 | Número de planilla | texto | → Formato 053, casilla "número de planilla de seguridad social" |
-| 2 | Fecha de pago | fecha | → Formato 053, casilla "fecha de pago de seguridad social" |
-| 3 | Fecha límite de pago | fecha | → Solo validación: si `fecha_límite < fecha_pago` → planilla vencida. **No va en formatos.** |
-| 4 | Periodo de la planilla | `MM/YYYY` | → Formato 053, casilla "periodo de pago". También alimenta la lógica cedular del 069. |
-| 5 | Valor total pagado | número | → Solo validación bloqueante: si `totalAportes > valorPagado` → STOP. **No va en formatos.** |
-
-**Total: 5 campos.** No se extraen campos adicionales de este documento.
-
----
-
-### 5.2 Certificado ARL — datos extraídos
-
-| # | Dato extraído | Tipo | Uso en la app |
-|---|---|---|---|
-| 1 | Fecha de inicio de cobertura | fecha | → Formato 069, casilla "fecha inicio" de vigencia del contrato. También para calcular meses. |
-| 2 | Fecha fin de cobertura | fecha | → Formato 069, casilla "fecha fin" de vigencia del contrato. También para calcular meses. |
-| 3 | Estado de cobertura | `ACTIVA / INACTIVA / SUSPENDIDA` | → Solo validación: si no es ACTIVA → STOP. **No va en formatos.** |
-| 4 | Clase de riesgo laboral | `I / II / III / IV / V` | → Formato 069, casilla "clase de riesgo laboral". También para calcular el aporte ARL. |
-
-**Total: 4 campos.** El estado de cobertura se usa solo para validar, no se escribe en ningún formato.
-
-> **Nota importante:** Los certificados ARL varían por entidad (Sura, Positiva, Porvenir, etc.) pero todos contienen estos mismos cuatro datos. Se permite una **gavela de exactamente 2 días** entre las fechas de la ARL y las del contrato.
-
----
-
-### 5.3 Contrato — datos extraídos
-
-| # | Dato extraído | Tipo | Uso en la app |
-|---|---|---|---|
-| 1 | Tipo de contrato | `OSE/OPS/OCE/OFS/OCO/ODS/ODO/OCU` | → Formato 053, identificación del contrato. → Formato 069, casilla "tipo de orden contractual". → Nombre del archivo final. |
-| 2 | Número de la orden contractual | número | → Formato 053, casilla número de orden. → Formato 069, casilla "número de orden contractual". → Nombre del archivo final. |
-| 3 | Año del contrato | número (año actual) | → Formato 053, casilla de vigencia (ej. "OSE 14 / **2026**"). |
-| 4 | Nombre completo del contratista | texto | → Formato 053, casilla "nombre del contratista". → Formato 069, casilla "nombre". |
-| 5 | Tipo de documento | `CC / NIT` | → Formato 069, casilla "tipo de documento". |
-| 6 | Número de documento | número | → Formato 053, casilla "cédula". → Formato 069, casilla "número de identificación". |
-| 7 | Valor total del contrato **sin impuestos** | número | → Formato 069, casilla "valor total del contrato". → Insumo para calcular valor mensualizado → IBC → aportes. |
-| 8 | Informe de actividades: ¿requiere? | boolean | → Activa o no la solicitud del informe U.FT.12.011.020. **No va en formatos.** |
-| 9 | Informe de actividades: cada cuántos meses | número o nulo | → Determina en qué pagos se solicita el informe. **No va en formatos.** |
-
-**Total: 9 campos** (7 que van a los formatos + 2 solo para lógica de informe).
-
-> **Nota:** Las fechas de inicio y fin del contrato **no se extraen del contrato** — el documento no las contiene de forma confiable. Se usan las del certificado ARL.
-
-> **Si son 2 contratos:** se extrae exactamente la misma lista del segundo contrato. La ARL y planilla son compartidas.
-
----
-
-### 4.4 Revisión y corrección de datos extraídos
-
-Una vez terminada la extracción, la app **muestra al usuario todos los datos extraídos** para que los revise. El usuario puede corregir cualquier campo antes de continuar (por ejemplo, fechas invertidas por el modelo). Solo al confirmar, la app avanza.
-
----
-
-## 5. Paso 4 — Datos que ingresa manualmente el usuario
-
-Estos datos no están en ningún documento PDF:
+### 3.3 Datos manuales (no están en los PDFs)
 
 | # | Campo | Obligatorio | Detalle |
 |---|---|---|---|
-| 1 | Correo | Sí | Cualquier correo del contratista |
+| 1 | Correo institucional | Sí | Cualquier correo del contratista |
 | 2 | ¿Es pensionado? | Sí | Sí / No — afecta cálculo de pensión y FSP |
 | 3 | Empresa en QUIPU | Sí | Código numérico (ej. `4013`) |
-| 4 | Número de otro sí | No | Solo si el contrato fue modificado. Es **solo informativo**, no cambia cálculos. |
-| 5 | Periodo de solicitud de pago | Sí | Mes que está cobrando, formato `MM/YYYY` |
-| 6 | Periodo de la planilla | Sí | Mes de la planilla cargada, formato `MM/YYYY`. Debe coincidir con lo extraído del PDF. |
+| 4 | Número de otro sí | No | Solo informativo, no cambia cálculos |
+| 5 | Periodo de solicitud de pago | Sí | Mes que se está cobrando, formato `MM/YYYY` |
+| 6 | Tipo de pago | Sí | `Parcial` / `Final` / `Único` — auto-detectado |
 | 7 | Número del pago | Sí | Consecutivo: 1, 2, 3… |
-| 8 | Valor a cobrar | Sí | Monto exacto que va a recibir en este periodo |
-| 9 | Nombre del interventor o supervisor | Sí | Quien firma la constancia 053 |
-| 10 | No. identificación del supervisor | Sí | Cédula o documento del supervisor |
-| 11 | Correo electrónico del supervisor | Sí | Correo del interventor o supervisor |
-| 12 | Teléfono del supervisor | Sí | Teléfono de contacto del supervisor |
+| 8 | Valor a cobrar | Sí | Monto exacto en este período |
+| 9 | Nombre del supervisor | Sí | Quien firma la constancia 053 |
+| 10 | No. identificación del supervisor | Sí | Cédula o documento |
+| 11 | Correo del supervisor | Sí | Correo de contacto |
+| 12 | Teléfono del supervisor | Sí | Teléfono de contacto |
 
 ---
 
-## 6. Paso 5 — Validaciones matemáticas (sin IA, 100% TypeScript)
+## 4. Paso 2 — Extracción IA y revisión de datos
 
-### 7.1 Cálculo de aportes
+### 4.1 Proceso de extracción
+
+1. **Extracción de texto**: Los PDFs se envían a `/api/extract-text`, que usa `pdfjs-dist` para extraer el texto de cada documento.
+2. **Extracción estructurada con IA**: El texto se envía a `/api/extract`, que usa modelos de IA con fallback para extraer campos estructurados. Los proveedores se intentan en orden:
+   - **Mistral**: `devstral-latest` → `mistral-large-latest`
+   - **OpenRouter**: `nvidia/nemotron-3-super-120b-a12b:free` → `minimax/minimax-m2.5:free` → `z-ai/glm-4.5-air:free` → `openai/gpt-oss-120b:free` → `openrouter/free`
+3. La extracción de los 3–4 documentos corre en paralelo con `Promise.allSettled`.
+4. Los resultados se transmiten como eventos NDJSON al cliente (streaming).
+
+### 4.2 Pre-procesamiento antes del prompt
+
+- `joinSplitDates`: repara fechas que el PDF-to-text corta entre líneas.
+- `extractPILACandidates` / `extractARLCandidates` / `extractContractCandidates`: extracción por regex (keyword extractor) que genera candidatos para validar con la IA.
+- `smartSlice`: toma hasta 12.000 caracteres del documento (70% inicio + 30% final) para respetar el contexto del modelo.
+- `fillFromCandidates`: si la IA devuelve nulo en un campo pero el keyword extractor encontró algo, usa el valor del extractor.
+- `computeConfidence`: calcula la confianza de cada campo comparando el candidato del extractor vs. el resultado final de la IA.
+
+### 4.3 Datos extraídos por documento
+
+**Planilla PILA** (5 campos):
+
+| Campo | Tipo | Uso |
+|---|---|---|
+| `sheetNumber` | texto | → Formato 053 |
+| `paymentDate` | DD/MM/YYYY | → Formato 053 |
+| `paymentDeadline` | DD/MM/YYYY (opcional) | → Validación. Si no está, se calcula por Decreto 780/2016 |
+| `period` | MM/YYYY | → Formato 053 + lógica cedular |
+| `totalAmountPaid` | número COP | → Validación bloqueante |
+
+**Certificado ARL** (5 campos):
+
+| Campo | Tipo | Uso |
+|---|---|---|
+| `startDate` | YYYY-MM-DD | → Formato 069 (vigencia) + cálculo meses |
+| `endDate` | YYYY-MM-DD | → Formato 069 (vigencia) + cálculo meses |
+| `coverageStatus` | `ACTIVA / INACTIVA / SUSPENDIDA` | → Validación bloqueante |
+| `riskClass` | `I / II / III / IV / V` | → Formato 069 |
+| `cotizationRate` | número (%) | → Cálculo ARL (ej: `1.044` = 1.044%) |
+
+> Los certificados ARL varían por entidad (Sura, Positiva, Colmena, etc.) pero todos contienen estos campos. Se permite una **gavela de exactamente 2 días** entre las fechas ARL y las del contrato.
+
+**Contrato UNAL** (9 campos, misma estructura para contratos 1 y 2):
+
+| Campo | Tipo | Uso |
+|---|---|---|
+| `contractType` | sigla (OSE, OPS, CCO, etc.) | → Formatos 053 y 069 |
+| `orderNumber` | texto | → Formatos 053 y 069 |
+| `contractorName` | texto | → Formatos 053 y 069 |
+| `documentType` | `CC / NIT / CE` | → Formato 069 |
+| `documentNumber` | texto | → Formatos 053 y 069 + cálculo fecha límite |
+| `totalValueBeforeTax` | número COP | → Formato 069 + cálculo aportes |
+| `startDate` | DD/MM/YYYY | → se sobrescribe con fecha ARL |
+| `endDate` | DD/MM/YYYY | → se sobrescribe con fecha ARL |
+| `activityReport.required` | boolean | → activa flujo informe |
+| `activityReport.frequencyMonths` | número o null | → determina en qué pagos se pide informe |
+
+> **Las fechas del contrato siempre se toman del ARL** — el contrato no las contiene de forma confiable. Las fechas ARL se convierten de ISO a DD/MM/YYYY para los editores.
+
+### 4.4 Revisión y corrección de datos extraídos
+
+Una vez terminada la extracción, el paso 2 muestra **todos los datos extraídos** con campos 100% editables. Cada campo tiene un indicador de confianza:
+- 🟢 **Verde**: extractor y IA coinciden — probablemente correcto
+- 🟡 **Amarillo**: solo una fuente o difieren — verificar
+- 🔴 **Rojo**: ninguna fuente encontró el valor — completar manualmente
+
+Al confirmar, los datos corregidos se guardan en el store y el perfil del emisor se guarda en `localStorage` para mejorar extracciones futuras.
+
+**Comportamiento al volver desde un paso posterior:** si el usuario regresa al paso 2, los editores muestran los datos ya confirmados sin re-ejecutar la IA.
+
+---
+
+## 5. Paso 3 — Validaciones y aportes
+
+### 5.1 Cálculo de aportes
 
 ```
-meses            = fecha_fin_ARL − fecha_inicio_ARL
-mensualizado     = valor_total_contrato ÷ meses
-IBC_base         = mensualizado × 40%
-IBC_final        = max(IBC_base, SMLMV_vigente)
+contractMonths   = meses entre startDate y endDate del ARL
+monthlyValue     = totalValueBeforeTax ÷ contractMonths
+ibc              = monthlyValue × 40%
+calculationBase  = max(ibc, SMMLV_2026)   // SMMLV 2026 = $1.751.200
 
-aporte_salud     = IBC_final × 12.5%
-aporte_pension   = IBC_final × 16%        ← se omite si es pensionado
-FSP              = según normativa         ← se omite si es pensionado
-aporte_ARL       = lookup(clase_de_riesgo) ← ver tabla
+healthContribution  = calculationBase × 12.5%
+pensionContribution = calculationBase × 16%     ← 0 si es pensionado
+solidarityFund      = 0                          ← pendiente confirmar FSP
+arlContribution     = calculationBase × (cotizationRate / 100)
 
-Total_Aportes    = salud + pensión* + FSP* + ARL
+totalObligatory = salud + pensión + FSP + ARL
 ```
 
-**Tabla ARL** (aproximada — verificar tabla oficial 2026):
+**Con 2 contratos:** se calculan los aportes por separado para cada contrato y se suman.
 
-| Clase | Valor mensual |
-|---|---|
-| I | ~$10.000 COP |
-| II | ~$20.000 COP |
-| III | ~$50.000 COP |
-| IV | ~$90.000 COP |
-| V | ~$120.000 COP |
-
-**Con 2 contratos:** el IBC y los aportes se calculan por separado para cada uno. Sus totales se suman y el resultado se compara contra la única planilla.
-
-### 7.2 Reglas de validación y sus consecuencias
+### 5.2 Reglas de validación
 
 | Validación | Condición de fallo | Consecuencia |
 |---|---|---|
-| **Aportes suficientes** | `Total_Aportes > valor_pagado_planilla` | 🔴 STOP. Subir planilla correcta. |
-| **Planilla vigente** | `fecha_límite_pago < fecha_pago` | 🟡 Pedir también planilla del mes siguiente. |
-| **ARL activa** | Estado ≠ `ACTIVA` | 🔴 STOP. No puede continuar. |
-| **Periodo consistente** | Periodo manual ≠ periodo extraído del PDF | 🔴 STOP. No puede continuar. |
-| **Contraste manual vs IA** | Nombre o documento manual ≠ nombre o documento extraído del contrato | 🟡 Alerta. El usuario puede continuar pero debe confirmar. |
-| **Informe requerido** | Contrato exige informe y el pago es múltiplo de la frecuencia | 🟡 Pedir PDF del informe antes de continuar. |
-| **Informe bien diligenciado** | `Periodo(%) > Acumulada` o hay casillas vacías o fecha errónea | 🔴 STOP. Corregir informe. |
+| **ARL activa** | `coverageStatus ≠ ACTIVA` | 🔴 STOP |
+| **Aportes suficientes** | `totalObligatory > totalAmountPaid` | 🔴 STOP |
+| **Planilla vigente** | `paymentDate > paymentDeadline` | 🟡 Pedir planilla del mes siguiente |
+| **Gavela ARL** | diferencia > 2 días entre fechas ARL y contrato | 🔴 STOP |
+| **Informe requerido** | contrato exige informe y número de pago es múltiplo de frecuencia | 🔴 STOP si no se recibe |
 
-> **Nota sobre el contraste manual vs IA:** La app cruza los datos que el usuario ingresó manualmente (nombre, número de documento) contra los que la IA extrajo del contrato. Si hay discrepancias, muestra una alerta visible. No es bloqueante — el usuario confirma que es correcto o corrige el dato antes de continuar.
+> **Fecha límite de pago**: Si la planilla no trae `paymentDeadline`, se calcula según Decreto 780/2016 Art. 3.2.2.1 — los dos últimos dígitos del documento determinan el día hábil límite del mes siguiente al período cotizado.
 
----
+### 5.3 Informe de actividades (solo si aplica)
 
-## 7. Paso 6 — Informe de actividades (solo si aplica)
-
-Se activa cuando el contrato dice **"ENTREGAR UN INFORME DE EJECUCIÓN DE ACTIVIDADES CADA # MESES"** y el pago actual es múltiplo de esa frecuencia desde el inicio del contrato (normalmente cada 3 meses).
+Se activa cuando el contrato incluye `activityReport.required = true` y el número de pago es múltiplo de `frequencyMonths` (normalmente cada 3 meses).
 
 El usuario sube el PDF del formato `U.FT.12.011.020`. La app verifica:
-
 1. En cada fila: `Periodo (%) ≤ Acumulada a la fecha`
 2. Sin casillas vacías en la tabla
-3. Fecha de diligenciamiento = fecha actual del sistema
 
-**El informe NO se incluye en el PDF final.** Solo sirve para validar.
+El informe **no se incluye en el PDF final**. Solo sirve para validar.
 
----
-
-## 8. Paso 7 — Diligenciamiento de los dos formatos
-
-Los formatos generados deben ser **idénticos** a los originales de la universidad: mismo diseño, casillas, imágenes y distribución.
-
----
-
-### 8.1 Formato 053 — Constancia de Cumplimiento Contractual
-
-Mapa completo de casillas:
-
-| Casilla del formato | Valor que se pone | Origen |
-|---|---|---|
-| Tipo de contrato | `OSE`, `OPS`, etc. | Extraído del contrato (IA) |
-| Nombre interventor/supervisor | nombre completo | Manual |
-| No. identificación supervisor | número de documento | Manual |
-| Correo electrónico supervisor | correo | Manual |
-| Teléfono supervisor | número de teléfono | Manual |
-| Número de la orden contractual | ej. `14` | Extraído del contrato (IA) |
-| Año | año actual del sistema | Sistema |
-| Número de otro sí | el número ingresado, o vacío | Manual (opcional) |
-| Empresa QUIPU | ej. `4013` | Manual |
-| Nombre completo del contratista | nombre extraído | Contrato (IA) |
-| Número de documento (cédula/NIT) | número extraído | Contrato (IA) |
-| Número de planilla de seguridad social | número de planilla | Planilla PILA (IA) |
-| Fecha de pago de la planilla | fecha de pago | Planilla PILA (IA) |
-| Periodo de pago | mes correspondiente (ej. `febrero`) | Planilla PILA (IA) |
-| Consecutivo del pago | `1`, `2`, `3`… | Manual |
-| Valor a cobrar en este periodo | monto exacto | Manual |
-| Fecha de diligenciamiento | fecha actual | Sistema |
-| **Firma del supervisor** | **VACÍO** — lo firma el supervisor | — |
-
----
-
-### 8.2 Formato 069 — Certificación Determinación Cedular
-
-Mapa completo de casillas:
-
-| Casilla del formato | Valor que se pone | Origen |
-|---|---|---|
-| Fecha de diligenciamiento | fecha actual del sistema | Sistema |
-| Nombre completo del contratista | nombre extraído | Contrato (IA) |
-| Tipo de documento | `CC` o `NIT` | Contrato (IA) |
-| Número de identificación | cédula o NIT | Contrato (IA) |
-| Correo | correo ingresado | Manual |
-| Empresa QUIPU | ej. `4013` | Manual |
-| Tipo de orden contractual | `OSE`, `OPS`, etc. | Contrato (IA) |
-| Número de orden contractual | ej. `14` | Contrato (IA) |
-| Valor total del contrato (sin impuestos) | valor extraído | Contrato (IA) |
-| Fecha inicio de vigencia del contrato | fecha inicio ARL | ARL (IA) |
-| Fecha fin de vigencia del contrato | fecha fin ARL | ARL (IA) |
-| Clase de riesgo laboral | `I`–`V` | ARL (IA) |
-| ¿Es pensionado? | `Sí` / `No` | Manual |
-| Número de meses del contrato | calculado: fin − inicio | Calculado |
-| Valor mensualizado | calculado: total ÷ meses | Calculado |
-| IBC (Ingreso Base de Cotización) | calculado: mensualizado × 40% (mín. SMLMV) | Calculado |
-| Aporte obligatorio salud | calculado: IBC × 12.5% | Calculado |
-| Aporte obligatorio pensión | calculado: IBC × 16% — **vacío si pensionado** | Calculado |
-| Fondo de Solidaridad Pensional | calculado según normativa — **vacío si pensionado** | Calculado |
-| Aportes ARL | valor fijo por clase de riesgo | Calculado |
-| **Declaración Formal (SI / NO)** | regla cedular (ver abajo) | Calculado |
-
-#### Tipo de pago — lógica automática
+### 5.4 Regla cedular (declaración formal en formato 069)
 
 ```
-paymentsToRequest === 1                                   →  "Único"
-isLastExecutionMonth OR paymentNumber === paymentsToRequest  →  "Final"   (si paymentsToRequest > 1)
-else                                                      →  "Parcial"
-```
-
-`isLastExecutionMonth` = `true` cuando el mes/año del periodo de solicitud coincide con el mes/año de la fecha fin del contrato (ARL). Cuando se detecta automáticamente el último mes, el sistema marca el checkbox correcto sin intervención del usuario.
-
-#### Regla cedular exacta
-
-```
-numeroPago = 1                               →  "SI"
-numeroPago ≥ 2  AND  periodoSolicitud ≠ periodoPlanilla  →  "NO"
-numeroPago ≥ 2  AND  periodoSolicitud = periodoPlanilla  →  "SI"
+paymentNumber = 1                                          → "SI"
+paymentNumber ≥ 2 AND paymentRequestPeriod ≠ planillaPeriod → "NO"
+resto                                                      → "SI"
 ```
 
 ---
 
-## 9. Paso 8 — PDF final unificado
+## 6. Paso 4 — Generación del PDF final
 
-### Orden de páginas (estricto)
+### 6.1 Orden de páginas
 
 ```
-1. Formato 053 diligenciado
-2. Formato 069 diligenciado
-3. Planilla de pago original del usuario
-   (si había planilla vencida, van las dos aquí)
-4. Certificado de ARL original del usuario
+1. Formato 053 diligenciado (U.FT.12.010.053)
+2. Formato 069 diligenciado (U.FT.12.010.069) — template pendiente
+3. Planilla de pago original
+   (+ planilla del mes siguiente si hubo pago extemporáneo)
+4. Certificado ARL original
 ```
 
-El informe de actividades **no se incluye** en este PDF.
+El informe de actividades **no se incluye**.
 
-### Nombre del archivo
+### 6.2 Nombre del archivo
 
 ```
 {QUIPU}Anexos{TipoContrato}{NumeroOrden}.pdf
@@ -292,58 +207,88 @@ El informe de actividades **no se incluye** en este PDF.
 
 Ejemplo: `4013AnexosOSE14.pdf`
 
+### 6.3 Mapa de casillas — Formato 053
+
+| Casilla | Valor | Origen |
+|---|---|---|
+| Tipo de contrato | `OSE`, `OPS`, etc. | Contrato (IA) |
+| Nombre supervisor | nombre completo | Manual |
+| No. identificación supervisor | número | Manual |
+| Correo supervisor | correo | Manual |
+| Teléfono supervisor | número | Manual |
+| Número de la orden contractual | ej. `14` | Contrato (IA) |
+| Año | año actual del sistema | Sistema |
+| Número de otro sí | el número, o vacío | Manual (opcional) |
+| Empresa QUIPU | ej. `4013` | Manual |
+| Nombre contratista | nombre extraído | Contrato (IA) |
+| Número de documento | cédula/NIT | Contrato (IA) |
+| Número de planilla SS | número de planilla | Planilla PILA (IA) |
+| Fecha de pago planilla | fecha de pago | Planilla PILA (IA) |
+| Periodo de pago | nombre del mes en español | Planilla PILA (IA) |
+| Consecutivo del pago | `1`, `2`, `3`… | Manual |
+| Valor a cobrar | monto exacto | Manual |
+| Fecha de diligenciamiento | fecha actual | Sistema |
+| **Firma del supervisor** | **VACÍO** — lo firma el supervisor | — |
+
+### 6.4 Mapa de casillas — Formato 069
+
+| Casilla | Valor | Origen |
+|---|---|---|
+| Fecha de diligenciamiento | fecha actual | Sistema |
+| Nombre contratista | nombre extraído | Contrato (IA) |
+| Tipo de documento | `CC` o `NIT` | Contrato (IA) |
+| Número de identificación | cédula o NIT | Contrato (IA) |
+| Correo | correo | Manual |
+| Empresa QUIPU | ej. `4013` | Manual |
+| Tipo de orden contractual | `OSE`, `OPS`, etc. | Contrato (IA) |
+| Número de orden contractual | ej. `14` | Contrato (IA) |
+| Valor total del contrato (sin impuestos) | valor extraído | Contrato (IA) |
+| Fecha inicio de vigencia | fecha inicio ARL → DD/MM/YYYY | ARL (IA) |
+| Fecha fin de vigencia | fecha fin ARL → DD/MM/YYYY | ARL (IA) |
+| Clase de riesgo laboral | `I`–`V` | ARL (IA) |
+| ¿Es pensionado? | `Sí` / `No` | Manual |
+| Número de meses del contrato | calculado: fin − inicio | Calculado |
+| Valor mensualizado | calculado: total ÷ meses | Calculado |
+| IBC | calculado: mensualizado × 40% (mín. SMMLV) | Calculado |
+| Aporte salud | IBC × 12.5% | Calculado |
+| Aporte pensión | IBC × 16% — **vacío si pensionado** | Calculado |
+| Fondo de Solidaridad Pensional | pendiente — **vacío si pensionado** | Calculado |
+| Aportes ARL | cotizationRate% × base | Calculado |
+| Declaración Formal (SI / NO) | regla cedular | Calculado |
+
+#### Tipo de pago — lógica automática
+
+```
+paymentsToRequest === 1                                     → "Único"
+isLastExecutionMonth OR paymentNumber === paymentsToRequest → "Final"
+else                                                        → "Parcial"
+```
+
+`isLastExecutionMonth` = `true` cuando el mes/año del periodo de solicitud coincide con el mes/año de la fecha fin del contrato (ARL).
+
 ---
 
-## 10. Mapa completo: dato → origen → destino
+## 7. Constantes normativas 2026
 
-Resumen de todos los datos del sistema, de dónde vienen y a dónde van:
+Definidas en `lib/validations/constantes.ts`:
 
-| Dato | Origen | Validación | Formato 053 | Formato 069 |
-|---|---|---|---|---|
-| Número de planilla | Planilla PILA (IA) | — | ✅ | — |
-| Fecha de pago planilla | Planilla PILA (IA) | — | ✅ | — |
-| Fecha límite de pago | Planilla PILA (IA) | ✅ (planilla vencida) | — | — |
-| Periodo de la planilla | Planilla PILA (IA) | ✅ (cruce con manual) | ✅ | ✅ (lógica cedular) |
-| Valor total pagado | Planilla PILA (IA) | ✅ (regla bloqueante) | — | — |
-| Fecha inicio cobertura | ARL (IA) | ✅ (gavela 2 días) | — | ✅ vigencia |
-| Fecha fin cobertura | ARL (IA) | ✅ (gavela 2 días) | — | ✅ vigencia |
-| Estado de cobertura | ARL (IA) | ✅ (debe ser ACTIVA) | — | — |
-| Clase de riesgo | ARL (IA) | — | — | ✅ |
-| Tipo de contrato | Contrato (IA) | — | ✅ | ✅ |
-| Número de orden | Contrato (IA) | — | ✅ | ✅ |
-| Año del contrato | Sistema (año actual) | — | ✅ | — |
-| Nombre del contratista | Contrato (IA) | — | ✅ | ✅ |
-| Tipo de documento | Contrato (IA) | — | — | ✅ |
-| Número de documento | Contrato (IA) | — | ✅ | ✅ |
-| Valor contrato sin impuestos | Contrato (IA) | — | — | ✅ + cálculos |
-| ¿Requiere informe? (bool) | Contrato (IA) | ✅ (activa flujo informe) | — | — |
-| Frecuencia informe (meses) | Contrato (IA) | ✅ (cuándo pedirlo) | — | — |
-| Correo | Manual | — | — | ✅ |
-| ¿Es pensionado? | Manual | ✅ (modifica cálculos) | — | ✅ |
-| Empresa QUIPU | Manual | — | ✅ | ✅ |
-| Número de otro sí | Manual (opcional) | — | ✅ | — |
-| Periodo de solicitud | Manual | ✅ (cruce periodo) | — | ✅ (lógica cedular) |
-| Número del pago | Manual | — | ✅ | — (solo lógica interna) |
-| Valor a cobrar | Manual | — | ✅ | — |
-| Fecha diligenciamiento | Sistema (hoy) | ✅ (igual en informe) | ✅ | ✅ |
-| Meses del contrato | Calculado | — | — | ✅ |
-| Valor mensualizado | Calculado | — | — | ✅ |
-| IBC | Calculado | — | — | ✅ |
-| Aporte salud | Calculado | — | — | ✅ |
-| Aporte pensión | Calculado | — | — | ✅ (vacío si pensionado) |
-| FSP | Calculado | — | — | ✅ (vacío si pensionado) |
-| Aporte ARL | Calculado | — | — | ✅ |
-| Declaración Formal (SI/NO) | Calculado (regla cedular) | — | — | ✅ |
+| Constante | Valor | Descripción |
+|---|---|---|
+| `IBC_PORCENTAJE` | 0.4 | 40% del valor mensualizado |
+| `APORTE_SALUD_PORCENTAJE` | 0.125 | 12.5% |
+| `APORTE_PENSION_PORCENTAJE` | 0.16 | 16% |
+| `SMMLV_2026` | $1.751.200 | Verificar con decreto oficial |
+| `GAVELA_DIAS_ARL` | 2 días | Tolerancia fechas ARL vs. contrato |
+
+⚠️ Actualizar `SMMLV_2026` cada enero con el decreto oficial.
 
 ---
 
-## 11. Dudas pendientes — requieren respuesta del stakeholder
-
-El notebook no contiene respuesta para estos puntos. Deben resolverse antes de implementar esas partes:
+## 8. Dudas pendientes — requieren respuesta del stakeholder
 
 | # | Pregunta | Impacto |
 |---|---|---|
-| 1 | **Nombre del archivo con 2 contratos**: el patrón estándar es `{QUIPU}Anexos{Tipo}{Numero}.pdf` — ¿cómo queda con dos contratos distintos? ¿Se concatenan? (`4013AnexosOSE14OPS7.pdf`?) | Nombre del archivo final |
-| 2 | **FSP — porcentaje exacto**: se menciona como componente del total de aportes pero sin valor. En normativa general es 1% si IBC ≥ 4 SMLMV. ¿Se aplica igual para contratistas UNAL? | Cálculo de aportes y regla bloqueante |
-| 3 | **SMLMV 2026 — valor y mantenimiento**: ¿se hardcodea en el código (actualización manual cada enero) o se consulta en alguna fuente/API? | Cálculo del IBC |
-| 4 | **2 contratos con distinta frecuencia de informe**: si contrato 1 exige informe cada 3 meses y contrato 2 cada 6, ¿se piden dos informes independientes en el pago correspondiente? | Flujo del informe de actividades |
+| 1 | **Nombre del archivo con 2 contratos**: ¿cómo queda con dos contratos? ¿Se concatenan? (`4013AnexosOSE14OPS7.pdf`?) | Nombre del archivo final |
+| 2 | **FSP — porcentaje exacto**: componente del total de aportes, actualmente en 0. En normativa general es 1% si IBC ≥ 4 SMMLV. ¿Aplica igual para contratistas UNAL? | Cálculo de aportes y regla bloqueante |
+| 3 | **Template 069**: el formato 069 aún no tiene el template PDF con coordenadas validadas | Generación del PDF final |
+| 4 | **2 contratos con distinta frecuencia de informe**: si contrato 1 exige informe cada 3 meses y contrato 2 cada 6, ¿se piden dos informes independientes? | Flujo del informe de actividades |

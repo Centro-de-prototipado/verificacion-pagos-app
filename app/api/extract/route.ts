@@ -14,6 +14,7 @@ import {
   extractARLCandidates,
   extractPILACandidates,
   extractContractCandidates,
+  extractDocumentTypeFromPILA,
   detectIssuer,
   joinSplitDates,
 } from "@/lib/pdf/parsers/keyword-extractor"
@@ -180,6 +181,13 @@ export async function POST(request: NextRequest) {
       const arlCandidate = extractARLCandidates(cleanText.arl)
       const contractCand = extractContractCandidates(cleanText.contract)
       const contract2Cand = extractContractCandidates(cleanText.contract2)
+
+      // The PILA shows the contractor's own document type unambiguously.
+      // Override whatever the contract extractor guessed — the contract always
+      // contains UNAL's NIT and other NITs which cause false positives.
+      const pilaDocumentType = extractDocumentTypeFromPILA(cleanText.paymentSheet)
+      contractCand.documentType = pilaDocumentType
+      if (contract2Cand) contract2Cand.documentType = pilaDocumentType
 
       // Snapshot providers ONCE so all parallel extractions start from the same
       // provider (devstral first) instead of each advancing the index independently.

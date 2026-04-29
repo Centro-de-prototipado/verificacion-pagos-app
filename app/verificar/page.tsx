@@ -16,8 +16,8 @@ import { STEPS_CONFIG } from "@/components/wizard/steps-config"
 import { StepIndicator } from "@/components/wizard/step-indicator"
 import { Step1 } from "@/components/wizard/step-1"
 import { Step2 } from "@/components/wizard/step-2"
+import { Step3 } from "@/components/wizard/step-3"
 import { Step4 } from "@/components/wizard/step-4"
-import { Step5 } from "@/components/wizard/step-5"
 
 export default function VerificarPage() {
   const { step, setStep, reset } = useWizardStore()
@@ -95,8 +95,8 @@ export default function VerificarPage() {
       <main>
         {step === 1 && <Step1 />}
         {step === 2 && <Step2 />}
-        {step === 3 && <Step4 />}
-        {step === 4 && <Step5 />}
+        {step === 3 && <Step3 />}
+        {step === 4 && <Step4 />}
       </main>
 
       {/* ── Back button ── */}

@@ -42,6 +42,13 @@ export const CONTRACT_LABELS: Record<ContractType, string> = {
   CVF: "CVF - Contrato de vigencia futura de compra venta",
 }
 
+/** Options array for contract type selects — derived from CONTRACT_LABELS to avoid duplication */
+export const CONTRACT_TYPE_OPTIONS: { value: ContractType; label: string }[] =
+  (Object.keys(CONTRACT_LABELS) as ContractType[]).map((t) => ({
+    value: t,
+    label: t,
+  }))
+
 /** Comma-separated sigla list used in AI prompts */
 export const CONTRACT_TYPES_PROMPT =
   "OCA, OCO, ODC, ODO, OPS, OSE, OSU, CCO, CDA, CDC, CDO, CIS, CON, COV, CPS, CSE, CSU, " +

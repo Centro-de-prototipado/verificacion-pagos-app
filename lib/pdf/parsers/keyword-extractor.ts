@@ -414,6 +414,33 @@ export function extractPILACandidates(text: string): Partial<PaymentSheetData> {
   }
 }
 
+/**
+ * Extracts the contractor's document type from the PILA payment sheet.
+ * More reliable than the contract because the PILA shows the cotizante's own
+ * type explicitly, while the contract also contains UNAL's NIT and other NITs.
+ */
+export function extractDocumentTypeFromPILA(text: string): DocumentType {
+  // Explicit "tipo de documento" label — most reliable
+  const labelMatch = findNear(
+    text,
+    ["tipo de documento:", "tipo doc:", "tipo de identificación:", "tipo id:"],
+    /\b(CC|NIT|CE)\b/i,
+    50
+  )
+  if (labelMatch) return labelMatch.toUpperCase() as DocumentType
+
+  // "C.C." or "CC" followed directly by a long digit sequence
+  if (/\bC\.?\s*C\.?\s+\d{6,}/.test(text)) return "CC"
+
+  // NIT with verification digit (NIT XXXXXXX-X format)
+  if (/\bNIT\s*[:\s]\s*\d{6,}-\d\b/.test(text)) return "NIT"
+
+  // "cédula de ciudadanía" anywhere
+  if (/cédula\s+de\s+ciudadan[ií]a/i.test(text)) return "CC"
+
+  return "CC" // safe default — most UNAL contractors are natural persons
+}
+
 // ─── Contrato ─────────────────────────────────────────────────────────────────
 
 // UNAL contract date labels
@@ -451,11 +478,23 @@ export function extractContractCandidates(text: string): Partial<ContractData> {
     /(?:orden|contrato|n[uú]mero\s+de\s+orden)[^\d]*(\d+)/i
   )
 
-  const docTypeRaw = /\bNIT\b/.test(text)
-    ? "NIT"
-    : /\bCE\b/.test(text)
-      ? "CE"
-      : "CC"
+  // Detect contractor's document type. CC markers take priority because
+  // UNAL's own NIT always appears in every contract — a bare "NIT" match would
+  // produce a false positive for contractors who hold a CC.
+  const hasCCMarker = /\bC\.?\s*C\.?\b|\bcédula\s+de\s+ciudadan[ií]a\b/i.test(
+    text
+  )
+  const hasNITMarker = /\bNIT\s*[:\-]?\s*\d|\bN\.I\.T\.\b/i.test(text)
+  const hasCEMarker =
+    /\bcédula\s+de\s+extranjer[ií]a\b|\bC\.?\s*E\.?\b/i.test(text)
+
+  const docTypeRaw = hasCCMarker
+    ? "CC"
+    : hasNITMarker
+      ? "NIT"
+      : hasCEMarker
+        ? "CE"
+        : "CC"
 
   const docNumberRaw = findNear(
     text,
