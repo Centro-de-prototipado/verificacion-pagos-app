@@ -69,9 +69,9 @@ export interface ManualFormData {
   isPensioner: boolean
   quipuCompany: string
   amendmentNumber?: string
+  additionNumber?: string
   /** Format MM/YYYY — payment request period */
   paymentRequestPeriod: string
-  /** Parcial / Final / Único — set by user in form, auto-detected from paymentNumber vs paymentsToRequest */
   paymentType: "Parcial" | "Final" | "Único"
   paymentNumber: number
   amountToCharge: number
@@ -80,6 +80,13 @@ export interface ManualFormData {
   supervisorDocumentNumber: string
   supervisorEmail: string
   supervisorPhone: string
+  // Documentos para soporte de deducciones (Formato 069, sección 3)
+  deductionDependents: boolean
+  deductionHealthPolicy: boolean
+  deductionMortgageInterest: boolean
+  deductionPrepaidMedicine: boolean
+  deductionAFC: boolean
+  deductionVoluntaryPension: boolean
 }
 
 // ─── Uploaded documents ───────────────────────────────────────────────────────
@@ -94,6 +101,13 @@ export interface UploadedDocuments {
   paymentSheet2?: File | null
   /** Optional activity report to append to the final PDF */
   activityReport?: File | null
+  // Deduction support documents (appended to final PDF when corresponding boolean is true)
+  deductionDependentsFile?: File | null
+  deductionHealthPolicyFile?: File | null
+  deductionMortgageInterestFile?: File | null
+  deductionPrepaidMedicineFile?: File | null
+  deductionAFCFile?: File | null
+  deductionVoluntaryPensionFile?: File | null
 }
 
 // ─── AI-extracted data (populated in Phase 3) ────────────────────────────────
@@ -187,6 +201,8 @@ export interface Format053Data {
   orderNumberYear: string
   /** e.g. "CSI 1/2026" — only when there's an amendment */
   amendmentLabel?: string
+  /** e.g. "Adición 1/2026" — only when there's an addition */
+  additionLabel?: string
   quipuCompany: string
   contractorName: string
   documentNumber: string
@@ -259,6 +275,13 @@ export interface Format069Data {
   ibc: number
   // Sección 6 — Base retención
   monthlyRetentionBase: number
+  // Sección 3 — Documentos para soporte de deducciones
+  deductionDependents: boolean
+  deductionHealthPolicy: boolean
+  deductionMortgageInterest: boolean
+  deductionPrepaidMedicine: boolean
+  deductionAFC: boolean
+  deductionVoluntaryPension: boolean
   // Declaración formal
   formalDeclaration: "SI" | "NO"
   // Firma sección 7

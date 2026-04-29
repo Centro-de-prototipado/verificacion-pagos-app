@@ -16,6 +16,8 @@ export const ManualFormSchema = z.object({
 
   amendmentNumber: z.string().optional(),
 
+  additionNumber: z.string().optional(),
+
   // ── Pago ──────────────────────────────────────────────────────────────────
   paymentsToRequest: z.coerce
     .number({ error: "Debe ser un número" })
@@ -44,6 +46,14 @@ export const ManualFormSchema = z.object({
   institutionalEmail: z.string().email("Correo electrónico inválido"),
 
   isPensioner: z.boolean(),
+
+  // ── Documentos para soporte de deducciones ───────────────────────────────
+  deductionDependents: z.boolean(),
+  deductionHealthPolicy: z.boolean(),
+  deductionMortgageInterest: z.boolean(),
+  deductionPrepaidMedicine: z.boolean(),
+  deductionAFC: z.boolean(),
+  deductionVoluntaryPension: z.boolean(),
 
   // ── Interventor / Supervisor ──────────────────────────────────────────────
   supervisorName: z

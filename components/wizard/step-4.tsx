@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { DownloadIcon, Loader2Icon, FileCheckIcon } from "lucide-react"
+import { Loader2Icon, FileCheckIcon, ExternalLinkIcon } from "lucide-react"
 import { toast } from "sonner"
 
 import { useWizardStore } from "@/lib/store"
@@ -55,8 +55,24 @@ export function Step4() {
       if (documents.paymentSheet2) {
         formData.append("planilla2", documents.paymentSheet2)
       }
-      if (documents.activityReport) {
+      if (informeRecibido && documents.activityReport) {
         formData.append("informe", documents.activityReport)
+      }
+
+      const deductionFileFields = [
+        { boolKey: "deductionDependents", fileKey: "deductionDependentsFile" },
+        { boolKey: "deductionHealthPolicy", fileKey: "deductionHealthPolicyFile" },
+        { boolKey: "deductionMortgageInterest", fileKey: "deductionMortgageInterestFile" },
+        { boolKey: "deductionPrepaidMedicine", fileKey: "deductionPrepaidMedicineFile" },
+        { boolKey: "deductionAFC", fileKey: "deductionAFCFile" },
+        { boolKey: "deductionVoluntaryPension", fileKey: "deductionVoluntaryPensionFile" },
+      ] as const
+
+      for (const { boolKey, fileKey } of deductionFileFields) {
+        const file = documents[fileKey]
+        if (manualData[boolKey] && file) {
+          formData.append(fileKey, file)
+        }
       }
 
       const res = await fetch("/api/generar-pdf", {
@@ -77,6 +93,8 @@ export function Step4() {
       }
 
       const blob = await res.blob()
+      const url = URL.createObjectURL(blob)
+      window.open(url, "_blank")
       setPdfBlob(blob)
       setStatus("ready")
       toast.success("PDF generado correctamente.", { description: filename })
@@ -91,14 +109,10 @@ export function Step4() {
     }
   }
 
-  const descargarPDF = () => {
+  const verPDF = () => {
     if (!pdfBlob) return
     const url = URL.createObjectURL(pdfBlob)
-    const a = document.createElement("a")
-    a.href = url
-    a.download = filename
-    a.click()
-    URL.revokeObjectURL(url)
+    window.open(url, "_blank")
   }
 
   return (
@@ -160,15 +174,15 @@ export function Step4() {
               <div className="flex items-center gap-2 rounded-lg border border-green-200 bg-green-50 px-4 py-3 dark:border-green-900 dark:bg-green-950">
                 <FileCheckIcon className="size-4 text-green-600" />
                 <p className="text-sm text-green-700 dark:text-green-400">
-                  PDF generado correctamente.
+                  PDF generado y abierto en una nueva pestaña.
                 </p>
               </div>
-              <div className="flex gap-3">
-                <Button onClick={descargarPDF}>
-                  <DownloadIcon className="size-4" />
-                  Descargar {filename}
+              <div className="flex flex-wrap gap-3">
+                <Button variant="outline" onClick={verPDF}>
+                  <ExternalLinkIcon className="size-4" />
+                  Abrir de nuevo
                 </Button>
-                <Button variant="outline" onClick={generarPDF}>
+                <Button variant="ghost" onClick={generarPDF}>
                   Regenerar
                 </Button>
               </div>

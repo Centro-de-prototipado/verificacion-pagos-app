@@ -17,8 +17,9 @@ import {
   FieldSet,
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
-import { Switch } from "@/components/ui/switch"
 import { Button } from "@/components/ui/button"
+import { useWizardStore } from "@/lib/store"
+import type { UploadedDocuments } from "@/lib/types"
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -79,6 +80,44 @@ function handlePeriodInput(
   onChange(val)
 }
 
+/** Pill-button SI / NO toggle — equal-width grid columns. */
+function YesNoToggle({
+  value,
+  onChange,
+}: {
+  value: boolean
+  onChange: (v: boolean) => void
+}) {
+  return (
+    <div className="grid w-24 grid-cols-2 overflow-hidden rounded-md border text-sm font-medium">
+      <button
+        type="button"
+        onClick={() => onChange(true)}
+        className={[
+          "py-1.5 text-center transition-colors",
+          value
+            ? "bg-primary text-primary-foreground"
+            : "text-muted-foreground hover:bg-muted",
+        ].join(" ")}
+      >
+        SI
+      </button>
+      <button
+        type="button"
+        onClick={() => onChange(false)}
+        className={[
+          "py-1.5 text-center transition-colors",
+          !value
+            ? "bg-muted text-foreground"
+            : "text-muted-foreground hover:bg-muted",
+        ].join(" ")}
+      >
+        NO
+      </button>
+    </div>
+  )
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 
 interface ManualFormProps {
@@ -101,35 +140,29 @@ export function ManualForm({
       isPensioner: false,
       paymentsToRequest: 1,
       paymentNumber: 1,
-      // Explicit empty strings so every input starts controlled, not undefined
       amountToCharge: "" as unknown as number,
       paymentRequestPeriod: "",
       paymentType: "Parcial" as "Parcial" | "Final" | "Único",
       quipuCompany: "",
       institutionalEmail: "",
       amendmentNumber: "",
+      additionNumber: "",
       supervisorName: "",
       supervisorDocumentNumber: "",
       supervisorEmail: "",
       supervisorPhone: "",
+      deductionDependents: false,
+      deductionHealthPolicy: false,
+      deductionMortgageInterest: false,
+      deductionPrepaidMedicine: false,
+      deductionAFC: false,
+      deductionVoluntaryPension: false,
       ...defaultValues,
     },
   })
 
   const contractCount = form.watch("contractCount")
-  const paymentsToRequest = form.watch("paymentsToRequest")
-  const paymentNumber = form.watch("paymentNumber")
-
-  // Auto-detect payment type whenever paymentNumber or paymentsToRequest change
-  useEffect(() => {
-    const auto: "Parcial" | "Final" | "Único" =
-      Number(paymentsToRequest) === 1
-        ? "Único"
-        : Number(paymentNumber) >= Number(paymentsToRequest)
-          ? "Final"
-          : "Parcial"
-    form.setValue("paymentType", auto, { shouldValidate: false })
-  }, [paymentsToRequest, paymentNumber]) // eslint-disable-line react-hooks/exhaustive-deps
+  const { setDocuments, documents } = useWizardStore()
 
   // Notifica al padre cada vez que cambia contractCount
   useEffect(() => {
@@ -247,7 +280,6 @@ export function ManualForm({
               )}
             />
 
-            {/* Tipo de pago — auto-detected, user can override */}
             <Controller
               name="paymentType"
               control={form.control}
@@ -255,7 +287,7 @@ export function ManualForm({
                 <Field data-invalid={fieldState.invalid || undefined}>
                   <FieldLabel>Tipo de pago</FieldLabel>
                   <FieldDescription>
-                    Se detecta automáticamente; ajusta si es necesario.
+                    Selecciona el tipo que corresponde a este pago.
                   </FieldDescription>
                   <div className="grid grid-cols-3 gap-2">
                     {(["Parcial", "Final", "Único"] as const).map((val) => (
@@ -337,32 +369,61 @@ export function ManualForm({
             )}
           />
 
-          <Controller
-            name="amendmentNumber"
-            control={form.control}
-            render={({ field, fieldState }) => (
-              <Field data-invalid={fieldState.invalid || undefined}>
-                <FieldLabel htmlFor={field.name}>
-                  Número de otrosí{" "}
-                  <span className="font-normal text-muted-foreground">
-                    (opcional)
-                  </span>
-                </FieldLabel>
-                <FieldDescription>
-                  Solo si tu contrato tiene adición o modificación por otrosí
-                </FieldDescription>
-                <Input
-                  {...field}
-                  id={field.name}
-                  placeholder="Ej. CSI 1/2026"
-                  aria-invalid={fieldState.invalid}
-                />
-                {fieldState.invalid && (
-                  <FieldError errors={[fieldState.error]} />
-                )}
-              </Field>
-            )}
-          />
+          <div className="grid gap-4 sm:grid-cols-2">
+            <Controller
+              name="amendmentNumber"
+              control={form.control}
+              render={({ field, fieldState }) => (
+                <Field data-invalid={fieldState.invalid || undefined}>
+                  <FieldLabel htmlFor={field.name}>
+                    Otrosí No.{" "}
+                    <span className="font-normal text-muted-foreground">
+                      (opcional)
+                    </span>
+                  </FieldLabel>
+                  <FieldDescription>
+                    Si el contrato fue modificado por otrosí
+                  </FieldDescription>
+                  <Input
+                    {...field}
+                    id={field.name}
+                    placeholder="Ej. CSI 1/2026"
+                    aria-invalid={fieldState.invalid}
+                  />
+                  {fieldState.invalid && (
+                    <FieldError errors={[fieldState.error]} />
+                  )}
+                </Field>
+              )}
+            />
+
+            <Controller
+              name="additionNumber"
+              control={form.control}
+              render={({ field, fieldState }) => (
+                <Field data-invalid={fieldState.invalid || undefined}>
+                  <FieldLabel htmlFor={field.name}>
+                    Adición No./Año{" "}
+                    <span className="font-normal text-muted-foreground">
+                      (opcional)
+                    </span>
+                  </FieldLabel>
+                  <FieldDescription>
+                    Si el contrato tiene adición de valor o plazo
+                  </FieldDescription>
+                  <Input
+                    {...field}
+                    id={field.name}
+                    placeholder="Ej. Adición 1/2026"
+                    aria-invalid={fieldState.invalid}
+                  />
+                  {fieldState.invalid && (
+                    <FieldError errors={[fieldState.error]} />
+                  )}
+                </Field>
+              )}
+            />
+          </div>
 
           <Controller
             name="isPensioner"
@@ -370,26 +431,110 @@ export function ManualForm({
             render={({ field }) => (
               <Field orientation="horizontal">
                 <div className="flex flex-col gap-0.5">
-                  <FieldLabel htmlFor={field.name} className="cursor-pointer">
-                    Soy pensionado
-                  </FieldLabel>
+                  <FieldLabel>Soy pensionado</FieldLabel>
                   <p className="text-xs text-muted-foreground">
                     Activa esta opción si ya estás pensionado — afecta el
                     cálculo de aportes
                   </p>
                 </div>
-                <Switch
-                  id={field.name}
-                  checked={field.value}
-                  onCheckedChange={field.onChange}
-                />
+                <YesNoToggle value={field.value} onChange={field.onChange} />
               </Field>
             )}
           />
         </FieldGroup>
       </FieldSet>
 
-      {/* ── Sección 4: Datos del interventor o supervisor ── */}
+      {/* ── Sección 4: Documentos para soporte de deducciones (Formato 069 §3) ── */}
+      <FieldSet>
+        <FieldLegend>Documentos para soporte de deducciones</FieldLegend>
+        <FieldGroup>
+          <p className="text-xs text-muted-foreground">
+            Indica con SI/NO si el contratista aporta cada documento. Si marcas
+            SI, adjunta el archivo PDF — se añadirá al final del PDF generado.
+          </p>
+          {(
+            [
+              {
+                name: "deductionDependents",
+                fileKey: "deductionDependentsFile",
+                label: "Certificado de dependientes",
+              },
+              {
+                name: "deductionHealthPolicy",
+                fileKey: "deductionHealthPolicyFile",
+                label: "Certificado de seguro de salud — Póliza",
+              },
+              {
+                name: "deductionMortgageInterest",
+                fileKey: "deductionMortgageInterestFile",
+                label:
+                  "Certificado de intereses o corrección monetaria por préstamos para vivienda",
+              },
+              {
+                name: "deductionPrepaidMedicine",
+                fileKey: "deductionPrepaidMedicineFile",
+                label: "Comprobante de pago mensual de Medicina Prepagada",
+              },
+              {
+                name: "deductionAFC",
+                fileKey: "deductionAFCFile",
+                label: "Certificado de cuentas AFC",
+              },
+              {
+                name: "deductionVoluntaryPension",
+                fileKey: "deductionVoluntaryPensionFile",
+                label: "Aportes voluntarios a pensión",
+              },
+            ] as const
+          ).map(({ name, fileKey, label }) => (
+            <Controller
+              key={name}
+              name={name}
+              control={form.control}
+              render={({ field }) => (
+                <div className="flex flex-col gap-2 rounded-lg border px-4 py-3">
+                  <div className="flex items-center justify-between gap-3">
+                    <span className="text-sm leading-snug">{label}</span>
+                    <YesNoToggle
+                      value={field.value}
+                      onChange={(v) => {
+                        field.onChange(v)
+                        if (!v)
+                          setDocuments({
+                            [fileKey]: null,
+                          } as Partial<UploadedDocuments>)
+                      }}
+                    />
+                  </div>
+                  {field.value && (
+                    <label className="flex cursor-pointer items-center gap-3 rounded-md border border-dashed bg-muted/30 px-3 py-2.5 text-sm transition-colors hover:bg-muted/60">
+                      <span className="shrink-0 rounded bg-muted px-2 py-0.5 text-xs font-medium">
+                        PDF
+                      </span>
+                      <span className="truncate text-muted-foreground">
+                        {(documents[fileKey as keyof typeof documents] as File | null)?.name ?? "Seleccionar archivo…"}
+                      </span>
+                      <input
+                        type="file"
+                        accept="application/pdf"
+                        className="sr-only"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0] ?? null
+                          setDocuments({
+                            [fileKey]: file,
+                          } as Partial<UploadedDocuments>)
+                        }}
+                      />
+                    </label>
+                  )}
+                </div>
+              )}
+            />
+          ))}
+        </FieldGroup>
+      </FieldSet>
+
+      {/* ── Sección 5: Datos del interventor o supervisor ── */}
       <FieldSet>
         <FieldLegend>Interventor o supervisor</FieldLegend>
         <FieldGroup>

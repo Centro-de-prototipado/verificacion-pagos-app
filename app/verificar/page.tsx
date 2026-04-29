@@ -11,7 +11,6 @@ import { cn } from "@/lib/utils"
 
 import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
-import { Separator } from "@/components/ui/separator"
 import { STEPS_CONFIG } from "@/components/wizard/steps-config"
 import { StepIndicator } from "@/components/wizard/step-indicator"
 import { Step1 } from "@/components/wizard/step-1"
@@ -99,20 +98,16 @@ export default function VerificarPage() {
         {step === 4 && <Step4 />}
       </main>
 
-      {/* ── Back button ── */}
+      {/* ── Bottom navigation ── */}
       {step > 1 && (
-        <>
-          <Separator />
-          <Button
-            variant="outline"
-            size="sm"
-            className="w-fit"
-            onClick={handleBack}
-          >
-            <ArrowLeftIcon className="size-4" />
-            Volver al paso anterior
-          </Button>
-        </>
+        <div className="sticky bottom-4 mt-4">
+          <div className="flex items-center rounded-xl border bg-background/95 px-4 py-3 shadow-md backdrop-blur supports-[backdrop-filter]:bg-background/80">
+            <Button variant="outline" onClick={handleBack} className="gap-2">
+              <ArrowLeftIcon className="size-4" />
+              Paso {step - 1} — {STEPS_CONFIG[step - 2].label}
+            </Button>
+          </div>
+        </div>
       )}
     </div>
   )

@@ -66,9 +66,8 @@ export function buildFormat053Data(
   return {
     contractType: contract!.contractType,
     orderNumberYear: `${contract!.orderNumber}/${year}`,
-    amendmentLabel: manual.amendmentNumber
-      ? `${manual.amendmentNumber}`
-      : undefined,
+    amendmentLabel: manual.amendmentNumber || undefined,
+    additionLabel: manual.additionNumber || undefined,
     quipuCompany: manual.quipuCompany,
     contractorName: contract!.contractorName,
     documentNumber: contract!.documentNumber,
@@ -137,6 +136,12 @@ export function buildFormat069Data(
     contractMonths: contributions.contractMonths,
     ibc: contributions.ibc,
     monthlyRetentionBase: contributions.monthlyRetentionBase,
+    deductionDependents: manual.deductionDependents,
+    deductionHealthPolicy: manual.deductionHealthPolicy,
+    deductionMortgageInterest: manual.deductionMortgageInterest,
+    deductionPrepaidMedicine: manual.deductionPrepaidMedicine,
+    deductionAFC: manual.deductionAFC,
+    deductionVoluntaryPension: manual.deductionVoluntaryPension,
     formalDeclaration: summary.formalDeclaration,
     signerName: contract!.contractorName,
     signerDocumentRef: `${contract!.documentType} ${contract!.documentNumber}`,

@@ -23,6 +23,16 @@ export async function POST(request: NextRequest) {
   let planilla2Bytes: Uint8Array | undefined
   let informeBytes: Uint8Array | undefined
   let informeRecibidoRaw: FormDataEntryValue | null = null
+  const deductionFileBytes: Uint8Array[] = []
+
+  const DEDUCTION_FILE_KEYS = [
+    "deductionDependentsFile",
+    "deductionHealthPolicyFile",
+    "deductionMortgageInterestFile",
+    "deductionPrepaidMedicineFile",
+    "deductionAFCFile",
+    "deductionVoluntaryPensionFile",
+  ] as const
 
   try {
     const formData = await request.formData()
@@ -56,6 +66,14 @@ export async function POST(request: NextRequest) {
     }
     if (informeFile) {
       informeBytes = new Uint8Array(await (informeFile as File).arrayBuffer())
+    }
+    for (const key of DEDUCTION_FILE_KEYS) {
+      const file = formData.get(key)
+      if (file) {
+        deductionFileBytes.push(
+          new Uint8Array(await (file as File).arrayBuffer())
+        )
+      }
     }
   } catch {
     return NextResponse.json(
@@ -106,6 +124,7 @@ export async function POST(request: NextRequest) {
       bytesPlanilla2: planilla2Bytes,
       bytesARL: arlBytes,
       bytesInforme: informeBytes,
+      bytesDeduccionFiles: deductionFileBytes.length ? deductionFileBytes : undefined,
     })
 
     const contract = extracted.contract!

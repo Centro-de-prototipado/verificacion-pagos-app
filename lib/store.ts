@@ -1,4 +1,5 @@
 import { create } from "zustand"
+import { persist } from "zustand/middleware"
 import type {
   ExtractedData,
   ManualFormData,
@@ -47,6 +48,12 @@ const INITIAL_STATE = {
     contract2: null,
     paymentSheet2: null,
     activityReport: null,
+    deductionDependentsFile: null,
+    deductionHealthPolicyFile: null,
+    deductionMortgageInterestFile: null,
+    deductionPrepaidMedicineFile: null,
+    deductionAFCFile: null,
+    deductionVoluntaryPensionFile: null,
   } satisfies UploadedDocuments,
   manualData: null,
   rawText: null,
@@ -59,27 +66,36 @@ const INITIAL_STATE = {
 
 // ─── Store ────────────────────────────────────────────────────────────────────
 
-export const useWizardStore = create<WizardState>((set) => ({
-  ...INITIAL_STATE,
+export const useWizardStore = create<WizardState>()(
+  persist(
+    (set) => ({
+      ...INITIAL_STATE,
 
-  setStep: (step) => set({ step }),
+      setStep: (step) => set({ step }),
 
-  setDocuments: (docs) =>
-    set((s) => ({ documents: { ...s.documents, ...docs } })),
+      setDocuments: (docs) =>
+        set((s) => ({ documents: { ...s.documents, ...docs } })),
 
-  setManualData: (manualData) => set({ manualData }),
+      setManualData: (manualData) => set({ manualData }),
 
-  setRawText: (rawText) => set({ rawText }),
+      setRawText: (rawText) => set({ rawText }),
 
-  setExtractedData: (extractedData) => set({ extractedData }),
+      setExtractedData: (extractedData) => set({ extractedData }),
 
-  setValidationResults: (validationResults) => set({ validationResults }),
+      setValidationResults: (validationResults) => set({ validationResults }),
 
-  setInformeRecibido: (informeRecibido) => set({ informeRecibido }),
+      setInformeRecibido: (informeRecibido) => set({ informeRecibido }),
 
-  setStatus: (status) => set({ status }),
+      setStatus: (status) => set({ status }),
 
-  setError: (error) => set({ error }),
+      setError: (error) => set({ error }),
 
-  reset: () => set(INITIAL_STATE),
-}))
+      reset: () => set(INITIAL_STATE),
+    }),
+    {
+      name: "verificacion-pagos-manual",
+      // Only persist the manual form data — Files can't be serialized
+      partialize: (state) => ({ manualData: state.manualData }),
+    }
+  )
+)

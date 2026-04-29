@@ -139,6 +139,19 @@ export async function llenarCertificacion069(
         ref_deducciones: datos.deductionsContractRef,
         periodo_solicitud: datos.paymentRequestPeriod,
         periodo_planilla: datos.payrollPeriod,
+        // Sección 3 — Deducciones (marcas de soporte)
+        ch_deduccion_dependientes: datos.deductionDependents ? "SI" : "NO",
+        ch_deduccion_poliza_salud: datos.deductionHealthPolicy ? "SI" : "NO",
+        ch_deduccion_intereses_vivienda: datos.deductionMortgageInterest
+          ? "SI"
+          : "NO",
+        ch_deduccion_medicina_prepagada: datos.deductionPrepaidMedicine
+          ? "SI"
+          : "NO",
+        ch_deduccion_afc: datos.deductionAFC ? "SI" : "NO",
+        ch_deduccion_pension_voluntaria: datos.deductionVoluntaryPension
+          ? "SI"
+          : "NO",
         // Sección 4 — Aportes
         aporte_salud: num(datos.healthContribution),
         aporte_pension: datos.isPensioner ? "" : num(datos.pensionContribution),
@@ -181,6 +194,7 @@ export async function unificarPDFs({
   bytesPlanilla2,
   bytesARL,
   bytesInforme,
+  bytesDeduccionFiles,
 }: {
   bytes053?: Uint8Array | null
   bytes069?: Uint8Array | null
@@ -188,6 +202,7 @@ export async function unificarPDFs({
   bytesPlanilla2?: Uint8Array
   bytesARL: Uint8Array
   bytesInforme?: Uint8Array | null
+  bytesDeduccionFiles?: Uint8Array[]
 }): Promise<Uint8Array> {
   const merged = await PDFDocument.create()
 
@@ -203,6 +218,9 @@ export async function unificarPDFs({
   if (bytesPlanilla2) await copiar(bytesPlanilla2)
   await copiar(bytesARL)
   if (bytesInforme) await copiar(bytesInforme)
+  if (bytesDeduccionFiles) {
+    for (const bytes of bytesDeduccionFiles) await copiar(bytes)
+  }
 
   return merged.save()
 }
