@@ -1,17 +1,63 @@
 import { NextRequest, NextResponse } from "next/server"
+import { z } from "zod"
 
 import type { ExtractedData, ManualFormData } from "@/lib/types"
 import { runValidations } from "@/lib/validations"
+import { ARLSchema } from "@/lib/schemas/arl"
+import { ContractSchema } from "@/lib/schemas/contract"
+import { ManualFormSchema } from "@/lib/schemas/manual-form"
+import { PaymentSheetSchema } from "@/lib/schemas/payment-sheet"
 import {
   buildFormat053Data,
   buildFormat069Data,
 } from "@/lib/pdf/build-format-data"
 import { fill053, fill069, combinePDFs } from "@/lib/pdf/fill-forms"
+import { getPdfPageCount } from "@/lib/pdf/page-count"
 import { nombreArchivoFinal } from "@/lib/pdf/utils"
+import {
+  exceedsContentLength,
+  getClientIp,
+  isRateLimited,
+  readPdfFile,
+} from "@/lib/security/request-guards"
 
 export const runtime = "nodejs"
 
+const ExtractedDataSchema = z.object({
+  paymentSheet: PaymentSheetSchema.nullable(),
+  arl: ARLSchema.nullable(),
+  contract: ContractSchema.nullable(),
+  contract2: ContractSchema.nullable().optional(),
+})
+
+const MAX_FORM_BYTES = 50 * 1024 * 1024 // 50 MB
+const MAX_PDF_BYTES = 12 * 1024 * 1024 // 12 MB por archivo
+const MAX_PDF_PAGES = 30
+const RATE_LIMIT_WINDOW_MS = 60 * 1000
+const RATE_LIMIT_MAX_REQUESTS = 8
+
 export async function POST(request: NextRequest) {
+  const ip = getClientIp(request)
+  if (
+    isRateLimited({
+      key: `generar-pdf:${ip}`,
+      limit: RATE_LIMIT_MAX_REQUESTS,
+      windowMs: RATE_LIMIT_WINDOW_MS,
+    })
+  ) {
+    return NextResponse.json(
+      { error: "Demasiadas solicitudes. Intenta de nuevo en un minuto." },
+      { status: 429 }
+    )
+  }
+
+  if (exceedsContentLength(request, MAX_FORM_BYTES)) {
+    return NextResponse.json(
+      { error: "La carga es demasiado grande." },
+      { status: 413 }
+    )
+  }
+
   let extracted: ExtractedData
   let manual: ManualFormData
   let planillaBytes: Uint8Array
@@ -35,10 +81,22 @@ export async function POST(request: NextRequest) {
 
     const extractedRaw = formData.get("extracted")
     const manualRaw = formData.get("manual")
-    const planillaFile = formData.get("planilla")
-    const arlFile = formData.get("arl")
-    const planilla2File = formData.get("planilla2")
-    const informeFile = formData.get("informe")
+    const planillaFile = readPdfFile(formData.get("planilla"), "planilla", {
+      required: true,
+      maxBytes: MAX_PDF_BYTES,
+    })
+    const arlFile = readPdfFile(formData.get("arl"), "arl", {
+      required: true,
+      maxBytes: MAX_PDF_BYTES,
+    })
+    const planilla2File = readPdfFile(formData.get("planilla2"), "planilla2", {
+      required: false,
+      maxBytes: MAX_PDF_BYTES,
+    })
+    const informeFile = readPdfFile(formData.get("informe"), "informe", {
+      required: false,
+      maxBytes: MAX_PDF_BYTES,
+    })
 
     if (!extractedRaw || !manualRaw || !planillaFile || !arlFile) {
       return NextResponse.json(
@@ -49,26 +107,71 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    extracted = JSON.parse(extractedRaw as string) as ExtractedData
-    manual = JSON.parse(manualRaw as string) as ManualFormData
-
-    planillaBytes = new Uint8Array(await (planillaFile as File).arrayBuffer())
-    arlBytes = new Uint8Array(await (arlFile as File).arrayBuffer())
-    if (planilla2File) {
-      planilla2Bytes = new Uint8Array(
-        await (planilla2File as File).arrayBuffer()
+    if (typeof extractedRaw !== "string" || typeof manualRaw !== "string") {
+      return NextResponse.json(
+        { error: "Los campos extracted y manual deben ser texto JSON." },
+        { status: 400 }
       )
     }
+
+    const parsedExtracted = ExtractedDataSchema.safeParse(JSON.parse(extractedRaw))
+    const parsedManual = ManualFormSchema.safeParse(JSON.parse(manualRaw))
+    if (!parsedExtracted.success || !parsedManual.success) {
+      return NextResponse.json(
+        { error: "Los datos de entrada no cumplen el formato esperado." },
+        { status: 422 }
+      )
+    }
+    extracted = parsedExtracted.data as ExtractedData
+    manual = parsedManual.data as ManualFormData
+
+    planillaBytes = new Uint8Array(await planillaFile.arrayBuffer())
+    arlBytes = new Uint8Array(await arlFile.arrayBuffer())
+    if ((await getPdfPageCount(planillaBytes)) > MAX_PDF_PAGES) {
+      return NextResponse.json(
+        { error: `El archivo "planilla" supera ${MAX_PDF_PAGES} páginas.` },
+        { status: 422 }
+      )
+    }
+    if ((await getPdfPageCount(arlBytes)) > MAX_PDF_PAGES) {
+      return NextResponse.json(
+        { error: `El archivo "arl" supera ${MAX_PDF_PAGES} páginas.` },
+        { status: 422 }
+      )
+    }
+    if (planilla2File) {
+      planilla2Bytes = new Uint8Array(await planilla2File.arrayBuffer())
+      if ((await getPdfPageCount(planilla2Bytes)) > MAX_PDF_PAGES) {
+        return NextResponse.json(
+          { error: `El archivo "planilla2" supera ${MAX_PDF_PAGES} páginas.` },
+          { status: 422 }
+        )
+      }
+    }
     if (informeFile) {
-      informeBytes = new Uint8Array(await (informeFile as File).arrayBuffer())
+      informeBytes = new Uint8Array(await informeFile.arrayBuffer())
+      if ((await getPdfPageCount(informeBytes)) > MAX_PDF_PAGES) {
+        return NextResponse.json(
+          { error: `El archivo "informe" supera ${MAX_PDF_PAGES} páginas.` },
+          { status: 422 }
+        )
+      }
       informeAdjunto = true
     }
     for (const key of DEDUCTION_FILE_KEYS) {
-      const file = formData.get(key)
+      const file = readPdfFile(formData.get(key), key, {
+        required: false,
+        maxBytes: MAX_PDF_BYTES,
+      })
       if (file) {
-        deductionFileBytes.push(
-          new Uint8Array(await (file as File).arrayBuffer())
-        )
+        const bytes = new Uint8Array(await file.arrayBuffer())
+        if ((await getPdfPageCount(bytes)) > MAX_PDF_PAGES) {
+          return NextResponse.json(
+            { error: `El archivo "${key}" supera ${MAX_PDF_PAGES} páginas.` },
+            { status: 422 }
+          )
+        }
+        deductionFileBytes.push(bytes)
       }
     }
   } catch {

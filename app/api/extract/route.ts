@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
+import { z } from "zod"
 
 import { generateWithFallback, snapshotProviders } from "@/lib/ai/client"
 import type { OnProviderProgress, ProviderEntry } from "@/lib/ai/client"
@@ -23,6 +24,11 @@ import {
 } from "@/lib/pdf/extract-helpers"
 import { CONTRACT_TYPES_PROMPT } from "@/lib/constants/contracts"
 import type { ExtractedData, RawPDFText, ConfidenceMap } from "@/lib/types"
+import {
+  exceedsContentLength,
+  getClientIp,
+  isRateLimited,
+} from "@/lib/security/request-guards"
 
 export const runtime = "nodejs"
 
@@ -49,17 +55,37 @@ interface ProfileHint {
   example: Record<string, unknown>
 }
 
+const ProfileHintSchema = z.object({
+  docType: z.string(),
+  issuer: z.string(),
+  example: z.record(z.string(), z.unknown()),
+})
+
+const ExtractRequestSchema = z.object({
+  rawText: z.object({
+    paymentSheet: z.string(),
+    arl: z.string(),
+    contract: z.string(),
+    contract2: z.string().optional(),
+  }),
+  profiles: z.array(ProfileHintSchema).default([]),
+})
+
+const MAX_JSON_BYTES = 6 * 1024 * 1024 // 6 MB
+const RATE_LIMIT_WINDOW_MS = 60 * 1000
+const RATE_LIMIT_MAX_REQUESTS = 10
+
 // ─── Request parsing ──────────────────────────────────────────────────────────
 
 async function parseRequest(
   request: NextRequest
 ): Promise<{ rawText: RawPDFText; profiles: ProfileHint[] }> {
-  const body = (await request.json()) as {
-    rawText?: RawPDFText
-    profiles?: ProfileHint[]
+  const body = await request.json()
+  const parsed = ExtractRequestSchema.safeParse(body)
+  if (!parsed.success) {
+    throw new Error("El body debe incluir rawText con el formato esperado.")
   }
-  if (!body.rawText) throw new Error("El body debe incluir rawText.")
-  return { rawText: body.rawText, profiles: body.profiles ?? [] }
+  return { rawText: parsed.data.rawText, profiles: parsed.data.profiles }
 }
 
 function findProfile(
@@ -74,6 +100,27 @@ function findProfile(
 // ─── Route handler ────────────────────────────────────────────────────────────
 
 export async function POST(request: NextRequest) {
+  const ip = getClientIp(request)
+  if (
+    isRateLimited({
+      key: `extract:${ip}`,
+      limit: RATE_LIMIT_MAX_REQUESTS,
+      windowMs: RATE_LIMIT_WINDOW_MS,
+    })
+  ) {
+    return NextResponse.json(
+      { error: "Demasiadas solicitudes. Intenta de nuevo en un minuto." },
+      { status: 429 }
+    )
+  }
+
+  if (exceedsContentLength(request, MAX_JSON_BYTES)) {
+    return NextResponse.json(
+      { error: "La solicitud es demasiado grande." },
+      { status: 413 }
+    )
+  }
+
   let rawText: RawPDFText
   let profiles: ProfileHint[]
 
