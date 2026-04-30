@@ -11,6 +11,7 @@ import {
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
+import Image from "next/image"
 
 // ─── Documentos que el usuario necesita tener listos ─────────────────────────
 
@@ -74,8 +75,14 @@ export default function HomePage() {
     <main className="mx-auto flex min-h-svh max-w-2xl flex-col items-center gap-14 px-6 py-16">
       {/* ── Hero ── */}
       <section className="flex w-full flex-col items-center gap-5 text-center">
-        <span className="inline-flex items-center gap-1.5 rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-xs font-medium text-primary">
-          Universidad Nacional de Colombia · Sede Manizales
+        <span className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
+          <Image
+            src="/un.svg"
+            alt="UNAL"
+            className="h-15 w-auto"
+            width={20}
+            height={20}
+          />
         </span>
 
         <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">
@@ -100,81 +107,28 @@ export default function HomePage() {
               <ArrowRightIcon className="size-4" />
             </Link>
           </Button>
-          <p className="text-xs text-muted-foreground/60">
-            Sin base de datos · Los documentos no se almacenan · Privacidad
-            garantizada
-          </p>
         </div>
       </section>
 
       <Separator />
-
-      {/* ── Documentos que necesitas ── */}
-      <section className="flex w-full flex-col gap-5">
-        <div className="flex flex-col gap-1">
-          <h2 className="text-base font-semibold">
-            Antes de empezar, necesitarás:
-          </h2>
-          <p className="text-sm text-muted-foreground">
-            Ten estos 3 documentos en formato PDF listos en tu computador.
-          </p>
-        </div>
-
-        <div className="flex flex-col gap-3">
-          {REQUIRED_DOCUMENTS.map((doc, index) => (
-            <div
-              key={doc.name}
-              className="flex gap-4 rounded-xl border bg-card/50 p-4"
-            >
-              <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary/10">
-                <doc.icon className="size-5 text-primary" />
-              </div>
-              <div className="flex flex-col gap-0.5">
-                <div className="flex items-center gap-2">
-                  <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-muted text-[10px] font-bold text-muted-foreground">
-                    {index + 1}
-                  </span>
-                  <p className="text-sm font-medium">{doc.name}</p>
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  {doc.description}
-                </p>
-                <p className="mt-0.5 text-[10px] text-muted-foreground/60">
-                  💡 {doc.tip}
-                </p>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        <Button asChild variant="outline" className="w-full sm:w-fit">
-          <Link href="/verificar">Ya tengo mis documentos — comenzar →</Link>
-        </Button>
-      </section>
-
-      <Separator />
-
       {/* ── Cómo funciona ── */}
       <section className="flex w-full flex-col gap-5">
         <h2 className="text-base font-semibold">¿Cómo funciona?</h2>
 
-        <div className="grid gap-3 sm:grid-cols-2">
+        <div className="grid gap-3 sm:grid-cols-4">
           {PROCESS_STEPS.map((step, index) => (
             <div
               key={step.title}
-              className="flex gap-3 rounded-xl border border-border/60 bg-card/40 p-4"
+              className="flex flex-col items-center gap-3 rounded-xl border border-border/60 bg-card/40 p-4 text-center"
             >
-              <div className="flex size-8 shrink-0 flex-col items-center justify-center gap-0.5">
-                <span className="flex size-5 items-center justify-center rounded-full bg-muted text-[10px] font-bold text-muted-foreground">
-                  {index + 1}
-                </span>
-                <step.icon className="size-4 text-primary" />
+              <div className="flex size-11 items-center justify-center rounded-xl bg-primary/10">
+                <step.icon className="size-5 text-primary" />
               </div>
               <div className="flex flex-col gap-0.5">
-                <p className="text-sm font-medium">{step.title}</p>
-                <p className="text-xs leading-relaxed text-muted-foreground">
-                  {step.description}
-                </p>
+                <span className="text-[10px] font-bold tracking-widest text-muted-foreground/60 uppercase">
+                  Paso {index + 1}
+                </span>
+                <p className="text-sm leading-snug font-medium">{step.title}</p>
               </div>
             </div>
           ))}

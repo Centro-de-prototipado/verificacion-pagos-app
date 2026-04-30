@@ -1,7 +1,13 @@
 "use client"
 
 import { useState } from "react"
-import { Loader2Icon, FileCheckIcon, ExternalLinkIcon } from "lucide-react"
+import {
+  Loader2Icon,
+  FileCheckIcon,
+  ExternalLinkIcon,
+  DownloadIcon,
+  IterationCcw,
+} from "lucide-react"
 import { toast } from "sonner"
 
 import { useWizardStore } from "@/lib/store"
@@ -14,8 +20,7 @@ import { SectionHeader } from "./section-header"
 type DownloadStatus = "idle" | "loading" | "ready" | "error"
 
 export function Step4() {
-  const { extractedData, manualData, documents, informeRecibido } =
-    useWizardStore()
+  const { extractedData, manualData, documents } = useWizardStore()
 
   const [status, setStatus] = useState<DownloadStatus>("idle")
   const [pdfBlob, setPdfBlob] = useState<Blob | null>(null)
@@ -49,23 +54,34 @@ export function Step4() {
       const formData = new FormData()
       formData.append("extracted", JSON.stringify(extractedData))
       formData.append("manual", JSON.stringify(manualData))
-      formData.append("informeRecibido", String(informeRecibido))
       formData.append("planilla", documents.paymentSheet)
       formData.append("arl", documents.arl)
       if (documents.paymentSheet2) {
         formData.append("planilla2", documents.paymentSheet2)
       }
-      if (informeRecibido && documents.activityReport) {
+      if (documents.activityReport) {
         formData.append("informe", documents.activityReport)
       }
 
       const deductionFileFields = [
         { boolKey: "deductionDependents", fileKey: "deductionDependentsFile" },
-        { boolKey: "deductionHealthPolicy", fileKey: "deductionHealthPolicyFile" },
-        { boolKey: "deductionMortgageInterest", fileKey: "deductionMortgageInterestFile" },
-        { boolKey: "deductionPrepaidMedicine", fileKey: "deductionPrepaidMedicineFile" },
+        {
+          boolKey: "deductionHealthPolicy",
+          fileKey: "deductionHealthPolicyFile",
+        },
+        {
+          boolKey: "deductionMortgageInterest",
+          fileKey: "deductionMortgageInterestFile",
+        },
+        {
+          boolKey: "deductionPrepaidMedicine",
+          fileKey: "deductionPrepaidMedicineFile",
+        },
         { boolKey: "deductionAFC", fileKey: "deductionAFCFile" },
-        { boolKey: "deductionVoluntaryPension", fileKey: "deductionVoluntaryPensionFile" },
+        {
+          boolKey: "deductionVoluntaryPension",
+          fileKey: "deductionVoluntaryPensionFile",
+        },
       ] as const
 
       for (const { boolKey, fileKey } of deductionFileFields) {
@@ -93,8 +109,6 @@ export function Step4() {
       }
 
       const blob = await res.blob()
-      const url = URL.createObjectURL(blob)
-      window.open(url, "_blank")
       setPdfBlob(blob)
       setStatus("ready")
       toast.success("PDF generado correctamente.", { description: filename })
@@ -111,8 +125,17 @@ export function Step4() {
 
   const verPDF = () => {
     if (!pdfBlob) return
-    const url = URL.createObjectURL(pdfBlob)
-    window.open(url, "_blank")
+    window.open(URL.createObjectURL(pdfBlob), "_blank")
+  }
+
+  const descargarPDF = () => {
+    if (!pdfBlob) return
+    const a = document.createElement("a")
+    a.href = URL.createObjectURL(pdfBlob)
+    a.download = filename
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
   }
 
   return (
@@ -143,7 +166,7 @@ export function Step4() {
           </div>
 
           {status === "idle" && (
-            <Button className="w-fit" onClick={generarPDF}>
+            <Button size="lg" className="w-full text-base" onClick={generarPDF}>
               <FileCheckIcon className="size-4" />
               Generar PDF
             </Button>
@@ -171,21 +194,31 @@ export function Step4() {
 
           {status === "ready" && (
             <div className="flex flex-col gap-3">
-              <div className="flex items-center gap-2 rounded-lg border border-green-200 bg-green-50 px-4 py-3 dark:border-green-900 dark:bg-green-950">
+              <div className="flex items-center gap-2 rounded-lg border border-green-200 bg-green-50 px-4 py-3">
                 <FileCheckIcon className="size-4 text-green-600" />
-                <p className="text-sm text-green-700 dark:text-green-400">
-                  PDF generado y abierto en una nueva pestaña.
+                <p className="text-sm text-green-700">
+                  PDF generado correctamente.
                 </p>
               </div>
-              <div className="flex flex-wrap gap-3">
-                <Button variant="outline" onClick={verPDF}>
+              <div className="grid grid-cols-2 gap-3">
+                <Button size="lg" onClick={verPDF}>
                   <ExternalLinkIcon className="size-4" />
-                  Abrir de nuevo
+                  Visualizar
                 </Button>
-                <Button variant="ghost" onClick={generarPDF}>
-                  Regenerar
+                <Button size="lg" variant="outline" onClick={descargarPDF}>
+                  <DownloadIcon className="size-4" />
+                  Descargar
                 </Button>
               </div>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="w-fit text-muted-foreground"
+                onClick={generarPDF}
+              >
+                <IterationCcw className="size-4" />
+                Regenerar
+              </Button>
             </div>
           )}
         </div>

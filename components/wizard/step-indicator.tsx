@@ -1,3 +1,5 @@
+"use client"
+
 import { CheckIcon } from "lucide-react"
 import { cn } from "@/lib/utils"
 import type { WizardStep } from "@/lib/types"
@@ -16,19 +18,23 @@ export function StepIndicator({ step, currentStep }: StepIndicatorProps) {
     <div className="flex flex-col items-center gap-1.5">
       <div
         className={cn(
-          "flex size-8 items-center justify-center rounded-full border-2 text-xs font-semibold transition-colors",
+          "flex size-10 items-center justify-center rounded-xl border-2 transition-all",
           completed && "border-primary bg-primary text-primary-foreground",
-          active && "border-primary bg-background text-primary",
+          active && "border-primary bg-primary/10 text-primary shadow-sm",
           !completed &&
             !active &&
-            "border-border bg-background text-muted-foreground"
+            "border-border bg-background text-muted-foreground/40"
         )}
       >
-        {completed ? <CheckIcon className="size-4" /> : step.number}
+        {completed ? (
+          <CheckIcon className="size-5" />
+        ) : (
+          <step.icon className="size-5" />
+        )}
       </div>
       <span
         className={cn(
-          "hidden text-xs font-medium sm:block",
+          "hidden text-[11px] font-medium sm:block",
           active ? "text-foreground" : "text-muted-foreground"
         )}
       >

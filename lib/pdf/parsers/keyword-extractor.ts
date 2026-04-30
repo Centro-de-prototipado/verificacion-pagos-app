@@ -485,8 +485,9 @@ export function extractContractCandidates(text: string): Partial<ContractData> {
     text
   )
   const hasNITMarker = /\bNIT\s*[:\-]?\s*\d|\bN\.I\.T\.\b/i.test(text)
-  const hasCEMarker =
-    /\bcédula\s+de\s+extranjer[ií]a\b|\bC\.?\s*E\.?\b/i.test(text)
+  const hasCEMarker = /\bcédula\s+de\s+extranjer[ií]a\b|\bC\.?\s*E\.?\b/i.test(
+    text
+  )
 
   const docTypeRaw = hasCCMarker
     ? "CC"

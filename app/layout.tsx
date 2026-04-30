@@ -1,5 +1,4 @@
 import "./globals.css"
-import { ThemeProvider } from "@/components/theme-provider"
 import { Toaster } from "@/components/ui/sonner"
 import { cn } from "@/lib/utils"
 
@@ -23,15 +22,12 @@ export default function RootLayout({
 }>) {
   return (
     <html
-      lang="en"
-      suppressHydrationWarning
+      lang="es"
       className={cn("antialiased", ancizarFont.variable, "font-sans")}
     >
       <body>
-        <ThemeProvider>
-          {children}
-          <Toaster position="bottom-right" richColors />
-        </ThemeProvider>
+        {children}
+        <Toaster position="bottom-right" richColors />
       </body>
     </html>
   )

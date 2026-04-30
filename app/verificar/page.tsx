@@ -10,18 +10,16 @@ import type { WizardStep } from "@/lib/types"
 import { cn } from "@/lib/utils"
 
 import { Button } from "@/components/ui/button"
-import { Progress } from "@/components/ui/progress"
 import { STEPS_CONFIG } from "@/components/wizard/steps-config"
 import { StepIndicator } from "@/components/wizard/step-indicator"
 import { Step1 } from "@/components/wizard/step-1"
 import { Step2 } from "@/components/wizard/step-2"
 import { Step3 } from "@/components/wizard/step-3"
 import { Step4 } from "@/components/wizard/step-4"
+import Image from "next/image"
 
 export default function VerificarPage() {
   const { step, setStep, reset } = useWizardStore()
-
-  const progress = ((step - 1) / (STEPS_CONFIG.length - 1)) * 100
 
   const handleBack = useCallback(() => {
     if (step > 1) setStep((step - 1) as WizardStep)
@@ -38,8 +36,14 @@ export default function VerificarPage() {
           </Link>
         </Button>
 
-        <span className="text-xs font-medium text-muted-foreground">
-          UNAL Sede Manizales
+        <span className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
+          <Image
+            src="/un.svg"
+            alt="UNAL"
+            className="h-10 w-auto"
+            width={20}
+            height={20}
+          />
         </span>
 
         <Button
@@ -59,14 +63,14 @@ export default function VerificarPage() {
 
       {/* ── Step indicators ── */}
       <nav aria-label="Pasos del proceso">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-center">
           {STEPS_CONFIG.map((s, index) => (
-            <div key={s.number} className="flex flex-1 items-center">
+            <div key={s.number} className="flex items-center">
               <StepIndicator step={s} currentStep={step} />
               {index < STEPS_CONFIG.length - 1 && (
                 <div
                   className={cn(
-                    "mx-1 h-px flex-1 transition-colors sm:mx-2",
+                    "mx-2 h-px w-10 transition-colors sm:w-20",
                     step > s.number ? "bg-primary" : "bg-border"
                   )}
                 />
@@ -74,20 +78,28 @@ export default function VerificarPage() {
             </div>
           ))}
         </div>
-        <Progress value={progress} className="mt-3 h-1 sm:hidden" />
       </nav>
 
-      {/* ── Active step title ── */}
-      <div className="flex flex-col gap-1 rounded-xl border bg-muted/30 px-4 py-3">
-        <p className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
-          Paso {step} de {STEPS_CONFIG.length}
-        </p>
-        <h1 className="text-lg font-semibold text-foreground">
-          {STEPS_CONFIG[step - 1].label}
-        </h1>
-        <p className="text-sm text-muted-foreground">
-          {STEPS_CONFIG[step - 1].description}
-        </p>
+      {/* ── Step title + back navigation ── */}
+      <div className="flex items-center gap-3">
+        {step > 1 && (
+          <Button
+            size="icon"
+            onClick={handleBack}
+            className="size-8 shrink-0"
+            aria-label="Volver al paso anterior"
+          >
+            <ArrowLeftIcon className="size-4" />
+          </Button>
+        )}
+        <div className="flex flex-col gap-0.5">
+          <p className="text-xs text-muted-foreground">
+            Paso {step} de {STEPS_CONFIG.length}
+          </p>
+          <h1 className="text-lg font-semibold">
+            {STEPS_CONFIG[step - 1].label}
+          </h1>
+        </div>
       </div>
 
       {/* ── Step content ── */}
@@ -97,18 +109,6 @@ export default function VerificarPage() {
         {step === 3 && <Step3 />}
         {step === 4 && <Step4 />}
       </main>
-
-      {/* ── Bottom navigation ── */}
-      {step > 1 && (
-        <div className="sticky bottom-4 mt-4">
-          <div className="flex items-center rounded-xl border bg-background/95 px-4 py-3 shadow-md backdrop-blur supports-[backdrop-filter]:bg-background/80">
-            <Button variant="outline" onClick={handleBack} className="gap-2">
-              <ArrowLeftIcon className="size-4" />
-              Paso {step - 1} — {STEPS_CONFIG[step - 2].label}
-            </Button>
-          </div>
-        </div>
-      )}
     </div>
   )
 }

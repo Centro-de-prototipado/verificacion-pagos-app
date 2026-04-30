@@ -14,10 +14,6 @@ function num(value: number): string {
   return new Intl.NumberFormat("es-CO").format(Math.round(value))
 }
 
-function peso(value: number): string {
-  return value > 0 ? `$ ${num(value)}` : "$ -"
-}
-
 async function loadTemplate(name: string): Promise<Template | null> {
   try {
     const json = await readFile(path.join(TEMPLATES_DIR, name), "utf-8")
@@ -31,7 +27,7 @@ async function loadTemplate(name: string): Promise<Template | null> {
 // Formato U.FT.12.010.053 — Constancia de cumplimiento contractual
 // ---------------------------------------------------------------------------
 
-export async function llenarConstancia053(
+export async function fill053(
   datos: Format053Data
 ): Promise<Uint8Array | null> {
   const template = await loadTemplate("template_053.json")
@@ -49,6 +45,7 @@ export async function llenarConstancia053(
         numero_orden,
         anio: `/${anio}`,
         csi_label: datos.amendmentLabel ?? "",
+        adicion_label: datos.additionLabel ?? "",
         codigo_quipu: datos.quipuCompany,
         nombre_contratista: datos.contractorName,
         numero_documento: datos.documentNumber,
@@ -93,7 +90,7 @@ export async function llenarConstancia053(
 // Formato U.FT.12.010.069 — Certificación determinación cedular
 // ---------------------------------------------------------------------------
 
-export async function llenarCertificacion069(
+export async function fill069(
   datos: Format069Data
 ): Promise<Uint8Array | null> {
   const template = await loadTemplate("template_069.json")
@@ -187,7 +184,7 @@ export async function llenarCertificacion069(
 // Unificación final: 053 → 069 → planilla → ARL
 // ---------------------------------------------------------------------------
 
-export async function unificarPDFs({
+export async function combinePDFs({
   bytes053,
   bytes069,
   bytesPlanilla,
@@ -206,20 +203,20 @@ export async function unificarPDFs({
 }): Promise<Uint8Array> {
   const merged = await PDFDocument.create()
 
-  const copiar = async (bytes: Uint8Array) => {
+  const copy = async (bytes: Uint8Array) => {
     const doc = await PDFDocument.load(bytes)
     const paginas = await merged.copyPages(doc, doc.getPageIndices())
     paginas.forEach((p) => merged.addPage(p))
   }
 
-  if (bytes053) await copiar(bytes053)
-  if (bytes069) await copiar(bytes069)
-  await copiar(bytesPlanilla)
-  if (bytesPlanilla2) await copiar(bytesPlanilla2)
-  await copiar(bytesARL)
-  if (bytesInforme) await copiar(bytesInforme)
+  if (bytes053) await copy(bytes053)
+  if (bytes069) await copy(bytes069)
+  await copy(bytesPlanilla)
+  if (bytesPlanilla2) await copy(bytesPlanilla2)
+  await copy(bytesARL)
+  if (bytesInforme) await copy(bytesInforme)
   if (bytesDeduccionFiles) {
-    for (const bytes of bytesDeduccionFiles) await copiar(bytes)
+    for (const bytes of bytesDeduccionFiles) await copy(bytes)
   }
 
   return merged.save()

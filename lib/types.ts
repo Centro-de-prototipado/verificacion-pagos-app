@@ -51,14 +51,6 @@ export type RiskClass = "I" | "II" | "III" | "IV" | "V"
 
 export type DocumentType = "CC" | "NIT" | "CE"
 
-export type VerificationStatus =
-  | "idle"
-  | "extracting-text"
-  | "extracting-ai"
-  | "validating"
-  | "ready"
-  | "error"
-
 // ─── Manual form data (Step 1) ────────────────────────────────────────────────
 
 /** Data entered manually by the user — not extracted by AI. */

@@ -6,11 +6,7 @@ import {
   buildFormat053Data,
   buildFormat069Data,
 } from "@/lib/pdf/build-format-data"
-import {
-  llenarConstancia053,
-  llenarCertificacion069,
-  unificarPDFs,
-} from "@/lib/pdf/llenar-formatos"
+import { fill053, fill069, combinePDFs } from "@/lib/pdf/fill-forms"
 import { nombreArchivoFinal } from "@/lib/pdf/utils"
 
 export const runtime = "nodejs"
@@ -22,7 +18,7 @@ export async function POST(request: NextRequest) {
   let arlBytes: Uint8Array
   let planilla2Bytes: Uint8Array | undefined
   let informeBytes: Uint8Array | undefined
-  let informeRecibidoRaw: FormDataEntryValue | null = null
+  let informeAdjunto = false
   const deductionFileBytes: Uint8Array[] = []
 
   const DEDUCTION_FILE_KEYS = [
@@ -39,7 +35,6 @@ export async function POST(request: NextRequest) {
 
     const extractedRaw = formData.get("extracted")
     const manualRaw = formData.get("manual")
-    informeRecibidoRaw = formData.get("informeRecibido")
     const planillaFile = formData.get("planilla")
     const arlFile = formData.get("arl")
     const planilla2File = formData.get("planilla2")
@@ -66,6 +61,7 @@ export async function POST(request: NextRequest) {
     }
     if (informeFile) {
       informeBytes = new Uint8Array(await (informeFile as File).arrayBuffer())
+      informeAdjunto = true
     }
     for (const key of DEDUCTION_FILE_KEYS) {
       const file = formData.get(key)
@@ -83,12 +79,8 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    // Run validations — informe assumed received if required (validated in step 3)
-    const summary = runValidations(
-      extracted,
-      manual,
-      informeRecibidoRaw === "true"
-    )
+    // Run validations; report check is non-blocking warning.
+    const summary = runValidations(extracted, manual, informeAdjunto)
 
     if (!summary.contributions) {
       return NextResponse.json(
@@ -106,8 +98,8 @@ export async function POST(request: NextRequest) {
     )
 
     const [bytes053, bytes069] = await Promise.all([
-      llenarConstancia053(datos053),
-      llenarCertificacion069(datos069),
+      fill053(datos053),
+      fill069(datos069),
     ])
 
     if (!bytes053 && !bytes069) {
@@ -117,14 +109,16 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const mergedBytes = await unificarPDFs({
+    const mergedBytes = await combinePDFs({
       bytes053,
       bytes069,
       bytesPlanilla: planillaBytes,
       bytesPlanilla2: planilla2Bytes,
       bytesARL: arlBytes,
       bytesInforme: informeBytes,
-      bytesDeduccionFiles: deductionFileBytes.length ? deductionFileBytes : undefined,
+      bytesDeduccionFiles: deductionFileBytes.length
+        ? deductionFileBytes
+        : undefined,
     })
 
     const contract = extracted.contract!

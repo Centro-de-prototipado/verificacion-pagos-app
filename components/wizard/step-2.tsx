@@ -4,6 +4,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { toast } from "sonner"
 import {
   AlertCircleIcon,
+  ArrowRightIcon,
   CheckCircle2Icon,
   CircleDashedIcon,
   Loader2Icon,
@@ -15,6 +16,7 @@ import {
   XCircleIcon,
 } from "lucide-react"
 
+import { cn } from "@/lib/utils"
 import { useWizardStore } from "@/lib/store"
 import { getAllProfiles, saveProfile } from "@/lib/pdf/document-profiles"
 import {
@@ -54,9 +56,9 @@ type ExtractionStatus =
 export function Step2() {
   const {
     documents,
-    setRawText,
     extractedData,
     setExtractedData,
+    setRawText,
     manualData,
     setStep,
   } = useWizardStore()
@@ -85,7 +87,7 @@ export function Step2() {
   const [confidence, setConfidence] = useState<Record<string, ConfidenceMap>>(
     {}
   )
-  const originalExtraction = useRef<ExtractedData | null>(null)
+  const abortRef = useRef<AbortController | null>(null)
 
   const deadlineCalcNote = useMemo(() => {
     const period = planilla?.period
@@ -176,57 +178,51 @@ export function Step2() {
   }, [documents])
 
   const processStep = useCallback(async () => {
+    const controller = new AbortController()
+    abortRef.current = controller
+
     setStatus("loading-text")
     setErrorMessage(null)
-
-    const parseApiError = async (res: Response, fallback: string) => {
-      try {
-        const payload = (await res.json()) as {
-          error?: string
-          details?: string
-        }
-        return payload.details ?? payload.error ?? fallback
-      } catch {
-        return fallback
-      }
-    }
+    setDocProgress({})
 
     try {
+      // Step 1: extract raw text from PDFs
       const textRes = await fetch("/api/extract-text", {
         method: "POST",
         body: buildFormData(),
+        signal: controller.signal,
       })
-
       if (!textRes.ok) {
-        const details = await parseApiError(
-          textRes,
-          `Error del servidor en extracción de texto: ${textRes.status}`
+        const payload = (await textRes.json().catch(() => ({}))) as {
+          error?: string
+        }
+        throw new Error(
+          payload.error ?? `Error del servidor: ${textRes.status}`
         )
-        throw new Error(details)
       }
-
-      const rawData: RawPDFText = await textRes.json()
+      const rawData = (await textRes.json()) as RawPDFText
       setRawText(rawData)
+
+      // Step 2: AI structured extraction
       setStatus("loading-ai")
-
-      const savedProfiles = getAllProfiles().map(
-        ({ docType, issuer, example }) => ({ docType, issuer, example })
-      )
-
-      setDocProgress({})
-
+      const savedProfiles = getAllProfiles()
       const aiRes = await fetch("/api/extract", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ rawText: rawData, profiles: savedProfiles }),
+        signal: controller.signal,
       })
 
       if (!aiRes.ok || !aiRes.body) {
-        const details = await parseApiError(
-          aiRes,
-          `Error del servidor en extracción IA: ${aiRes.status}`
+        const payload = (await aiRes.json().catch(() => ({}))) as {
+          error?: string
+          details?: string
+        }
+        throw new Error(
+          payload.details ??
+            payload.error ??
+            `Error del servidor: ${aiRes.status}`
         )
-        throw new Error(details)
       }
 
       const reader = aiRes.body.getReader()
@@ -292,7 +288,6 @@ export function Step2() {
       setIssuerKeys(keys)
       setWarnings(warnings)
       setConfidence(conf)
-      originalExtraction.current = extracted
       setStatus("ready")
 
       if (warnings.length > 0) {
@@ -301,6 +296,10 @@ export function Step2() {
         })
       }
     } catch (err) {
+      if (err instanceof DOMException && err.name === "AbortError") {
+        setStatus("manual")
+        return
+      }
       const message =
         err instanceof Error
           ? err.message
@@ -310,6 +309,8 @@ export function Step2() {
       toast.error("No se pudo completar la extracción.", {
         description: message,
       })
+    } finally {
+      abortRef.current = null
     }
   }, [buildFormData, setExtractedData, setRawText])
 
@@ -325,47 +326,6 @@ export function Step2() {
   }, [])
 
   const handleConfirm = () => {
-    const orig = originalExtraction.current
-    const changed: string[] = []
-    if (orig) {
-      const ps = orig.paymentSheet
-      if (ps && planilla) {
-        if (ps.sheetNumber !== planilla.sheetNumber) changed.push("N° planilla")
-        if (ps.paymentDate !== planilla.paymentDate)
-          changed.push("Fecha de pago")
-        if (ps.period !== planilla.period) changed.push("Período")
-        if (ps.totalAmountPaid !== planilla.totalAmountPaid)
-          changed.push("Valor total")
-      }
-      const ar = orig.arl
-      if (ar && arl) {
-        if (ar.startDate !== arl.startDate) changed.push("Inicio ARL")
-        if (ar.endDate !== arl.endDate) changed.push("Fin ARL")
-        if (ar.coverageStatus !== arl.coverageStatus) changed.push("Estado ARL")
-        if (ar.riskClass !== arl.riskClass) changed.push("Clase riesgo")
-        if (ar.cotizationRate !== arl.cotizationRate) changed.push("Tasa ARL")
-      }
-      const ct = orig.contract
-      if (ct && contract) {
-        if (ct.contractType !== contract.contractType)
-          changed.push("Tipo contrato")
-        if (ct.orderNumber !== contract.orderNumber) changed.push("N° orden")
-        if (ct.contractorName !== contract.contractorName)
-          changed.push("Nombre contratista")
-        if (ct.documentNumber !== contract.documentNumber)
-          changed.push("N° documento")
-        if (ct.totalValueBeforeTax !== contract.totalValueBeforeTax)
-          changed.push("Valor contrato")
-        if (ct.startDate !== contract.startDate) changed.push("Inicio contrato")
-        if (ct.endDate !== contract.endDate) changed.push("Fin contrato")
-      }
-    }
-    if (changed.length > 0) {
-      toast.info("Correcciones guardadas.", {
-        description: `Campos modificados: ${changed.join(", ")}`,
-      })
-    }
-
     if (issuerKeys.paymentSheet && planilla)
       saveProfile(
         "pila",
@@ -393,6 +353,10 @@ export function Step2() {
   const allFailed = isReady && !planilla && !arl && !contract
   const someFailed = isReady && (!planilla || !arl || !contract)
 
+  const handleCancel = () => {
+    abortRef.current?.abort()
+  }
+
   const handleSkipToManual = () => {
     setStatus("manual")
     setErrorMessage(null)
@@ -402,26 +366,27 @@ export function Step2() {
     <div className="flex flex-col gap-8">
       {/* ① Extracción */}
       <div className="flex flex-col gap-4">
-        <SectionHeader
-          number={1}
-          title="Procesamiento automático de documentos"
-          subtitle="El sistema extrae el texto de los PDFs y los analiza con inteligencia artificial."
-          done={isReady}
-        />
+        <div className="flex items-start justify-between gap-2">
+          <SectionHeader
+            number={1}
+            title="Procesamiento automático de documentos"
+            subtitle="El sistema extrae el texto de los PDFs y los analiza con inteligencia artificial."
+            done={isReady}
+          />
+          {isReady && status !== "manual" && (
+            <Button
+              variant="outline"
+              size="lg"
+              className="shrink-0 gap-1.5"
+              onClick={processStep}
+            >
+              <RefreshCwIcon className="size-3.5" />
+              Reintentar
+            </Button>
+          )}
+        </div>
 
-        {status === "loading-text" && (
-          <div className="flex flex-col items-center gap-3 rounded-xl border border-dashed py-10 text-center">
-            <Loader2Icon className="size-8 animate-spin text-primary" />
-            <div className="flex flex-col gap-1">
-              <p className="text-sm font-medium">Leyendo los archivos PDF…</p>
-              <p className="text-xs text-muted-foreground">
-                Puede tardar unos segundos según el tamaño de los documentos.
-              </p>
-            </div>
-          </div>
-        )}
-
-        {status === "loading-ai" &&
+        {(status === "loading-text" || status === "loading-ai") &&
           (() => {
             const docs = [
               {
@@ -445,20 +410,23 @@ export function Step2() {
               (d) => docProgress[d.key]?.status === "done"
             ).length
             return (
-              <div className="flex flex-col items-center gap-6 rounded-2xl border border-dashed px-6 py-10">
-                <div className="flex flex-col items-center gap-3 text-center">
-                  <div className="relative flex size-14 items-center justify-center rounded-2xl bg-primary/10">
-                    <SparklesIcon className="size-6 text-primary" />
+              <div className="flex flex-col gap-5 rounded-2xl border border-dashed px-6 py-8">
+                {/* Header */}
+                <div className="flex items-center gap-4">
+                  <div className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-primary/10">
+                    <SparklesIcon className="size-6 animate-pulse text-primary" />
                   </div>
-                  <div className="flex flex-col gap-0.5">
-                    <p className="text-sm font-semibold">
-                      Analizando con inteligencia artificial
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      {doneCount} de {docs.length} documentos completados
-                    </p>
-                  </div>
-                  <div className="w-48">
+                  <div className="flex flex-1 flex-col gap-2">
+                    <div className="flex items-center justify-between">
+                      <p className="text-sm font-semibold">
+                        {status === "loading-text"
+                          ? "Extrayendo texto de PDFs…"
+                          : "Analizando documentos…"}
+                      </p>
+                      <span className="text-xs text-muted-foreground">
+                        {doneCount}/{docs.length}
+                      </span>
+                    </div>
                     <Progress
                       value={(doneCount / docs.length) * 100}
                       className="h-1.5"
@@ -466,7 +434,8 @@ export function Step2() {
                   </div>
                 </div>
 
-                <div className="flex w-full gap-3">
+                {/* Doc list */}
+                <div className="flex flex-col gap-2">
                   {docs.map(({ key, label, Icon }) => {
                     const p = docProgress[key]
                     const isDone = p?.status === "done"
@@ -475,85 +444,87 @@ export function Step2() {
                     return (
                       <div
                         key={key}
-                        className={`flex flex-col items-center gap-3 rounded-xl border p-5 text-center transition-all duration-300 ${
-                          isDone
-                            ? "border-green-200 bg-green-50/70 dark:border-green-800 dark:bg-green-950/30"
-                            : isTrying
-                              ? "border-primary/40 bg-primary/5 shadow-sm"
-                              : isFailed
-                                ? "border-amber-200 bg-amber-50/60 dark:border-amber-800 dark:bg-amber-950/30"
-                                : "border-border bg-muted/20"
-                        }`}
+                        className={cn(
+                          "flex items-center gap-3 rounded-lg border px-4 py-3 transition-all duration-300",
+                          isDone &&
+                            "border-green-200 bg-green-50/60 dark:border-green-800 dark:bg-green-950/20",
+                          isTrying &&
+                            "border-primary/40 bg-primary/5 shadow-sm",
+                          isFailed &&
+                            "border-amber-200 bg-amber-50/60 dark:border-amber-800",
+                          !isDone &&
+                            !isTrying &&
+                            !isFailed &&
+                            "border-border bg-muted/20"
+                        )}
                       >
-                        <div className="relative">
-                          <div
-                            className={`flex size-11 items-center justify-center rounded-xl transition-colors duration-300 ${
-                              isDone
-                                ? "bg-green-100 dark:bg-green-900/50"
-                                : isTrying
-                                  ? "bg-primary/10"
-                                  : "bg-muted"
-                            }`}
-                          >
-                            <Icon
-                              className={`size-5 transition-colors duration-300 ${
-                                isDone
-                                  ? "text-green-600 dark:text-green-400"
-                                  : isTrying
-                                    ? "text-primary"
-                                    : "text-muted-foreground/60"
-                              }`}
-                            />
-                          </div>
-                          <div className="absolute -right-1.5 -bottom-1.5">
-                            {isDone ? (
-                              <CheckCircle2Icon className="size-4.5 fill-white text-green-500 dark:fill-background" />
-                            ) : isTrying ? (
-                              <Loader2Icon className="size-4.5 animate-spin text-primary" />
-                            ) : isFailed ? (
-                              <XCircleIcon className="size-4.5 fill-white text-amber-500 dark:fill-background" />
-                            ) : (
-                              <CircleDashedIcon className="size-4.5 text-muted-foreground/30" />
-                            )}
-                          </div>
-                        </div>
-
-                        <div className="flex flex-col gap-0.5">
-                          <p className="text-xs font-semibold">{label}</p>
-                          <p className="line-clamp-2 text-[10px] leading-tight text-muted-foreground">
-                            {!p || p.status === "waiting"
-                              ? "En cola…"
-                              : isTrying
-                                ? p.model
-                                : isDone
-                                  ? p.finalModel
-                                  : "Sin respuesta"}
-                          </p>
-                        </div>
-
-                        <span
-                          className={`rounded-full px-2.5 py-0.5 text-[10px] font-semibold tracking-wide ${
+                        <Icon
+                          className={cn(
+                            "size-4 shrink-0 transition-colors duration-300",
                             isDone
-                              ? "bg-green-100 text-green-700 dark:bg-green-900/60 dark:text-green-300"
+                              ? "text-green-600 dark:text-green-400"
                               : isTrying
-                                ? "bg-primary/10 text-primary"
+                                ? "text-primary"
+                                : "text-muted-foreground/40"
+                          )}
+                        />
+                        <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+                          <span className="text-sm font-medium">{label}</span>
+                          {(isTrying || isDone || isFailed) && (
+                            <span className="truncate text-[11px] text-muted-foreground">
+                              {isTrying
+                                ? p?.model
+                                : isDone
+                                  ? p?.finalModel
+                                  : p?.model}
+                            </span>
+                          )}
+                        </div>
+                        <div className="flex shrink-0 items-center gap-1.5">
+                          {isDone ? (
+                            <CheckCircle2Icon className="size-4 text-green-500" />
+                          ) : isTrying ? (
+                            <Loader2Icon className="size-4 animate-spin text-primary" />
+                          ) : isFailed ? (
+                            <XCircleIcon className="size-4 text-amber-500" />
+                          ) : (
+                            <CircleDashedIcon className="size-4 text-muted-foreground/30" />
+                          )}
+                          <span
+                            className={cn(
+                              "text-xs font-medium",
+                              isDone
+                                ? "text-green-600 dark:text-green-400"
+                                : isTrying
+                                  ? "text-primary"
+                                  : isFailed
+                                    ? "text-amber-600"
+                                    : "text-muted-foreground/50"
+                            )}
+                          >
+                            {isDone
+                              ? "Listo"
+                              : isTrying
+                                ? "Analizando"
                                 : isFailed
-                                  ? "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300"
-                                  : "bg-muted text-muted-foreground"
-                          }`}
-                        >
-                          {isDone
-                            ? "Listo"
-                            : isTrying
-                              ? "Analizando"
-                              : isFailed
-                                ? "Sin respuesta"
-                                : "En cola"}
-                        </span>
+                                  ? "Falló"
+                                  : "En cola"}
+                          </span>
+                        </div>
                       </div>
                     )
                   })}
                 </div>
+                {/* Cancel button */}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="w-fit gap-2 self-center text-muted-foreground"
+                  onClick={handleCancel}
+                >
+                  <XCircleIcon className="size-4" />
+                  Cancelar e ingresar manualmente
+                </Button>
               </div>
             )
           })()}
@@ -563,9 +534,8 @@ export function Step2() {
             <Alert className="border-amber-300 bg-amber-50/60 dark:border-amber-700 dark:bg-amber-950/30">
               <AlertCircleIcon className="size-4 text-amber-600" />
               <AlertDescription className="text-amber-800 dark:text-amber-300">
-                <strong>La extracción automática no funcionó.</strong>{" "}
-                {errorMessage ?? "Ocurrió un error al procesar los documentos."}{" "}
-                Puedes reintentar o continuar ingresando los datos tú mismo.
+                <strong>La extracción no funcionó.</strong>{" "}
+                {errorMessage ?? "Ocurrió un error al procesar los documentos."}
               </AlertDescription>
             </Alert>
             <div className="flex flex-wrap gap-2">
@@ -579,7 +549,7 @@ export function Step2() {
                 Reintentar
               </Button>
               <Button variant="ghost" size="sm" onClick={handleSkipToManual}>
-                Ingresar datos manualmente →
+                Ingresar manualmente
               </Button>
             </div>
           </div>
@@ -657,22 +627,14 @@ export function Step2() {
                 </AlertDescription>
               </Alert>
             )}
-            <div className="flex flex-wrap gap-3">
-              {status !== "manual" && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="gap-2"
-                  onClick={processStep}
-                >
-                  <RefreshCwIcon className="size-4" />
-                  Reintentar extracción
-                </Button>
-              )}
-              <Button size="sm" onClick={handleConfirm}>
-                Confirmar datos y continuar →
-              </Button>
-            </div>
+            <Button
+              size="lg"
+              className="w-full text-base"
+              onClick={handleConfirm}
+            >
+              Confirmar y continuar
+              <ArrowRightIcon className="size-4" />
+            </Button>
           </div>
         </>
       )}

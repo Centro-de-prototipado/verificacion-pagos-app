@@ -2,13 +2,11 @@
 
 import { useState } from "react"
 import { toast } from "sonner"
-import { InfoIcon } from "lucide-react"
 
 import { useWizardStore } from "@/lib/store"
 import type { ManualFormData } from "@/lib/types"
 import type { ManualFormInput } from "@/lib/schemas/manual-form"
 
-import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Progress } from "@/components/ui/progress"
 import { Separator } from "@/components/ui/separator"
 import { DocumentDropzone } from "@/components/upload/document-dropzone"
@@ -81,22 +79,10 @@ export function Step1() {
     }
     setManualData({ ...data, contractCount } as ManualFormData)
     setStep(2)
-    toast.success("¡Paso 1 completado!", {
-      description: "Ahora la IA procesará tus documentos.",
-    })
   }
 
   return (
     <div className="flex flex-col gap-8">
-      {/* Aviso contextual */}
-      <Alert>
-        <InfoIcon className="size-4" />
-        <AlertDescription>
-          Ten listos tus PDFs antes de empezar: planilla de seguridad social,
-          certificado ARL y contrato u orden contractual.
-        </AlertDescription>
-      </Alert>
-
       {/* ① ¿Cuántos contratos? */}
       <div className="flex flex-col gap-4">
         <SectionHeader

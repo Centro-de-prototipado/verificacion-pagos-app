@@ -6,7 +6,6 @@ import type {
 } from "@/lib/types"
 import { validarFechaPago, validarGavelaARL } from "./fechas"
 import { calcularFechaLimite } from "./fecha-limite"
-import { validarInformeActividades, resolverInforme053 } from "./informe"
 import { calcularDeclaracionCedular } from "./cedular"
 import {
   calcularContribuciones,
@@ -28,8 +27,6 @@ export interface ValidationSummary {
   isLatePayment: boolean
   /** Declaración cedular: "SI" | "NO" */
   formalDeclaration: "SI" | "NO"
-  /** Resolved value for 053 activityReportReceived field */
-  activityReportReceived: boolean | "N/A"
 }
 
 /**
@@ -39,7 +36,7 @@ export interface ValidationSummary {
 export function runValidations(
   extracted: ExtractedData,
   manual: ManualFormData,
-  informeRecibido: boolean
+  informeAdjunto = false
 ): ValidationSummary {
   const { paymentSheet, arl, contract } = extracted
   const results: ValidationResult[] = []
@@ -60,11 +57,10 @@ export function runValidations(
       blocked: true,
       isLatePayment: false,
       formalDeclaration: "SI",
-      activityReportReceived: "N/A",
     }
   }
 
-  // ── 1. Estado cobertura ARL ─────────────────────────────────────────────────────
+  // ── 1. Estado cobertura ARL ──────────────────────────────────────────────────
   if (arl.coverageStatus !== "ACTIVA") {
     results.push({
       ok: false,
@@ -81,9 +77,7 @@ export function runValidations(
     })
   }
 
-  // ── 3. Fecha de pago dentro del plazo ────────────────────────────────────
-  // Si la planilla no trae fecha límite, se calcula por fórmula oficial
-  // (Decreto 780/2016): últimos 2 dígitos del documento → día hábil del mes siguiente
+  // ── 2. Fecha de pago dentro del plazo ────────────────────────────────────────
   const deadlineCalc = paymentSheet.period
     ? calcularFechaLimite(paymentSheet.period, contract.documentNumber)
     : undefined
@@ -91,8 +85,7 @@ export function runValidations(
   const isLatePayment = !fechaPagoResult.ok
   results.push(fechaPagoResult)
 
-  // ── 4. Gavela ARL ─────────────────────────────────────────────────────────
-  // ContractData tiene fechas en DD/MM/YYYY; validarGavelaARL espera YYYY-MM-DD.
+  // ── 3. Gavela ARL ─────────────────────────────────────────────────────────
   const toISO = (ddmmyyyy: string) => {
     const [d, m, y] = ddmmyyyy.split("/")
     return `${y}-${m}-${d}`
@@ -101,15 +94,30 @@ export function runValidations(
     validarGavelaARL(arl, toISO(contract.startDate), toISO(contract.endDate))
   )
 
-  // ── 5. Informe de actividades ─────────────────────────────────────────────
-  const activityReportResult = validarInformeActividades(
-    contract,
-    manual.paymentNumber,
-    informeRecibido
-  )
-  results.push(activityReportResult)
+  // ── 4. Informe de actividades ─────────────────────────────────────────────
+  const { required, frequencyMonths } = contract.activityReport
+  if (required && frequencyMonths !== null) {
+    const requiereEnEstePago = manual.paymentNumber % frequencyMonths === 0
+    if (requiereEnEstePago) {
+      results.push(
+        informeAdjunto
+          ? {
+              ok: true,
+              blocking: false,
+              type: "report",
+              message: `Informe de actividades adjunto para el pago ${manual.paymentNumber}.`,
+            }
+          : {
+              ok: false,
+              blocking: false,
+              type: "report",
+              message: `El contrato exige informe de actividades cada ${frequencyMonths} mes(es). No se adjuntó en este pago — recuerda incluirlo.`,
+            }
+      )
+    }
+  }
 
-  // ── 6. Aportes ────────────────────────────────────────────────────────────
+  // ── 5. Aportes ────────────────────────────────────────────────────────────
   const contributions1 = calcularContribuciones(
     contract,
     arl,
@@ -122,22 +130,15 @@ export function runValidations(
   const contributions = contributions2
     ? combineContributions(contributions1, contributions2)
     : contributions1
-  // contributions1 is always set — exported for per-contract UI breakdown
   results.push(
     validarPago(contributions.totalObligatory, paymentSheet.totalAmountPaid)
   )
 
-  // ── 6. Declaración cedular ────────────────────────────────────────────────
+  // ── 5. Declaración cedular ────────────────────────────────────────────────
   const formalDeclaration = calcularDeclaracionCedular(
     manual.paymentNumber,
     manual.paymentRequestPeriod,
     paymentSheet.period
-  )
-
-  const activityReportReceived = resolverInforme053(
-    contract,
-    manual.paymentNumber,
-    informeRecibido
   )
 
   const blocked = results.some((r) => !r.ok && r.blocking)
@@ -150,6 +151,5 @@ export function runValidations(
     blocked,
     isLatePayment,
     formalDeclaration,
-    activityReportReceived,
   }
 }

@@ -444,96 +444,6 @@ export function ManualForm({
         </FieldGroup>
       </FieldSet>
 
-      {/* ── Sección 4: Documentos para soporte de deducciones (Formato 069 §3) ── */}
-      <FieldSet>
-        <FieldLegend>Documentos para soporte de deducciones</FieldLegend>
-        <FieldGroup>
-          <p className="text-xs text-muted-foreground">
-            Indica con SI/NO si el contratista aporta cada documento. Si marcas
-            SI, adjunta el archivo PDF — se añadirá al final del PDF generado.
-          </p>
-          {(
-            [
-              {
-                name: "deductionDependents",
-                fileKey: "deductionDependentsFile",
-                label: "Certificado de dependientes",
-              },
-              {
-                name: "deductionHealthPolicy",
-                fileKey: "deductionHealthPolicyFile",
-                label: "Certificado de seguro de salud — Póliza",
-              },
-              {
-                name: "deductionMortgageInterest",
-                fileKey: "deductionMortgageInterestFile",
-                label:
-                  "Certificado de intereses o corrección monetaria por préstamos para vivienda",
-              },
-              {
-                name: "deductionPrepaidMedicine",
-                fileKey: "deductionPrepaidMedicineFile",
-                label: "Comprobante de pago mensual de Medicina Prepagada",
-              },
-              {
-                name: "deductionAFC",
-                fileKey: "deductionAFCFile",
-                label: "Certificado de cuentas AFC",
-              },
-              {
-                name: "deductionVoluntaryPension",
-                fileKey: "deductionVoluntaryPensionFile",
-                label: "Aportes voluntarios a pensión",
-              },
-            ] as const
-          ).map(({ name, fileKey, label }) => (
-            <Controller
-              key={name}
-              name={name}
-              control={form.control}
-              render={({ field }) => (
-                <div className="flex flex-col gap-2 rounded-lg border px-4 py-3">
-                  <div className="flex items-center justify-between gap-3">
-                    <span className="text-sm leading-snug">{label}</span>
-                    <YesNoToggle
-                      value={field.value}
-                      onChange={(v) => {
-                        field.onChange(v)
-                        if (!v)
-                          setDocuments({
-                            [fileKey]: null,
-                          } as Partial<UploadedDocuments>)
-                      }}
-                    />
-                  </div>
-                  {field.value && (
-                    <label className="flex cursor-pointer items-center gap-3 rounded-md border border-dashed bg-muted/30 px-3 py-2.5 text-sm transition-colors hover:bg-muted/60">
-                      <span className="shrink-0 rounded bg-muted px-2 py-0.5 text-xs font-medium">
-                        PDF
-                      </span>
-                      <span className="truncate text-muted-foreground">
-                        {(documents[fileKey as keyof typeof documents] as File | null)?.name ?? "Seleccionar archivo…"}
-                      </span>
-                      <input
-                        type="file"
-                        accept="application/pdf"
-                        className="sr-only"
-                        onChange={(e) => {
-                          const file = e.target.files?.[0] ?? null
-                          setDocuments({
-                            [fileKey]: file,
-                          } as Partial<UploadedDocuments>)
-                        }}
-                      />
-                    </label>
-                  )}
-                </div>
-              )}
-            />
-          ))}
-        </FieldGroup>
-      </FieldSet>
-
       {/* ── Sección 5: Datos del interventor o supervisor ── */}
       <FieldSet>
         <FieldLegend>Interventor o supervisor</FieldLegend>
@@ -623,6 +533,100 @@ export function ManualForm({
               )}
             />
           </div>
+        </FieldGroup>
+      </FieldSet>
+
+      {/* ── Sección 4: Documentos para soporte de deducciones (Formato 069 §3) ── */}
+      <FieldSet>
+        <FieldLegend>Documentos para soporte de deducciones</FieldLegend>
+        <FieldGroup>
+          <p className="text-xs text-muted-foreground">
+            Indica con SI/NO si el contratista aporta cada documento. Si marcas
+            SI, adjunta el archivo PDF — se añadirá al final del PDF generado.
+          </p>
+          {(
+            [
+              {
+                name: "deductionDependents",
+                fileKey: "deductionDependentsFile",
+                label: "Certificado de dependientes",
+              },
+              {
+                name: "deductionHealthPolicy",
+                fileKey: "deductionHealthPolicyFile",
+                label: "Certificado de seguro de salud — Póliza",
+              },
+              {
+                name: "deductionMortgageInterest",
+                fileKey: "deductionMortgageInterestFile",
+                label:
+                  "Certificado de intereses o corrección monetaria por préstamos para vivienda",
+              },
+              {
+                name: "deductionPrepaidMedicine",
+                fileKey: "deductionPrepaidMedicineFile",
+                label: "Comprobante de pago mensual de Medicina Prepagada",
+              },
+              {
+                name: "deductionAFC",
+                fileKey: "deductionAFCFile",
+                label: "Certificado de cuentas AFC",
+              },
+              {
+                name: "deductionVoluntaryPension",
+                fileKey: "deductionVoluntaryPensionFile",
+                label: "Aportes voluntarios a pensión",
+              },
+            ] as const
+          ).map(({ name, fileKey, label }) => (
+            <Controller
+              key={name}
+              name={name}
+              control={form.control}
+              render={({ field }) => (
+                <div className="flex flex-col gap-2 rounded-lg border px-4 py-3">
+                  <div className="flex items-center justify-between gap-3">
+                    <span className="text-sm leading-snug">{label}</span>
+                    <YesNoToggle
+                      value={field.value}
+                      onChange={(v) => {
+                        field.onChange(v)
+                        if (!v)
+                          setDocuments({
+                            [fileKey]: null,
+                          } as Partial<UploadedDocuments>)
+                      }}
+                    />
+                  </div>
+                  {field.value && (
+                    <label className="flex cursor-pointer items-center gap-3 rounded-md border border-dashed bg-muted/30 px-3 py-2.5 text-sm transition-colors hover:bg-muted/60">
+                      <span className="shrink-0 rounded bg-muted px-2 py-0.5 text-xs font-medium">
+                        PDF
+                      </span>
+                      <span className="truncate text-muted-foreground">
+                        {(
+                          documents[
+                            fileKey as keyof typeof documents
+                          ] as File | null
+                        )?.name ?? "Seleccionar archivo…"}
+                      </span>
+                      <input
+                        type="file"
+                        accept="application/pdf"
+                        className="sr-only"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0] ?? null
+                          setDocuments({
+                            [fileKey]: file,
+                          } as Partial<UploadedDocuments>)
+                        }}
+                      />
+                    </label>
+                  )}
+                </div>
+              )}
+            />
+          ))}
         </FieldGroup>
       </FieldSet>
 

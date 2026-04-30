@@ -1,4 +1,3 @@
-import { createGroq } from "@ai-sdk/groq"
 import { createOpenAI } from "@ai-sdk/openai"
 import { createMistral } from "@ai-sdk/mistral"
 import { generateText, TypeValidationError, NoContentGeneratedError } from "ai"
@@ -11,30 +10,28 @@ const COOLDOWN_MS = 10 * 60 * 1000 // only for rate-limits / credit errors
 // Max output tokens — enough for any extraction schema in this app
 const MAX_TOKENS = 1200
 
-// ── Model catalog ──────────────────────────────────────────────────────────────
-// All model names live here. Only API keys come from .env.
-//
-// Confirmed structured-output support (April 2026):
-//   Mistral:     mistral-large-latest     — best quality for extraction
-//                devstral-latest          — coding-focused but works well in practice
-//   Groq:        llama-3.3-70b-versatile  — JSON mode, 128K ctx, 6 000 req/day free
-//   OpenRouter:  gpt-oss-20b:free         — native structured output, 1 000 T/s
-//                gpt-oss-120b:free        — native structured output, larger
-//                gemma-4-26b-a4b-it:free  — native structured output, 256K context
-//                gemma-4-31b-it:free      — native function calling
-//                openrouter/free          — smart router (last resort)
+const MISTRAL_MODELS = ["devstral-latest", "mistral-large-latest"] as const
 
-const MODELS = {
-  mistral: ["devstral-latest", "mistral-large-latest"],
-  groq: [],
-  openrouter: [
-    "nvidia/nemotron-3-super-120b-a12b:free",
-    "minimax/minimax-m2.5:free",
-    "z-ai/glm-4.5-air:free",
-    "openai/gpt-oss-120b:free",
-    "openrouter/free",
-  ],
-} as const
+const OPENROUTER_MODELS = ["openrouter/auto"] as const
+
+// ── Key resolution ────────────────────────────────────────────────────────────
+// Add MISTRAL_API_KEY_2, OPENROUTER_API_KEY_2, etc. in .env to register
+// additional key slots. Each key creates a separate provider entry so the
+// fallback chain can round-robin across them when one is rate-limited.
+
+function resolveKeys(prefix: string): string[] {
+  const keys: string[] = []
+  // First key (no suffix)
+  const base = process.env[prefix]
+  if (base) keys.push(base)
+  // Numbered extras: PREFIX_2, PREFIX_3, …
+  for (let i = 2; i <= 9; i++) {
+    const extra = process.env[`${prefix}_${i}`]
+    if (extra) keys.push(extra)
+    else break
+  }
+  return keys
+}
 
 // ── Provider registry ──────────────────────────────────────────────────────────
 
@@ -46,8 +43,8 @@ export type OnProviderProgress = (
 
 interface ProviderEntry {
   model: LanguageModel
-  name: string // internal key (e.g. "groq:llama-3.3-70b-versatile")
-  label: string // human-readable (e.g. "Groq · Llama 3.3 70B")
+  name: string
+  label: string
   cooldownUntil: number
 }
 
@@ -68,47 +65,32 @@ function toLabel(provider: string, modelId: string): string {
 function buildRegistry(): ProviderEntry[] {
   const list: ProviderEntry[] = []
 
-  if (process.env.MISTRAL_API_KEY) {
-    const mistral = createMistral({ apiKey: process.env.MISTRAL_API_KEY })
-    for (const modelId of MODELS.mistral) {
+  const mistralKeys = resolveKeys("MISTRAL_API_KEY")
+  for (const [ki, key] of mistralKeys.entries()) {
+    const client = createMistral({ apiKey: key })
+    const suffix = ki === 0 ? "" : ` ${ki + 1}`
+    for (const modelId of MISTRAL_MODELS) {
       list.push({
-        model: mistral(modelId),
-        name: `mistral:${modelId}`,
-        label: toLabel("Mistral", modelId),
+        model: client(modelId),
+        name: `mistral${ki === 0 ? "" : `-${ki + 1}`}:${modelId}`,
+        label: toLabel(`Mistral${suffix}`, modelId),
         cooldownUntil: 0,
       })
     }
   }
 
-  if (process.env.GROQ_API_KEY) {
-    const groq = createGroq({ apiKey: process.env.GROQ_API_KEY })
-    for (const modelId of MODELS.groq) {
-      list.push({
-        model: groq(modelId),
-        name: `groq:${modelId}`,
-        label: toLabel("Groq", modelId),
-        cooldownUntil: 0,
-      })
-    }
-  }
-
-  const orKeys = (
-    [process.env.OPENROUTER_API_KEY, process.env.OPENROUTER_API_KEY_2] as (
-      | string
-      | undefined
-    )[]
-  ).filter((k): k is string => Boolean(k))
-
+  const orKeys = resolveKeys("OPENROUTER_API_KEY")
   for (const [ki, key] of orKeys.entries()) {
-    const or = createOpenAI({
+    const client = createOpenAI({
       apiKey: key,
       baseURL: "https://openrouter.ai/api/v1",
     })
-    for (const modelId of MODELS.openrouter) {
+    const suffix = ki === 0 ? "" : ` ${ki + 1}`
+    for (const modelId of OPENROUTER_MODELS) {
       list.push({
-        model: or(modelId),
-        name: `openrouter-${ki + 1}:${modelId}`,
-        label: toLabel(`OpenRouter ${ki + 1}`, modelId),
+        model: client(modelId),
+        name: `openrouter${ki === 0 ? "" : `-${ki + 1}`}:${modelId}`,
+        label: toLabel(`OpenRouter${suffix}`, modelId),
         cooldownUntil: 0,
       })
     }
@@ -122,7 +104,7 @@ function getRegistry(): ProviderEntry[] {
   return _registry
 }
 
-/** Returns providers in fixed order: available first, rate-limited last. */
+/** Returns providers ordered: available first, rate-limited last. */
 function getOrderedProviders(): ProviderEntry[] {
   const registry = getRegistry()
   const now = Date.now()
@@ -134,10 +116,6 @@ function getOrderedProviders(): ProviderEntry[] {
 
 // ── Error classification ───────────────────────────────────────────────────────
 
-/**
- * True when the provider is genuinely rate-limited or out of credits.
- * These get a long cooldown so we don't hammer them again.
- */
 function isRateLimitError(err: unknown): boolean {
   const msg = err instanceof Error ? err.message : String(err)
   return /429|402|rate.?limit|quota.?exceed|too.?many.?request|more credits|can only afford|insufficient.*(credit|balance|quota)/i.test(
@@ -145,11 +123,6 @@ function isRateLimitError(err: unknown): boolean {
   )
 }
 
-/**
- * True for transient failures (bad response, schema mismatch, empty output).
- * We skip to the next provider but do NOT set a cooldown — on retry the same
- * provider is tried again immediately.
- */
 function isTransientError(err: unknown): boolean {
   if (TypeValidationError.isInstance(err)) return true
   if (NoContentGeneratedError.isInstance(err)) return true
@@ -162,11 +135,9 @@ function isTransientError(err: unknown): boolean {
 export type { ProviderEntry }
 
 /**
- * Call once per incoming request. Returns the ordered provider list for that
- * request (advances round-robin by 1 so successive requests rotate providers).
- * Pass the result to every generateWithFallback call in the same request so all
- * parallel extractions start from the same provider instead of each advancing
- * the index independently.
+ * Call once per request. Returns the ordered provider list so all parallel
+ * extractions in the same request start from the same provider instead of
+ * each advancing the index independently.
  */
 export function snapshotProviders(): ProviderEntry[] {
   return getOrderedProviders()
@@ -199,13 +170,13 @@ export async function generateWithFallback(
       lastError = err
       onProgress?.("failed", entry.label)
       if (isRateLimitError(err)) {
-        entry.cooldownUntil = Date.now() + COOLDOWN_MS // long cooldown — provider saturated
+        entry.cooldownUntil = Date.now() + COOLDOWN_MS
         continue
       }
       if (isTransientError(err)) {
-        continue // try next provider this request; no cooldown so retry starts fresh with Mistral
+        continue
       }
-      throw err // non-retryable
+      throw err
     }
   }
 

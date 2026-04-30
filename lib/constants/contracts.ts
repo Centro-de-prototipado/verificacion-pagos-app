@@ -43,11 +43,12 @@ export const CONTRACT_LABELS: Record<ContractType, string> = {
 }
 
 /** Options array for contract type selects — derived from CONTRACT_LABELS to avoid duplication */
-export const CONTRACT_TYPE_OPTIONS: { value: ContractType; label: string }[] =
-  (Object.keys(CONTRACT_LABELS) as ContractType[]).map((t) => ({
-    value: t,
-    label: t,
-  }))
+export const CONTRACT_TYPE_OPTIONS: { value: ContractType; label: string }[] = (
+  Object.keys(CONTRACT_LABELS) as ContractType[]
+).map((t) => ({
+  value: t,
+  label: t,
+}))
 
 /** Comma-separated sigla list used in AI prompts */
 export const CONTRACT_TYPES_PROMPT =

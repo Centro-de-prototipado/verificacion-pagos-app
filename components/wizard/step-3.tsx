@@ -1,12 +1,12 @@
 "use client"
 
-import { useMemo, useEffect, useRef, useState } from "react"
+import { useMemo } from "react"
 import {
+  ArrowRightIcon,
   CheckCircle2Icon,
   XCircleIcon,
   AlertTriangleIcon,
   ShieldCheckIcon,
-  Loader2Icon,
 } from "lucide-react"
 
 import { useWizardStore } from "@/lib/store"
@@ -17,11 +17,9 @@ import type {
   WizardStep,
 } from "@/lib/types"
 import { DocumentDropzone } from "@/components/upload/document-dropzone"
-import type { InformeAuditResult } from "@/app/api/extract-informe/route"
 
 import { Button } from "@/components/ui/button"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Switch } from "@/components/ui/switch"
 import { SectionHeader } from "./section-header"
 
 // ─── Result row ───────────────────────────────────────────────────────────────
@@ -107,134 +105,16 @@ function ContributionGrid({
   )
 }
 
-// ─── Informe audit display ────────────────────────────────────────────────────
-
-function InformeAuditPanel({
-  status,
-  result,
-}: {
-  status: "idle" | "loading" | "done" | "error"
-  result: InformeAuditResult | null
-}) {
-  if (status === "idle") return null
-
-  if (status === "loading") {
-    return (
-      <div className="flex items-center gap-2 rounded-lg border bg-muted/30 px-4 py-3 text-sm text-muted-foreground">
-        <Loader2Icon className="size-4 animate-spin" />
-        <span>Auditando informe de actividades…</span>
-      </div>
-    )
-  }
-
-  if (status === "error" || !result) {
-    return (
-      <Alert variant="destructive">
-        <AlertTriangleIcon className="size-4" />
-        <AlertDescription>
-          No se pudo auditar el informe. Verifica que el PDF sea legible.
-        </AlertDescription>
-      </Alert>
-    )
-  }
-
-  if (result.ok) {
-    return (
-      <div className="flex items-center gap-2 rounded-lg border border-green-200 bg-green-50 px-4 py-3 dark:border-green-900 dark:bg-green-950">
-        <CheckCircle2Icon className="size-4 shrink-0 text-green-600" />
-        <p className="text-sm text-green-700 dark:text-green-400">
-          Informe auditado correctamente — {result.filas} fila(s) revisada(s),
-          sin observaciones.
-        </p>
-      </div>
-    )
-  }
-
-  return (
-    <div className="flex flex-col gap-2">
-      <div className="flex items-center gap-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 dark:border-amber-900 dark:bg-amber-950">
-        <AlertTriangleIcon className="size-4 shrink-0 text-amber-600" />
-        <p className="text-xs font-medium text-amber-700 dark:text-amber-400">
-          Advertencia — Informe de actividades ({result.filas} filas revisadas)
-        </p>
-      </div>
-      <ul className="flex flex-col gap-1.5 pl-1">
-        {result.warnings.map((w, i) => (
-          <li
-            key={i}
-            className="flex items-start gap-2 rounded-md border border-amber-100 bg-amber-50/50 px-3 py-2 text-sm text-amber-800 dark:border-amber-900/40 dark:bg-amber-950/30 dark:text-amber-300"
-          >
-            <AlertTriangleIcon className="mt-0.5 size-3.5 shrink-0" />
-            {w}
-          </li>
-        ))}
-      </ul>
-      <p className="text-xs text-muted-foreground">
-        Puedes continuar igualmente, pero se recomienda corregir el informe
-        antes de entregarlo.
-      </p>
-    </div>
-  )
-}
-
 // ─── Step component ───────────────────────────────────────────────────────────
 
 export function Step3() {
-  const {
-    extractedData,
-    manualData,
-    documents,
-    informeRecibido,
-    setInformeRecibido,
-    setDocuments,
-    setStep,
-  } = useWizardStore()
-
-  const [auditStatus, setAuditStatus] = useState<
-    "idle" | "loading" | "done" | "error"
-  >("idle")
-  const [auditResult, setAuditResult] = useState<InformeAuditResult | null>(
-    null
-  )
-  const lastAuditedFile = useRef<File | null>(null)
-
-  useEffect(() => {
-    const file = documents.activityReport ?? null
-    if (!informeRecibido || !file) {
-      if (!file) {
-        setAuditStatus("idle")
-        setAuditResult(null)
-        lastAuditedFile.current = null
-      }
-      return
-    }
-    if (file === lastAuditedFile.current) return
-
-    lastAuditedFile.current = file
-    setAuditStatus("loading")
-    setAuditResult(null)
-
-    const fd = new FormData()
-    fd.append("informe", file)
-
-    fetch("/api/extract-informe", { method: "POST", body: fd })
-      .then(async (res) => {
-        if (!res.ok) throw new Error(`HTTP ${res.status}`)
-        return res.json() as Promise<InformeAuditResult>
-      })
-      .then((data) => {
-        setAuditResult(data)
-        setAuditStatus("done")
-      })
-      .catch(() => {
-        setAuditStatus("error")
-      })
-  }, [documents.activityReport, informeRecibido])
+  const { extractedData, manualData, documents, setDocuments, setStep } =
+    useWizardStore()
 
   const summary = useMemo(() => {
     if (!extractedData || !manualData) return null
-    return runValidations(extractedData, manualData, informeRecibido)
-  }, [extractedData, manualData, informeRecibido])
+    return runValidations(extractedData, manualData, !!documents.activityReport)
+  }, [extractedData, manualData, documents.activityReport])
 
   if (!extractedData || !manualData) {
     return (
@@ -260,40 +140,17 @@ export function Step3() {
           <SectionHeader
             number={1}
             title="Informe de actividades"
-            subtitle={`El contrato exige informe cada ${contract!.activityReport.frequencyMonths} mes(es). Confirma si fue recibido.`}
+            subtitle={`El contrato exige informe cada ${contract!.activityReport.frequencyMonths} mes(es). Adjunta el PDF para incluirlo en el paquete final.`}
           />
-          <div className="flex flex-col gap-3 pl-9">
-            <div className="flex items-center gap-3 rounded-lg border px-4 py-3">
-              <Switch
-                id="informe-recibido"
-                checked={informeRecibido}
-                onCheckedChange={(checked) => {
-                  setInformeRecibido(checked)
-                  if (!checked) setDocuments({ activityReport: null })
-                }}
-              />
-              <label
-                htmlFor="informe-recibido"
-                className="cursor-pointer text-sm"
-              >
-                Informe de actividades recibido y verificado
-              </label>
-            </div>
-            {informeRecibido && (
-              <div className="flex flex-col gap-3">
-                <DocumentDropzone
-                  stepNumber={4}
-                  label="Informe de actividades (U.FT.12.011.020)"
-                  description="Sube el PDF del informe para auditarlo automáticamente"
-                  hint="Se verificará que todas las casillas estén diligenciadas y que el cumplimiento del período no supere el acumulado"
-                  file={documents.activityReport ?? null}
-                  onFileChange={(file) =>
-                    setDocuments({ activityReport: file })
-                  }
-                />
-                <InformeAuditPanel status={auditStatus} result={auditResult} />
-              </div>
-            )}
+          <div className="pl-9">
+            <DocumentDropzone
+              stepNumber={4}
+              label="Informe de actividades (U.FT.12.011.020)"
+              description="Se adjuntará al PDF final"
+              hint="Formato U.FT.12.011.020 de la Universidad Nacional"
+              file={documents.activityReport ?? null}
+              onFileChange={(file) => setDocuments({ activityReport: file })}
+            />
           </div>
         </div>
       )}
@@ -406,11 +263,13 @@ export function Step3() {
         )}
 
         <Button
-          className="w-fit"
+          size="lg"
+          className="w-full text-base"
           disabled={!summary || summary.blocked}
           onClick={() => setStep(4 as WizardStep)}
         >
           Continuar — Generar PDF
+          <ArrowRightIcon className="size-4" />
         </Button>
       </div>
     </div>

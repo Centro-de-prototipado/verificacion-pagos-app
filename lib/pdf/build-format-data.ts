@@ -78,7 +78,7 @@ export function buildFormat053Data(
     paymentType,
     isLastExecutionMonth,
     amountToCharge: manual.amountToCharge,
-    activityReportReceived: summary.activityReportReceived,
+    activityReportReceived: "N/A",
     supervisorName: manual.supervisorName,
     supervisorDocumentNumber: manual.supervisorDocumentNumber,
     supervisorEmail: manual.supervisorEmail,
