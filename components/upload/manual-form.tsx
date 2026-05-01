@@ -7,7 +7,6 @@ import {
   ManualFormSchema,
   type ManualFormInput,
 } from "@/lib/schemas/manual-form"
-import { DEPENDENCIA } from "@/lib/constants/institution"
 import {
   Field,
   FieldDescription,
@@ -145,7 +144,7 @@ export function ManualForm({
       paymentRequestPeriod: "",
       paymentType: "Parcial" as "Parcial" | "Final" | "Único",
       quipuCompany: "",
-      dependencia: DEPENDENCIA,
+      dependencia: "",
       institutionalEmail: "",
       amendmentNumber: "",
       additionNumber: "",
