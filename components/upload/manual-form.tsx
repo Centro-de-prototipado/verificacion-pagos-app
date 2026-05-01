@@ -7,6 +7,7 @@ import {
   ManualFormSchema,
   type ManualFormInput,
 } from "@/lib/schemas/manual-form"
+import { DEPENDENCIA } from "@/lib/constants/institution"
 import {
   Field,
   FieldDescription,
@@ -144,6 +145,7 @@ export function ManualForm({
       paymentRequestPeriod: "",
       paymentType: "Parcial" as "Parcial" | "Final" | "Único",
       quipuCompany: "",
+      dependencia: DEPENDENCIA,
       institutionalEmail: "",
       amendmentNumber: "",
       additionNumber: "",
@@ -320,6 +322,29 @@ export function ManualForm({
       <FieldSet>
         <FieldLegend>Datos del contratista</FieldLegend>
         <FieldGroup>
+          <Controller
+            name="dependencia"
+            control={form.control}
+            render={({ field, fieldState }) => (
+              <Field data-invalid={fieldState.invalid || undefined}>
+                <FieldLabel htmlFor={field.name}>Dependencia</FieldLabel>
+                <FieldDescription>
+                  Dependencia a la que pertenece
+                </FieldDescription>
+                <Input
+                  {...field}
+                  id={field.name}
+                  placeholder="Ej. DIRECCIÓN DE INVESTIGACIÓN Y EXTENSIÓN"
+                  onChange={(e) => field.onChange(e.target.value.toUpperCase())}
+                  aria-invalid={fieldState.invalid}
+                />
+                {fieldState.invalid && (
+                  <FieldError errors={[fieldState.error]} />
+                )}
+              </Field>
+            )}
+          />
+
           <Controller
             name="quipuCompany"
             control={form.control}

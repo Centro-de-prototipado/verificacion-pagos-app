@@ -13,6 +13,11 @@ import {
 } from "@/lib/pdf/build-format-data"
 import { fill053, fill069, combinePDFs } from "@/lib/pdf/fill-forms"
 import { getPdfPageCount } from "@/lib/pdf/page-count"
+import { extractTextFromPDF } from "@/lib/pdf/extract-text"
+import {
+  extractPILACandidates,
+  joinSplitDates,
+} from "@/lib/pdf/parsers/keyword-extractor"
 import { nombreArchivoFinal } from "@/lib/pdf/utils"
 import {
   exceedsContentLength,
@@ -192,12 +197,37 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const datos053 = buildFormat053Data(extracted, manual, summary)
+    // Extract basic data from planilla2 (sheet number, dates, period) if present.
+    let paymentSheet2Data:
+      | { sheetNumber?: string; paymentDate?: string; period?: string }
+      | undefined
+    if (planilla2Bytes) {
+      try {
+        const text = await extractTextFromPDF(planilla2Bytes.buffer as ArrayBuffer)
+        const cands = extractPILACandidates(joinSplitDates(text))
+        paymentSheet2Data = {
+          sheetNumber: cands.sheetNumber,
+          paymentDate: cands.paymentDate,
+          period: cands.period,
+        }
+      } catch {
+        // Non-fatal: proceed without planilla2 data
+      }
+    }
+
+    const datos053 = buildFormat053Data(
+      extracted,
+      manual,
+      summary,
+      informeAdjunto,
+      paymentSheet2Data
+    )
     const datos069 = buildFormat069Data(
       extracted,
       manual,
       summary.contributions,
-      summary
+      summary,
+      paymentSheet2Data
     )
 
     const [bytes053, bytes069] = await Promise.all([

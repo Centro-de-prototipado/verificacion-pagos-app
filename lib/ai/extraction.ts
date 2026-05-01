@@ -60,7 +60,10 @@ Instrucciones:
     const { output } = await generateWithFallback(
       {
         output: Output.object({ schema }),
-        prompt: `Extrae datos de este documento (${docLabel}) y devuelve el JSON del esquema.\n\nTexto:\n${smartSlice(text, 2500)}`,
+        prompt:
+          `Extrae datos de este documento (${docLabel}) y devuelve el JSON del esquema.\n\n` +
+          `Candidatos detectados:\n${JSON.stringify(candidates, null, 2)}\n\n` +
+          `Texto:\n${smartSlice(text, 2500)}`,
       },
       onProgress,
       snapshot

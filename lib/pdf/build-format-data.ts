@@ -8,6 +8,20 @@ import type {
 import type { ValidationSummary } from "@/lib/validations"
 import { SPANISH_MONTHS } from "@/lib/constants/months"
 
+type PlanillaShort = {
+  sheetNumber?: string
+  paymentDate?: string
+  period?: string
+}
+
+/** Returns the later of two "MM/YYYY" period strings. */
+function laterPeriod(p1: string, p2: string | undefined): string {
+  if (!p2) return p1
+  const [m1, y1] = p1.split("/").map(Number)
+  const [m2, y2] = p2.split("/").map(Number)
+  return y2 > y1 || (y2 === y1 && m2 > m1) ? p2 : p1
+}
+
 /** DD/MM/YYYY → "DD de mes de YYYY" for expedition date */
 function formatExpeditionDate(ddmmyyyy: string): string {
   const [d, m, y] = ddmmyyyy.split("/")
@@ -38,7 +52,9 @@ function todayDDMMYYYY(): string {
 export function buildFormat053Data(
   extracted: ExtractedData,
   manual: ManualFormData,
-  summary: ValidationSummary
+  summary: ValidationSummary,
+  informeAdjunto = false,
+  paymentSheet2Data?: PlanillaShort
 ): Format053Data {
   const { paymentSheet, contract, arl } = extracted
   const year = manual.paymentRequestPeriod.split("/")[1]
@@ -61,9 +77,26 @@ export function buildFormat053Data(
     return reqMM === endMM && reqYYYY === endYYYY
   })()
 
-  const paymentType = manual.paymentType
+  // Combine values for two-planilla case
+  const sheetNumber = paymentSheet2Data?.sheetNumber
+    ? `${paymentSheet!.sheetNumber} y ${paymentSheet2Data.sheetNumber}`
+    : paymentSheet!.sheetNumber
+
+  const paymentDate = paymentSheet2Data?.paymentDate
+    ? `${paymentSheet!.paymentDate} y ${paymentSheet2Data.paymentDate}`
+    : paymentSheet!.paymentDate
+
+  const period1Name = periodToMonthName(paymentSheet!.period)
+  const period2Name = paymentSheet2Data?.period
+    ? periodToMonthName(paymentSheet2Data.period)
+    : undefined
+  const payrollPeriodName =
+    period2Name && period2Name !== period1Name
+      ? `${period1Name} y ${period2Name}`
+      : period1Name
 
   return {
+    dependencia: manual.dependencia.toUpperCase(),
     contractType: contract!.contractType,
     orderNumberYear: `${contract!.orderNumber}/${year}`,
     amendmentLabel: manual.amendmentNumber || undefined,
@@ -71,14 +104,14 @@ export function buildFormat053Data(
     quipuCompany: manual.quipuCompany,
     contractorName: contract!.contractorName,
     documentNumber: contract!.documentNumber,
-    sheetNumber: paymentSheet!.sheetNumber,
-    paymentDate: paymentSheet!.paymentDeadline ?? paymentSheet!.paymentDate,
-    payrollPeriodName: periodToMonthName(extracted.paymentSheet!.period),
+    sheetNumber,
+    paymentDate,
+    payrollPeriodName,
     paymentNumber,
-    paymentType,
+    paymentType: manual.paymentType,
     isLastExecutionMonth,
     amountToCharge: manual.amountToCharge,
-    activityReportReceived: "N/A",
+    activityReportReceived: informeAdjunto ? true : "N/A",
     supervisorName: manual.supervisorName,
     supervisorDocumentNumber: manual.supervisorDocumentNumber,
     supervisorEmail: manual.supervisorEmail,
@@ -91,7 +124,8 @@ export function buildFormat069Data(
   extracted: ExtractedData,
   manual: ManualFormData,
   contributions: ContributionCalculation,
-  summary: ValidationSummary
+  summary: ValidationSummary,
+  paymentSheet2Data?: PlanillaShort
 ): Format069Data {
   const { contract, arl, contract2 } = extracted
   const year = manual.paymentRequestPeriod.split("/")[1]
@@ -126,7 +160,9 @@ export function buildFormat069Data(
       : {}),
     deductionsContractRef,
     paymentRequestPeriod: periodToSpanish(manual.paymentRequestPeriod),
-    payrollPeriod: periodToSpanish(extracted.paymentSheet!.period),
+    payrollPeriod: periodToSpanish(
+      laterPeriod(extracted.paymentSheet!.period, paymentSheet2Data?.period)
+    ),
     healthContribution: contributions.healthContribution,
     pensionContribution: contributions.pensionContribution,
     solidarityFund: contributions.solidarityFund,

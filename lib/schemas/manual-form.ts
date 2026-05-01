@@ -42,6 +42,9 @@ export const ManualFormSchema = z.object({
     error: "Selecciona el tipo de pago",
   }),
 
+  // ── Dependencia ───────────────────────────────────────────────────────────
+  dependencia: z.string().min(1, "La dependencia es requerida"),
+
   // ── Contratista ───────────────────────────────────────────────────────────
   institutionalEmail: z.string().email("Correo electrónico inválido"),
 

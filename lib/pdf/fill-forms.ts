@@ -5,7 +5,7 @@ import type { Template } from "@pdfme/common"
 import { multiVariableText, text } from "@pdfme/schemas"
 import { PDFDocument } from "pdf-lib"
 import type { Format053Data, Format069Data } from "@/lib/types"
-import { SEDE, DEPENDENCIA } from "@/lib/constants/institution"
+import { SEDE } from "@/lib/constants/institution"
 import { CONTRACT_LABELS } from "@/lib/constants/contracts"
 
 const TEMPLATES_DIR = path.join(process.cwd(), "lib", "templates")
@@ -40,7 +40,7 @@ export async function fill053(
     inputs: [
       {
         sede: SEDE,
-        dependencia: DEPENDENCIA,
+        dependencia: datos.dependencia,
         modalidad_contrato: CONTRACT_LABELS[datos.contractType],
         numero_orden,
         anio: `/${anio}`,

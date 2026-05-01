@@ -18,6 +18,7 @@ import {
   detectIssuer,
   joinSplitDates,
 } from "@/lib/pdf/parsers/keyword-extractor"
+import { isDocumentMatch } from "@/lib/pdf/document-validator"
 import {
   fillFromCandidates,
   computeConfidence,
@@ -146,13 +147,6 @@ export async function POST(request: NextRequest) {
 
   ;(async () => {
     try {
-      const issuerKeys = {
-        paymentSheet: detectIssuer(rawText.paymentSheet, "pila"),
-        arl: detectIssuer(rawText.arl, "arl"),
-        contract: "unal",
-        ...(rawText.contract2 ? { contract2: "unal" } : {}),
-      }
-
       const cleanText = {
         paymentSheet: joinSplitDates(rawText.paymentSheet),
         arl: joinSplitDates(rawText.arl),
@@ -160,10 +154,19 @@ export async function POST(request: NextRequest) {
         contract2: rawText.contract2 ? joinSplitDates(rawText.contract2) : "",
       }
 
+      const issuerKeys = {
+        paymentSheet: detectIssuer(cleanText.paymentSheet, "pila"),
+        arl: detectIssuer(cleanText.arl, "arl"),
+        contract: "unal",
+        ...(cleanText.contract2 ? { contract2: "unal" } : {}),
+      }
+
       const pilaCandidate = extractPILACandidates(cleanText.paymentSheet)
       const arlCandidate = extractARLCandidates(cleanText.arl)
       const contractCand = extractContractCandidates(cleanText.contract)
-      const contract2Cand = extractContractCandidates(cleanText.contract2)
+      const contract2Cand = cleanText.contract2
+        ? extractContractCandidates(cleanText.contract2)
+        : null
 
       // The PILA shows the contractor's own document type unambiguously.
       // Override whatever the contract extractor guessed — the contract always
@@ -173,6 +176,16 @@ export async function POST(request: NextRequest) {
       )
       contractCand.documentType = pilaDocumentType
       if (contract2Cand) contract2Cand.documentType = pilaDocumentType
+
+      // Validate that each PDF is the expected document type before calling the AI.
+      const docChecks = {
+        paymentSheet: isDocumentMatch(cleanText.paymentSheet, "pila"),
+        arl: isDocumentMatch(cleanText.arl, "arl"),
+        contract: isDocumentMatch(cleanText.contract, "contract"),
+        contract2: cleanText.contract2
+          ? isDocumentMatch(cleanText.contract2, "contract")
+          : null,
+      }
 
       // Snapshot providers ONCE so all parallel extractions start from the same
       // provider (devstral first) instead of each advancing the index independently.
@@ -186,70 +199,94 @@ export async function POST(request: NextRequest) {
         }
 
       const [r0, r1, r2, r3] = await Promise.allSettled([
-        extractWithValidation<PaymentSheetExtracted>({
-          text: cleanText.paymentSheet,
-          schema: PaymentSheetSchema,
-          docLabel: "Planilla PILA de seguridad social",
-          candidates: pilaCandidate,
-          profileExample: findProfile(
-            profiles,
-            "pila",
-            issuerKeys.paymentSheet
-          ),
-          snapshot,
-          extraInstructions:
-            "Reglas críticas: " +
-            "(1) sheetNumber: si el candidato contiene varios números separados por ' / ' " +
-            "(formato SOI/Aportes en Línea donde hay múltiples filas), elige el número de planilla " +
-            "que corresponda al contratista identificado en el documento (cruza con su CC/NIT si aparece). " +
-            "Si no puedes determinar cuál es, usa el último de la lista. " +
-            "El número de planilla en SOI es de 10 dígitos y aparece DESPUÉS de la 'Clave Pago' (8-9 dígitos) en la tabla. " +
-            "NO uses la Clave Pago ni fechas ni montos como número de planilla. " +
-            "(2) 'period' es el MES COTIZADO tal como aparece literalmente en el documento, en formato MM/YYYY (ej: '04/2026'). " +
-            "NO deduzcas el período a partir de paymentDate ni lo modifiques — extráelo exactamente del texto. " +
-            "El período y la fecha de pago pueden coincidir en el mismo mes o diferir; usa siempre el valor explícito del documento. " +
-            "(3) paymentDate es la fecha en que se realizó el pago (DD/MM/YYYY). " +
-            "(4) paymentDeadline es la fecha límite máxima; suele estar en el mes siguiente al período cotizado. " +
-            "Si paymentDate y paymentDeadline parecen invertidos, corrígelos: paymentDeadline ≥ paymentDate.",
-          onProgress: makeOnProgress("paymentSheet"),
-        }),
-        extractWithValidation<ARLExtracted>({
-          text: cleanText.arl,
-          schema: ARLSchema,
-          docLabel: "Certificado de afiliación ARL",
-          candidates: arlCandidate,
-          profileExample: findProfile(profiles, "arl", issuerKeys.arl),
-          snapshot,
-          onProgress: makeOnProgress("arl"),
-        }),
-        extractWithValidation<ContractExtracted>({
-          text: cleanText.contract,
-          schema: ContractSchema,
-          docLabel: "Contrato UNAL (contrato 1)",
-          candidates: contractCand,
-          profileExample: findProfile(profiles, "contract", "unal"),
-          snapshot,
-          extraInstructions:
-            `Tipos de contrato válidos (usa solo estas siglas exactas): ${CONTRACT_TYPES_PROMPT}. ` +
-            "NO extraigas startDate ni endDate del contrato — se tomarán del certificado ARL.",
-          onProgress: makeOnProgress("contract"),
-        }),
-        extractWithValidation<ContractExtracted>({
-          text: cleanText.contract2,
-          schema: ContractSchema,
-          docLabel: "Contrato UNAL (contrato 2)",
-          candidates: contract2Cand,
-          profileExample: findProfile(profiles, "contract", "unal"),
-          snapshot,
-          extraInstructions:
-            `Tipos de contrato válidos (usa solo estas siglas exactas): ${CONTRACT_TYPES_PROMPT}. ` +
-            "NO extraigas startDate ni endDate del contrato — se tomarán del certificado ARL.",
-          onProgress: makeOnProgress("contract2"),
-        }),
+        docChecks.paymentSheet.valid
+          ? extractWithValidation<PaymentSheetExtracted>({
+              text: cleanText.paymentSheet,
+              schema: PaymentSheetSchema,
+              docLabel: "Planilla PILA de seguridad social",
+              candidates: pilaCandidate,
+              profileExample: findProfile(
+                profiles,
+                "pila",
+                issuerKeys.paymentSheet
+              ),
+              snapshot,
+              extraInstructions:
+                "Reglas:\n" +
+                "1. sheetNumber: si el candidato tiene varios números separados por ' / ' (tablas SOI/Aportes en Línea con múltiples filas), " +
+                "elige el que corresponda al contratista (cruza con su CC/NIT). Si no puedes determinarlo, usa el último. " +
+                "En SOI, el número de planilla tiene 10 dígitos y va DESPUÉS de la Clave Pago (8-9 dígitos) — no confundas los dos.\n" +
+                "2. period: extrae el mes cotizado exactamente del texto en formato MM/YYYY. No lo deduzcas de paymentDate.\n" +
+                "3. paymentDate: fecha en que se realizó el pago (DD/MM/YYYY).\n" +
+                "4. paymentDeadline: fecha límite de pago; si parece invertida con paymentDate, corrígela (paymentDeadline ≥ paymentDate).",
+              onProgress: makeOnProgress("paymentSheet"),
+            })
+          : Promise.resolve(null),
+        docChecks.arl.valid
+          ? extractWithValidation<ARLExtracted>({
+              text: cleanText.arl,
+              schema: ARLSchema,
+              docLabel: "Certificado de afiliación ARL",
+              candidates: arlCandidate,
+              profileExample: findProfile(profiles, "arl", issuerKeys.arl),
+              snapshot,
+              onProgress: makeOnProgress("arl"),
+            })
+          : Promise.resolve(null),
+        docChecks.contract.valid
+          ? extractWithValidation<ContractExtracted>({
+              text: cleanText.contract,
+              schema: ContractSchema,
+              docLabel: "Contrato UNAL (contrato 1)",
+              candidates: contractCand,
+              profileExample: findProfile(profiles, "contract", "unal"),
+              snapshot,
+              extraInstructions:
+                `Tipos de contrato válidos (usa solo estas siglas exactas): ${CONTRACT_TYPES_PROMPT}. ` +
+                "NO extraigas startDate ni endDate del contrato — se tomarán del certificado ARL.",
+              onProgress: makeOnProgress("contract"),
+            })
+          : Promise.resolve(null),
+        docChecks.contract2?.valid
+          ? extractWithValidation<ContractExtracted>({
+              text: cleanText.contract2,
+              schema: ContractSchema,
+              docLabel: "Contrato UNAL (contrato 2)",
+              candidates: contract2Cand ?? {},
+              profileExample: findProfile(profiles, "contract", "unal"),
+              snapshot,
+              extraInstructions:
+                `Tipos de contrato válidos (usa solo estas siglas exactas): ${CONTRACT_TYPES_PROMPT}. ` +
+                "NO extraigas startDate ni endDate del contrato — se tomarán del certificado ARL.",
+              onProgress: makeOnProgress("contract2"),
+            })
+          : Promise.resolve(null),
       ])
 
       const warnings: string[] = []
       const confidence: Record<string, ConfidenceMap> = {}
+
+      // Warn immediately for documents that don't match the expected type.
+      if (!docChecks.paymentSheet.valid && cleanText.paymentSheet.trim().length > 0)
+        warnings.push(
+          `Planilla — el PDF no parece ser una ${docChecks.paymentSheet.label}. Verifica que subiste el archivo correcto.`
+        )
+      if (!docChecks.arl.valid && cleanText.arl.trim().length > 0)
+        warnings.push(
+          `ARL — el PDF no parece ser un ${docChecks.arl.label}. Verifica que subiste el archivo correcto.`
+        )
+      if (!docChecks.contract.valid && cleanText.contract.trim().length > 0)
+        warnings.push(
+          `Contrato — el PDF no parece ser un ${docChecks.contract.label}. Verifica que subiste el archivo correcto.`
+        )
+      if (
+        docChecks.contract2 &&
+        !docChecks.contract2.valid &&
+        cleanText.contract2.trim().length > 0
+      )
+        warnings.push(
+          `Contrato 2 — el PDF no parece ser un ${docChecks.contract2.label}. Verifica que subiste el archivo correcto.`
+        )
 
       const aiPS =
         r0.status === "fulfilled"
@@ -348,10 +385,8 @@ export async function POST(request: NextRequest) {
           c1Raw
         )
 
-      const c2Raw = fillFromCandidates(
-        aiC2,
-        contract2Cand as Record<string, unknown>
-      )
+      const c2Candidates = (contract2Cand ?? {}) as Record<string, unknown>
+      const c2Raw = fillFromCandidates(aiC2, c2Candidates)
       const contract2 = c2Raw as ContractExtracted | null
       if (r3.status === "rejected" && cleanText.contract2)
         warnings.push(`Contrato 2 — error de extracción: ${r3.reason}`)
@@ -362,10 +397,7 @@ export async function POST(request: NextRequest) {
       )
         warnings.push("Contrato 2 — la IA no pudo interpretar el documento")
       if (c2Raw)
-        confidence.contract2 = computeConfidence(
-          contract2Cand as Record<string, unknown>,
-          c2Raw
-        )
+        confidence.contract2 = computeConfidence(c2Candidates, c2Raw)
 
       const extractedData: ExtractedData = {
         paymentSheet,

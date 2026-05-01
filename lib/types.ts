@@ -60,6 +60,7 @@ export interface ManualFormData {
   institutionalEmail: string
   isPensioner: boolean
   quipuCompany: string
+  dependencia: string
   amendmentNumber?: string
   additionNumber?: string
   /** Format MM/YYYY — payment request period */
@@ -187,6 +188,8 @@ export interface ContributionCalculation {
 
 /** Data needed to fill U.FT.12.010.053 — Constancia de cumplimiento contractual */
 export interface Format053Data {
+  // Dependencia
+  dependencia: string
   // Contrato
   contractType: ContractType
   /** e.g. "14/2026" */

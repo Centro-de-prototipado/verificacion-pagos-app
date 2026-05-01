@@ -186,7 +186,7 @@ const DEFAULT_END_LABELS = [
 // ─── ARL ─────────────────────────────────────────────────────────────────────
 
 export function extractARLCandidates(text: string): Partial<ARLData> {
-  // NOTE: caller is expected to pass already-normalized text (joinSplitDates applied)
+  // Caller must pass already-normalized text (joinSplitDates applied).
   const issuer = detectIssuer(text, "arl")
   const rateLabels = ARL_RATE_LABELS[issuer] ?? ARL_RATE_LABELS.default
 
@@ -254,7 +254,7 @@ export function extractARLCandidates(text: string): Partial<ARLData> {
 const PILA_DATE_WINDOW = 60
 
 export function extractPILACandidates(text: string): Partial<PaymentSheetData> {
-  text = joinSplitDates(text)
+  // Caller must pass already-normalized text (joinSplitDates applied).
 
   // ── SOI / Aportes en Línea table format ──────────────────────────────────
   // Row pattern: YYYY-MM YYYY-MM clave(7-9d) planilla(9-12d) tipo(A-Z)
@@ -470,7 +470,7 @@ const CONTRACT_END_LABELS = [
 ]
 
 export function extractContractCandidates(text: string): Partial<ContractData> {
-  text = joinSplitDates(text)
+  // Caller must pass already-normalized text (joinSplitDates applied).
   const typeMatch = text.match(
     /\b(OCA|OCO|ODC|ODO|OPS|OSE|OSU|CCO|CDA|CDC|CDO|CIS|CON|COV|CPS|CSE|CSU|OEF|OFA|OFC|OFO|OFS|OOF|OSF|OUF|CAF|CCF|CIF|COF|CPF|CSF|CTF|CUF|CVF)\b/
   )

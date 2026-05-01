@@ -122,6 +122,28 @@ export function Step2() {
     contract?.documentNumber,
   ])
 
+  // startDate and endDate in contracts are always overridden with ARL dates,
+  // so inherit ARL confidence for those two fields instead of showing contract extraction confidence.
+  const contractConfidence = useMemo(() => {
+    const base = confidence.contract ? { ...confidence.contract } : undefined
+    if (!base) return base
+    if (arl) {
+      base.startDate = confidence.arl?.startDate ?? "medium"
+      base.endDate = confidence.arl?.endDate ?? "medium"
+    }
+    return base
+  }, [confidence.contract, confidence.arl, arl])
+
+  const contract2Confidence = useMemo(() => {
+    const base = confidence.contract2 ? { ...confidence.contract2 } : undefined
+    if (!base) return base
+    if (arl) {
+      base.startDate = confidence.arl?.startDate ?? "medium"
+      base.endDate = confidence.arl?.endDate ?? "medium"
+    }
+    return base
+  }, [confidence.contract2, confidence.arl, arl])
+
   // Populate editors when extractedData changes (initial load or coming back from a later step)
   useEffect(() => {
     if (!extractedData) return
@@ -602,7 +624,7 @@ export function Step2() {
                 }
                 onChange={setContract}
                 warnings={warnings.filter((w) => w.startsWith("Contrato —"))}
-                confidenceMap={confidence.contract}
+                confidenceMap={contractConfidence}
               />
               {manualData?.contractCount === "2" && (
                 <ContractEditor
@@ -610,7 +632,7 @@ export function Step2() {
                   title="Contrato 2"
                   onChange={setContract2}
                   warnings={warnings.filter((w) => w.startsWith("Contrato 2"))}
-                  confidenceMap={confidence.contract2}
+                  confidenceMap={contract2Confidence}
                 />
               )}
             </div>
