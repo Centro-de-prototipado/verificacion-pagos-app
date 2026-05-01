@@ -1,6 +1,7 @@
 import "./globals.css"
 import { Toaster } from "@/components/ui/sonner"
 import { cn } from "@/lib/utils"
+import { Logo } from "@/components/ui/logo"
 
 import localFont from "next/font/local"
 
@@ -27,6 +28,10 @@ export default function RootLayout({
     >
       <body>
         {children}
+        <footer className="flex flex-col items-center justify-center py-6 text-xs text-muted-foreground">
+          <span>Desarrollado por</span>
+          <Logo className="h-10" />
+        </footer>
         <Toaster position="bottom-right" richColors />
       </body>
     </html>
