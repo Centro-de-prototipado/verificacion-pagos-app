@@ -165,8 +165,8 @@ export async function POST(request: NextRequest) {
         paymentSheet: detectIssuer(cleanText.paymentSheet, "pila"),
         arl: detectIssuer(cleanText.arl, "arl"),
         contract: "unal",
-        ...(cleanText.contract2 ? { contract2: "unal" } : {}),
-        ...(cleanText.paymentSheet2 ? { paymentSheet2: detectIssuer(cleanText.paymentSheet2, "pila") } : {}),
+        contract2: cleanText.contract2 ? "unal" : undefined,
+        paymentSheet2: cleanText.paymentSheet2 ? detectIssuer(cleanText.paymentSheet2, "pila") : undefined,
       }
 
       const pilaCandidate = extractPILACandidates(cleanText.paymentSheet)
@@ -315,7 +315,7 @@ export async function POST(request: NextRequest) {
               profileExample: findProfile(
                 profiles,
                 "pila",
-                issuerKeys.paymentSheet2
+                issuerKeys.paymentSheet2 || ""
               ),
               snapshot,
               extraInstructions: "Extrae los datos de la planilla del mes siguiente.",
