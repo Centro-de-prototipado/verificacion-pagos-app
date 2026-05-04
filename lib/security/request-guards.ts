@@ -49,11 +49,11 @@ export function exceedsContentLength(
   return size > maxBytes
 }
 
-export function readPdfFile(
+export async function readPdfFile(
   value: FormDataEntryValue | null,
   fieldName: string,
   options: { required: boolean; maxBytes: number }
-): File | null {
+): Promise<File | null> {
   if (!value) {
     if (options.required) {
       throw new Error(`El archivo "${fieldName}" es obligatorio.`)
@@ -63,30 +63,60 @@ export function readPdfFile(
   if (!(value instanceof File)) {
     throw new Error(`El campo "${fieldName}" no es un archivo válido.`)
   }
+
+  // Verificaciones rápidas de metadatos
   const name = value.name?.toLowerCase() ?? ""
-  const mime = value.type?.toLowerCase() ?? ""
-  const seemsPdfByMime =
-    mime === "application/pdf" ||
-    mime === "application/x-pdf" ||
-    mime === "application/octet-stream" ||
-    mime === ""
-  const seemsPdfByName = name.endsWith(".pdf")
-  if (!seemsPdfByMime || !seemsPdfByName) {
-    throw new Error(`El archivo "${fieldName}" debe estar en formato PDF.`)
+  if (!name.endsWith(".pdf")) {
+    throw new Error(`El archivo "${fieldName}" debe tener extensión .pdf`)
   }
   if (value.size > options.maxBytes) {
     throw new Error(
-      `El archivo "${fieldName}" supera el tamaño máximo permitido.`
+      `El archivo "${fieldName}" supera el tamaño máximo de ${Math.round(
+        options.maxBytes / 1024 / 1024
+      )}MB.`
     )
   }
+
+  // --- VALIDACIÓN DE SEGURIDAD PROFUNDA ---
+  const buffer = await value.arrayBuffer()
+  const bytes = new Uint8Array(buffer)
+
+  // 1. Validar Magic Number de PDF (%PDF-)
+  if (
+    bytes[0] !== 0x25 ||
+    bytes[1] !== 0x50 ||
+    bytes[2] !== 0x44 ||
+    bytes[3] !== 0x46
+  ) {
+    console.error(`[SECURITY] Firma de PDF inválida en "${fieldName}"`)
+    throw new Error(
+      `El archivo "${fieldName}" no es un PDF válido (firma corrupta).`
+    )
+  }
+
+  // 2. Escaneo de patrones maliciosos básicos (JS/OpenAction)
+  // Analizamos los primeros 5KB para detectar inyecciones comunes
+  const headerContent = new TextDecoder().decode(bytes.slice(0, 5120))
+  const dangerousPatterns = ["/JS", "/JavaScript", "/OpenAction"]
+  for (const pattern of dangerousPatterns) {
+    if (headerContent.includes(pattern)) {
+      console.warn(
+        `[SECURITY] Patrón peligroso detectado: ${pattern} en "${fieldName}"`
+      )
+      throw new Error(
+        `Seguridad: El archivo "${fieldName}" contiene elementos no permitidos.`
+      )
+    }
+  }
+
   return value
 }
 
-export function readImageFile(
+export async function readImageFile(
   value: FormDataEntryValue | null,
   fieldName: string,
   options: { required: boolean; maxBytes: number }
-): File | null {
+): Promise<File | null> {
   if (!value) {
     if (options.required) {
       throw new Error(`La imagen "${fieldName}" es obligatoria.`)
@@ -96,15 +126,34 @@ export function readImageFile(
   if (!(value instanceof File)) {
     throw new Error(`El campo "${fieldName}" no es una imagen válida.`)
   }
-  const mime = value.type?.toLowerCase() ?? ""
-  const isImage = mime.startsWith("image/")
-  if (!isImage) {
-    throw new Error(`El archivo "${fieldName}" debe ser una imagen (JPG/PNG).`)
-  }
+
   if (value.size > options.maxBytes) {
     throw new Error(
       `La imagen "${fieldName}" supera el tamaño máximo permitido.`
     )
   }
+
+  const buffer = await value.arrayBuffer()
+  const bytes = new Uint8Array(buffer)
+
+  // Validar Magic Numbers comunes
+  // JPEG: FF D8 FF
+  const isJpg = bytes[0] === 0xff && bytes[1] === 0xd8 && bytes[2] === 0xff
+  // PNG: 89 50 4E 47
+  const isPng =
+    bytes[0] === 0x89 &&
+    bytes[1] === 0x50 &&
+    bytes[2] === 0x4e &&
+    bytes[3] === 0x47
+  // GIF: 47 49 46
+  const isGif = bytes[0] === 0x47 && bytes[1] === 0x49 && bytes[2] === 0x46
+
+  if (!isJpg && !isPng && !isGif) {
+    console.error(`[SECURITY] Firma de imagen no válida para "${fieldName}"`)
+    throw new Error(
+      `El archivo "${fieldName}" no es una imagen válida (JPG/PNG).`
+    )
+  }
+
   return value
 }

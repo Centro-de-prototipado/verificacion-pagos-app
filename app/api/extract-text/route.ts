@@ -66,7 +66,7 @@ export async function POST(request: NextRequest) {
       // The client only sends the documents it has at each step.
       if (!field) return [key, ""]
 
-      const file = readPdfFile(field, key, {
+      const file = await readPdfFile(field, key, {
         required: false,
         maxBytes: MAX_PDF_BYTES,
       })

@@ -638,8 +638,43 @@ export function ManualForm({
                         type="file"
                         accept="application/pdf"
                         className="sr-only"
-                        onChange={(e) => {
+                        onChange={async (e) => {
                           const file = e.target.files?.[0] ?? null
+                          if (file) {
+                            try {
+                              const buffer = await file.arrayBuffer()
+                              const bytes = new Uint8Array(buffer)
+                              if (
+                                bytes[0] !== 0x25 ||
+                                bytes[1] !== 0x50 ||
+                                bytes[2] !== 0x44 ||
+                                bytes[3] !== 0x46
+                              ) {
+                                throw new Error(
+                                  "El archivo no es un PDF válido."
+                                )
+                              }
+                              const content = new TextDecoder().decode(
+                                bytes.slice(0, 5000)
+                              )
+                              if (
+                                content.includes("/JS") ||
+                                content.includes("/JavaScript")
+                              ) {
+                                throw new Error(
+                                  "El PDF contiene elementos no permitidos (/JS)."
+                                )
+                              }
+                            } catch (err: any) {
+                              import("sonner").then(({ toast }) => {
+                                toast.error("Archivo rechazado", {
+                                  description: err.message,
+                                })
+                              })
+                              e.target.value = ""
+                              return
+                            }
+                          }
                           setDocuments({
                             [fileKey]: file,
                           } as Partial<UploadedDocuments>)

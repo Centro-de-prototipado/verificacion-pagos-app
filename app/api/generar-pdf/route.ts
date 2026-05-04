@@ -88,23 +88,23 @@ export async function POST(request: NextRequest) {
 
     const extractedRaw = formData.get("extracted")
     const manualRaw = formData.get("manual")
-    const planillaFile = readPdfFile(formData.get("planilla"), "planilla", {
+    const planillaFile = await readPdfFile(formData.get("planilla"), "planilla", {
       required: true,
       maxBytes: MAX_PDF_BYTES,
     })
-    const arlFile = readPdfFile(formData.get("arl"), "arl", {
+    const arlFile = await readPdfFile(formData.get("arl"), "arl", {
       required: true,
       maxBytes: MAX_PDF_BYTES,
     })
-    const planilla2File = readPdfFile(formData.get("planilla2"), "planilla2", {
+    const planilla2File = await readPdfFile(formData.get("planilla2"), "planilla2", {
       required: false,
       maxBytes: MAX_PDF_BYTES,
     })
-    const informeFile = readPdfFile(formData.get("informe"), "informe", {
+    const informeFile = await readPdfFile(formData.get("informe"), "informe", {
       required: false,
       maxBytes: MAX_PDF_BYTES,
     })
-    const signatureFile = readImageFile(formData.get("signature"), "signature", {
+    const signatureFile = await readImageFile(formData.get("signature"), "signature", {
       required: true,
       maxBytes: MAX_PDF_BYTES,
     })
@@ -175,7 +175,7 @@ export async function POST(request: NextRequest) {
       signatureBase64 = `data:${type};base64,${Buffer.from(buffer).toString("base64")}`
     }
     for (const key of DEDUCTION_FILE_KEYS) {
-      const file = readPdfFile(formData.get(key), key, {
+      const file = await readPdfFile(formData.get(key), key, {
         required: false,
         maxBytes: MAX_PDF_BYTES,
       })
