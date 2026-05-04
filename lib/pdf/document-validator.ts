@@ -1,4 +1,4 @@
-type DocType = "pila" | "arl" | "contract"
+type DocType = "pila" | "arl" | "contract" | "report"
 
 interface DocFingerprint {
   label: string
@@ -59,6 +59,13 @@ const FINGERPRINTS: Record<DocType, DocFingerprint> = {
     require: [
       ["contrato", "orden de", "orden contractual", "orden de servicio", "orden de compra"],
       ["contratista", "universidad nacional", "unal"],
+    ],
+  },
+  report: {
+    label: "informe de actividades",
+    require: [
+      ["informe de actividades", "informe mensual", "informe de ejecución"],
+      ["actividades ejecutadas", "periodo del informe", "plazo ops"],
     ],
   },
 }

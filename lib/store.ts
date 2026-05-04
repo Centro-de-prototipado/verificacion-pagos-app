@@ -43,6 +43,7 @@ const INITIAL_STATE = {
     deductionPrepaidMedicineFile: null,
     deductionAFCFile: null,
     deductionVoluntaryPensionFile: null,
+    signature: null,
   } satisfies UploadedDocuments,
   manualData: null,
   rawText: null,

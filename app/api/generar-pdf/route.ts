@@ -24,6 +24,7 @@ import {
   getClientIp,
   isRateLimited,
   readPdfFile,
+  readImageFile,
 } from "@/lib/security/request-guards"
 
 export const runtime = "nodejs"
@@ -69,6 +70,7 @@ export async function POST(request: NextRequest) {
   let arlBytes: Uint8Array
   let planilla2Bytes: Uint8Array | undefined
   let informeBytes: Uint8Array | undefined
+  let signatureBase64: string | undefined
   let informeAdjunto = false
   const deductionFileBytes: Uint8Array[] = []
 
@@ -102,11 +104,15 @@ export async function POST(request: NextRequest) {
       required: false,
       maxBytes: MAX_PDF_BYTES,
     })
+    const signatureFile = readImageFile(formData.get("signature"), "signature", {
+      required: true,
+      maxBytes: MAX_PDF_BYTES,
+    })
 
-    if (!extractedRaw || !manualRaw || !planillaFile || !arlFile) {
+    if (!extractedRaw || !manualRaw || !planillaFile || !arlFile || !signatureFile) {
       return NextResponse.json(
         {
-          error: "Se requieren los campos: extracted, manual, planilla, arl.",
+          error: "Se requieren los campos: extracted, manual, planilla, arl, signature.",
         },
         { status: 400 }
       )
@@ -163,6 +169,11 @@ export async function POST(request: NextRequest) {
       }
       informeAdjunto = true
     }
+    if (signatureFile) {
+      const buffer = await signatureFile.arrayBuffer()
+      const type = signatureFile.type
+      signatureBase64 = `data:${type};base64,${Buffer.from(buffer).toString("base64")}`
+    }
     for (const key of DEDUCTION_FILE_KEYS) {
       const file = readPdfFile(formData.get(key), key, {
         required: false,
@@ -203,7 +214,12 @@ export async function POST(request: NextRequest) {
       | undefined
     if (planilla2Bytes) {
       try {
-        const text = await extractTextFromPDF(planilla2Bytes.buffer as ArrayBuffer)
+        // Crear un ArrayBuffer limpio desde los bytes (evita problemas de offset con .buffer)
+        const ab = planilla2Bytes.buffer.slice(
+          planilla2Bytes.byteOffset,
+          planilla2Bytes.byteOffset + planilla2Bytes.byteLength
+        )
+        const text = await extractTextFromPDF(ab)
         const cands = extractPILACandidates(joinSplitDates(text))
         paymentSheet2Data = {
           sheetNumber: cands.sheetNumber,
@@ -227,7 +243,8 @@ export async function POST(request: NextRequest) {
       manual,
       summary.contributions,
       summary,
-      paymentSheet2Data
+      paymentSheet2Data,
+      signatureBase64
     )
 
     const [bytes053, bytes069] = await Promise.all([

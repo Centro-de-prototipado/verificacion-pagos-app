@@ -2,7 +2,7 @@ import path from "path"
 import { readFile } from "fs/promises"
 import { generate } from "@pdfme/generator"
 import type { Template } from "@pdfme/common"
-import { multiVariableText, text } from "@pdfme/schemas"
+import { multiVariableText, text, image } from "@pdfme/schemas"
 import { PDFDocument } from "pdf-lib"
 import type { Format053Data, Format069Data } from "@/lib/types"
 import { SEDE } from "@/lib/constants/institution"
@@ -103,7 +103,7 @@ export async function fill069(
 
   return generate({
     template,
-    plugins: { text, multiVariableText },
+    plugins: { text, multiVariableText, image },
     inputs: [
       {
         // Sección 1 — Datos generales
@@ -175,6 +175,7 @@ export async function fill069(
         declaracion_formal: datos.formalDeclaration,
         nombre_firmante: datos.signerName,
         documento_firmante: datos.signerDocumentRef,
+        firma: datos.signatureImage ?? "",
       },
     ],
   })
@@ -183,6 +184,27 @@ export async function fill069(
 // ---------------------------------------------------------------------------
 // Unificación final: 053 → 069 → planilla → ARL
 // ---------------------------------------------------------------------------
+
+/** Verifica que los bytes correspondan a un PDF válido (empieza con %PDF). */
+function validatePdfBytes(bytes: Uint8Array, label: string): void {
+  if (!bytes || bytes.length === 0) {
+    throw new Error(
+      `El archivo "${label}" está vacío. Verifica que subiste el archivo correcto.`
+    )
+  }
+  // PDF header: %PDF (bytes 0x25 0x50 0x44 0x46)
+  if (
+    bytes[0] !== 0x25 ||
+    bytes[1] !== 0x50 ||
+    bytes[2] !== 0x44 ||
+    bytes[3] !== 0x46
+  ) {
+    throw new Error(
+      `El archivo "${label}" no es un PDF válido (no contiene encabezado %PDF). ` +
+        `Asegúrate de subir un PDF real y no un archivo renombrado.`
+    )
+  }
+}
 
 export async function combinePDFs({
   bytes053,
@@ -203,20 +225,23 @@ export async function combinePDFs({
 }): Promise<Uint8Array> {
   const merged = await PDFDocument.create()
 
-  const copy = async (bytes: Uint8Array) => {
-    const doc = await PDFDocument.load(bytes)
+  const copy = async (bytes: Uint8Array, label: string) => {
+    validatePdfBytes(bytes, label)
+    const doc = await PDFDocument.load(bytes, { ignoreEncryption: true })
     const paginas = await merged.copyPages(doc, doc.getPageIndices())
     paginas.forEach((p) => merged.addPage(p))
   }
 
-  if (bytes053) await copy(bytes053)
-  if (bytes069) await copy(bytes069)
-  await copy(bytesPlanilla)
-  if (bytesPlanilla2) await copy(bytesPlanilla2)
-  await copy(bytesARL)
-  if (bytesInforme) await copy(bytesInforme)
+  if (bytes053) await copy(bytes053, "Formato 053 (generado)")
+  if (bytes069) await copy(bytes069, "Formato 069 (generado)")
+  await copy(bytesPlanilla, "Planilla PILA")
+  if (bytesPlanilla2) await copy(bytesPlanilla2, "Planilla mes siguiente")
+  await copy(bytesARL, "Certificado ARL")
+  if (bytesInforme) await copy(bytesInforme, "Informe de actividades")
   if (bytesDeduccionFiles) {
-    for (const bytes of bytesDeduccionFiles) await copy(bytes)
+    for (let i = 0; i < bytesDeduccionFiles.length; i++) {
+      await copy(bytesDeduccionFiles[i], `Documento de deducción ${i + 1}`)
+    }
   }
 
   return merged.save()

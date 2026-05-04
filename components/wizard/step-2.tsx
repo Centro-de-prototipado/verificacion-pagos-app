@@ -82,6 +82,7 @@ export function Step2() {
   const [arl, setArl] = useState<ARLData | null>(null)
   const [contract, setContract] = useState<ContractData | null>(null)
   const [contract2, setContract2] = useState<ContractData | null>(null)
+  const [activityReport, setActivityReport] = useState<any>(null)
   const [issuerKeys, setIssuerKeys] = useState<Record<string, string>>({})
   const [warnings, setWarnings] = useState<string[]>([])
   const [confidence, setConfidence] = useState<Record<string, ConfidenceMap>>(
@@ -187,6 +188,7 @@ export function Step2() {
     setArl(arlData)
     setContract(applyARLDates(ct))
     setContract2(applyARLDates(extractedData.contract2 ?? null))
+    setActivityReport(extractedData.activityReport ?? null)
   }, [extractedData])
 
   const buildFormData = useCallback(() => {
@@ -196,6 +198,8 @@ export function Step2() {
     if (documents.arl) formData.append("arl", documents.arl)
     if (documents.contract) formData.append("contract", documents.contract)
     if (documents.contract2) formData.append("contract2", documents.contract2)
+    if (documents.activityReport)
+      formData.append("activityReport", documents.activityReport)
     return formData
   }, [documents])
 
@@ -367,7 +371,13 @@ export function Step2() {
         contract as unknown as Record<string, unknown>
       )
 
-    setExtractedData({ paymentSheet: planilla, arl, contract, contract2 })
+    setExtractedData({
+      paymentSheet: planilla,
+      arl,
+      contract,
+      contract2,
+      activityReport,
+    })
     setStep(3 as WizardStep)
   }
 
@@ -423,6 +433,15 @@ export function Step2() {
                     {
                       key: "contract2",
                       label: "Contrato 2",
+                      Icon: ScrollTextIcon,
+                    },
+                  ]
+                : []),
+              ...(documents.activityReport
+                ? [
+                    {
+                      key: "activityReport",
+                      label: "Informe de Actividades",
                       Icon: ScrollTextIcon,
                     },
                   ]

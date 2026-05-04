@@ -62,6 +62,9 @@ export function Step4() {
       if (documents.activityReport) {
         formData.append("informe", documents.activityReport)
       }
+      if (documents.signature) {
+        formData.append("signature", documents.signature)
+      }
 
       const deductionFileFields = [
         { boolKey: "deductionDependents", fileKey: "deductionDependentsFile" },

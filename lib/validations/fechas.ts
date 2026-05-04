@@ -99,9 +99,11 @@ export function calcularMesesContrato(
   startDate: string,
   endDate: string
 ): number {
+  if (!startDate || !endDate) return 1
   const start = parseISO(startDate)
   const end = parseISO(endDate)
+  if (isNaN(start.getTime()) || isNaN(end.getTime())) return 1
   const diffMs = end.getTime() - start.getTime()
   const diffMonths = diffMs / (1000 * 60 * 60 * 24 * 30.4375)
-  return Math.round(diffMonths)
+  return Math.max(1, Math.round(diffMonths))
 }

@@ -187,19 +187,52 @@ const DEFAULT_END_LABELS = [
 
 export function extractARLCandidates(text: string): Partial<ARLData> {
   // Caller must pass already-normalized text (joinSplitDates applied).
-  const issuer = detectIssuer(text, "arl")
+  const flatText = text.replace(/\s+/g, " ")
+  const issuer = detectIssuer(flatText, "arl")
   const rateLabels = ARL_RATE_LABELS[issuer] ?? ARL_RATE_LABELS.default
 
   // ── Dates ──────────────────────────────────────────────────────────────────
+  // Strategy 0: Explicit contract date labels (prioritized over everything else)
+  const explicitStartLabels = [
+    "fecha inicio contrato",
+    "fecha de inicio del contrato",
+    "fecha de inicio contrato",
+  ]
+  const explicitEndLabels = [
+    "fecha fin contrato",
+    "fecha de fin contrato",
+    "fecha de terminación del contrato",
+    "fecha terminación contrato",
+  ]
+  
+  let startDate = normalizeDate(findNear(flatText, explicitStartLabels, DATE_RE))
+  let rawEnd = normalizeDate(findNear(flatText, explicitEndLabels, DATE_RE))
+  let endDate = rawEnd !== startDate ? rawEnd : null
+
+  // Specific fix for Positiva's table layout where the date is visually *under* the 
+  // "Fecha inicio contrato" header, meaning the PDF parser puts the date *before* the label.
+  if (
+    !startDate && 
+    issuer === "positiva" && 
+    flatText.toLowerCase().includes("fecha inicio contrato")
+  ) {
+    const preTipoMatch = flatText.match(new RegExp(`(${DATE_RE.source})\\s+tipo de vinculación`, "i"))
+    if (preTipoMatch) {
+      startDate = normalizeDate(preTipoMatch[1])
+    }
+  }
+
   // Strategy 1: scan for full ISO dates (YYYY-MM-DD) — most reliable after
   // joinSplitDates fixes the line-broken format used by Sura and others.
-  const isoDates = [...text.matchAll(/\d{4}-\d{2}-\d{2}/g)].map((m) => m[0])
-  let startDate: MaybeString = isoDates[0] ? normalizeDate(isoDates[0]) : null
-  let endDate: MaybeString = isoDates[1] ? normalizeDate(isoDates[1]) : null
+  if (!startDate || !endDate) {
+    const isoDates = [...flatText.matchAll(/\d{4}-\d{2}-\d{2}/g)].map((m) => m[0])
+    startDate ??= isoDates[0] ? normalizeDate(isoDates[0]) : null
+    endDate ??= isoDates[1] && isoDates[1] !== isoDates[0] ? normalizeDate(isoDates[1]) : null
+  }
 
   // Strategy 2: range patterns ("del … al", "desde … hasta", "date – date")
   if (!startDate || !endDate) {
-    const [rs, re] = extractDateRange(text)
+    const [rs, re] = extractDateRange(flatText)
     startDate ??= rs
     endDate ??= re
   }
@@ -211,32 +244,33 @@ export function extractARLCandidates(text: string): Partial<ARLData> {
       ...DEFAULT_START_LABELS,
     ]
     const endLabels = [...(ARL_END_LABELS[issuer] ?? []), ...DEFAULT_END_LABELS]
-    startDate ??= normalizeDate(findNear(text, startLabels, DATE_RE))
-    const rawEnd = normalizeDate(findNear(text, endLabels, DATE_RE))
+    startDate ??= normalizeDate(findNear(flatText, startLabels, DATE_RE))
+    rawEnd = normalizeDate(findNear(flatText, endLabels, DATE_RE))
     endDate ??= rawEnd !== startDate ? rawEnd : null
   }
 
   // ── Rest of fields ─────────────────────────────────────────────────────────
-  const statusRaw = /\bactiva\b/i.test(text)
+  const statusRaw = /\bactiva\b/i.test(flatText)
     ? "ACTIVA"
-    : /\bsuspendida\b/i.test(text)
+    : /\bsuspendida\b/i.test(flatText)
       ? "SUSPENDIDA"
-      : /\binactiva\b/i.test(text)
+      : /\binactiva\b/i.test(flatText)
         ? "INACTIVA"
         : null
 
-  const rateRaw = findNear(text, rateLabels, /([\d]+[.,][\d]+)\s*%/)
+  const rateRaw = findNear(flatText, rateLabels, /([\d]+[.,][\d]+)(?:\s*%)?/)
 
   const riskRaw = findNear(
-    text,
+    flatText,
     [
       "clase de riesgo",
       "nivel de riesgo",
       "riesgo laboral",
       "clasificación de riesgo",
       "clase riesgo",
+      "riesgo",
     ],
-    /\b([IVX]{1,3})\b/
+    /\b([IVX]{1,3}|[1-5])\b/
   )
 
   return {
@@ -275,9 +309,12 @@ export function extractPILACandidates(text: string): Partial<PaymentSheetData> {
       allPlanillas.length > 1
         ? allPlanillas.join(" / ") // AI will choose correct one
         : allPlanillas[0]
-    // Dates from first row (fecha pago is the same across rows)
-    soiPaymentDate = normalizeDate(soiMatches[0][3]) ?? undefined
-    soiDeadline = normalizeDate(soiMatches[0][4]) ?? undefined
+    // En el formato SOI/Aportes en Línea las columnas son:
+    // ... Fecha Pago (col 3) = fecha límite del sistema
+    // ... Limite Pago (col 4) = fecha en que el usuario realizó el pago
+    // Los nombres de las columnas son contraintuitivos — se asignan correctamente:
+    soiPaymentDate = normalizeDate(soiMatches[0][4]) ?? undefined  // "Limite Pago" = fecha real de pago
+    soiDeadline = normalizeDate(soiMatches[0][3]) ?? undefined      // "Fecha Pago" = fecha límite sistema
     // Period: YYYY-MM → MM/YYYY
     const [yr, mo] = soiMatches[0][1].split("-")
     soiPeriod = `${mo}/${yr}`
@@ -577,4 +614,22 @@ export function detectIssuer(
   }
 
   return "unknown"
+}
+
+// ─── Informe de Actividades ───────────────────────────────────────────────────
+
+export function extractActivityReportCandidates(text: string): Record<string, unknown> {
+  const signatureDate = normalizeDate(findNear(text, ["firma el presente informe el"], DATE_RE, 50))
+  const periodFrom = normalizeDate(findNear(text, ["PERIODO DEL INFORME:", "Desde:"], DATE_RE, 50))
+  const periodTo = normalizeDate(findNear(text, ["Hasta:"], DATE_RE, 50))
+  const opsStartDate = normalizeDate(findNear(text, ["PLAZO OPS:", "Fecha inicio"], DATE_RE, 50))
+  const opsEndDate = normalizeDate(findNear(text, ["Fecha Terminación"], DATE_RE, 50))
+
+  return {
+    signatureDate,
+    periodFrom,
+    periodTo,
+    opsStartDate,
+    opsEndDate,
+  }
 }

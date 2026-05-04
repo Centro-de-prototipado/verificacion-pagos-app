@@ -101,9 +101,16 @@ export function validarPago(
   }
 }
 
+/** Convierte DD/MM/YYYY → YYYY-MM-DD para calcularMesesContrato. */
+function dmyToISO(date: string): string {
+  const dmy = date.match(/^(\d{2})\/(\d{2})\/(\d{4})$/)
+  return dmy ? `${dmy[3]}-${dmy[2]}-${dmy[1]}` : date
+}
+
 /**
  * Calcula todos los aportes obligatorios al SGSSI para un contrato.
- * Los meses se derivan de las fechas ARL (más confiables que el contrato).
+ * Los meses se derivan de las fechas del CONTRATO (startDate / endDate),
+ * que es el valor total sobre el cual se mensualiza.
  * Si el contratista es pensionado, pensión y FSP se omiten.
  */
 export function calcularContribuciones(
@@ -111,7 +118,11 @@ export function calcularContribuciones(
   arl: ARLData,
   isPensioner: boolean
 ): ContributionCalculation {
-  const contractMonths = calcularMesesContrato(arl.startDate, arl.endDate)
+  // Usar fechas del contrato para calcular la duración (mensualización correcta)
+  const contractMonths = calcularMesesContrato(
+    dmyToISO(contract.startDate),
+    dmyToISO(contract.endDate)
+  )
   const monthlyValue = calcularValorMensualizado(
     contract.totalValueBeforeTax,
     contractMonths

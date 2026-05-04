@@ -81,3 +81,30 @@ export function readPdfFile(
   }
   return value
 }
+
+export function readImageFile(
+  value: FormDataEntryValue | null,
+  fieldName: string,
+  options: { required: boolean; maxBytes: number }
+): File | null {
+  if (!value) {
+    if (options.required) {
+      throw new Error(`La imagen "${fieldName}" es obligatoria.`)
+    }
+    return null
+  }
+  if (!(value instanceof File)) {
+    throw new Error(`El campo "${fieldName}" no es una imagen válida.`)
+  }
+  const mime = value.type?.toLowerCase() ?? ""
+  const isImage = mime.startsWith("image/")
+  if (!isImage) {
+    throw new Error(`El archivo "${fieldName}" debe ser una imagen (JPG/PNG).`)
+  }
+  if (value.size > options.maxBytes) {
+    throw new Error(
+      `La imagen "${fieldName}" supera el tamaño máximo permitido.`
+    )
+  }
+  return value
+}

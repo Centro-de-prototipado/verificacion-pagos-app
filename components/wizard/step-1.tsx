@@ -38,6 +38,13 @@ const REQUIRED_DOCUMENTS = [
     description: "Orden de prestación de servicios",
     hint: "OSE, OPS, CCO u otro tipo de contrato UNAL",
   },
+  {
+    key: "signature" as const,
+    stepNumber: 4,
+    label: "Foto de la Firma",
+    description: "Imagen de tu firma manuscrita",
+    hint: "Foto nítida o firma escaneada (PNG/JPG)",
+  },
 ] as const
 
 export function Step1() {
@@ -53,20 +60,23 @@ export function Step1() {
     arl: documents.arl !== null,
     contract: documents.contract !== null,
     contract2: documents.contract2 !== null,
+    signature: documents.signature !== null,
   }
 
-  const requiredCount = contractCount === "2" ? 4 : 3
+  const requiredCount = (contractCount === "2" ? 4 : 3) + 1
   const uploadedCount = [
     uploadStatus.paymentSheet,
     uploadStatus.arl,
     uploadStatus.contract,
     contractCount === "2" && uploadStatus.contract2,
+    uploadStatus.signature,
   ].filter(Boolean).length
 
   const allDocumentsReady =
     uploadStatus.paymentSheet &&
     uploadStatus.arl &&
     uploadStatus.contract &&
+    uploadStatus.signature &&
     (contractCount !== "2" || uploadStatus.contract2)
 
   function handleFormSubmit(data: ManualFormInput) {
@@ -140,6 +150,7 @@ export function Step1() {
             {contractCount === "2" && (
               <DocCheckItem label="Contrato 2" done={uploadStatus.contract2} />
             )}
+            <DocCheckItem label="Firma" done={uploadStatus.signature} />
           </div>
         </div>
 
@@ -154,6 +165,7 @@ export function Step1() {
                 hint={hint}
                 file={documents[key]}
                 onFileChange={(file) => setDocuments({ [key]: file })}
+                accept={key === "signature" ? "image/*" : "application/pdf"}
               />
             )
           )}

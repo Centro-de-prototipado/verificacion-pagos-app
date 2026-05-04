@@ -13,6 +13,8 @@ import {
   validarPago,
 } from "./aportes"
 
+import { validarInformeActividades } from "./informe"
+
 export interface ValidationSummary {
   results: ValidationResult[]
   /** Combined contributions (sum of both when two contracts). Used for PDF and payment validation. */
@@ -99,21 +101,28 @@ export function runValidations(
   if (required && frequencyMonths !== null) {
     const requiereEnEstePago = manual.paymentNumber % frequencyMonths === 0
     if (requiereEnEstePago) {
-      results.push(
-        informeAdjunto
-          ? {
-              ok: true,
-              blocking: false,
-              type: "report",
-              message: `Informe de actividades adjunto para el pago ${manual.paymentNumber}.`,
-            }
-          : {
-              ok: false,
-              blocking: false,
-              type: "report",
-              message: `El contrato exige informe de actividades cada ${frequencyMonths} mes(es). No se adjuntó en este pago — recuerda incluirlo.`,
-            }
-      )
+      if (!informeAdjunto) {
+        results.push({
+          ok: false,
+          blocking: false,
+          type: "report",
+          message: `El contrato exige informe de actividades cada ${frequencyMonths} mes(es). No se adjuntó en este pago — recuerda incluirlo.`,
+        })
+      } else if (extracted.activityReport) {
+        // Validation of report content
+        const reportResults = validarInformeActividades(
+          extracted.activityReport,
+          contract
+        )
+        results.push(...reportResults)
+      } else {
+        results.push({
+          ok: true,
+          blocking: false,
+          type: "report",
+          message: `Informe de actividades adjunto para el pago ${manual.paymentNumber}.`,
+        })
+      }
     }
   }
 

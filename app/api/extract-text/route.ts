@@ -12,13 +12,19 @@ import {
 export const runtime = "nodejs"
 
 // Campos de PDF que se esperan en el FormData
-const PDF_KEYS = ["paymentSheet", "arl", "contract", "contract2"] as const
+const PDF_KEYS = [
+  "paymentSheet",
+  "arl",
+  "contract",
+  "contract2",
+  "activityReport",
+] as const
 type PDFKey = (typeof PDF_KEYS)[number]
 const MAX_FORM_BYTES = 40 * 1024 * 1024 // 40 MB
 const MAX_PDF_BYTES = 12 * 1024 * 1024 // 12 MB por archivo
 const MAX_PDF_PAGES = 30
 const RATE_LIMIT_WINDOW_MS = 60 * 1000
-const RATE_LIMIT_MAX_REQUESTS = 12
+const RATE_LIMIT_MAX_REQUESTS = 20 // increased for Step 3 uploads
 
 export async function POST(request: NextRequest) {
   const ip = getClientIp(request)
@@ -55,8 +61,13 @@ export async function POST(request: NextRequest) {
   try {
     // Iniciar todas las extracciones en paralelo (async-parallel)
     const entries = PDF_KEYS.map(async (key): Promise<[PDFKey, string]> => {
-      const file = readPdfFile(formData.get(key), key, {
-        required: key !== "contract2",
+      const field = formData.get(key)
+      // If the field is missing, just skip it without error.
+      // The client only sends the documents it has at each step.
+      if (!field) return [key, ""]
+
+      const file = readPdfFile(field, key, {
+        required: false,
         maxBytes: MAX_PDF_BYTES,
       })
       if (!file) return [key, ""]

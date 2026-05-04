@@ -101,6 +101,8 @@ export interface UploadedDocuments {
   deductionPrepaidMedicineFile?: File | null
   deductionAFCFile?: File | null
   deductionVoluntaryPensionFile?: File | null
+  /** Signature image for the 069 form */
+  signature: File | null
 }
 
 // ─── AI-extracted data (populated in Phase 3) ────────────────────────────────
@@ -139,11 +141,33 @@ export interface ContractData {
   }
 }
 
+export interface ActivityReportItem {
+  activityDescription: string
+  periodPercentage: number
+  accumulatedPercentage: number
+}
+
+export interface ActivityReportData {
+  items: ActivityReportItem[]
+  /** Date after "En constancia de lo anterior, se firma el presente informe el" */
+  signatureDate: string
+  /** PERIODO DEL INFORME: Desde */
+  periodFrom: string
+  /** PERIODO DEL INFORME: Hasta */
+  periodTo: string
+  /** PLAZO OPS: Fecha inicio */
+  opsStartDate: string
+  /** PLAZO OPS: Fecha Terminación */
+  opsEndDate: string
+  isSigned: boolean
+}
+
 export interface ExtractedData {
   paymentSheet: PaymentSheetData | null
   arl: ARLData | null
   contract: ContractData | null
   contract2?: ContractData | null
+  activityReport?: ActivityReportData | null
 }
 
 // ─── Validation results (Phase 4) ────────────────────────────────────────────
@@ -282,4 +306,6 @@ export interface Format069Data {
   // Firma sección 7
   signerName: string
   signerDocumentRef: string
+  /** Base64 encoded image string */
+  signatureImage?: string
 }

@@ -14,7 +14,23 @@ export function calcularDeclaracionCedular(
   paymentRequestPeriod: string,
   payrollPeriod: string
 ): "SI" | "NO" {
+  // 1. Si es el primer pago, siempre es SI
   if (paymentNumber === 1) return "SI"
-  if (paymentRequestPeriod !== payrollPeriod) return "NO"
-  return "SI"
+
+  // 2. Normalizar períodos para comparación (quitar espacios y asegurar MM/YYYY)
+  const normalize = (p: string) => {
+    const trimmed = p.trim().toLowerCase()
+    if (!trimmed.includes("/")) return trimmed
+    const [m, y] = trimmed.split("/")
+    return `${m.padStart(2, "0")}/${y}`
+  }
+
+  const req = normalize(paymentRequestPeriod)
+  const pay = normalize(payrollPeriod)
+
+  // 3. Si los períodos son iguales, es SI
+  if (req === pay) return "SI"
+
+  // 4. Si son diferentes (y no es el primer pago), es NO
+  return "NO"
 }

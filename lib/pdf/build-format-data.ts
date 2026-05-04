@@ -6,6 +6,7 @@ import type {
   ContributionCalculation,
 } from "@/lib/types"
 import type { ValidationSummary } from "@/lib/validations"
+import { calcularDeclaracionCedular } from "@/lib/validations/cedular"
 import { SPANISH_MONTHS } from "@/lib/constants/months"
 
 type PlanillaShort = {
@@ -125,7 +126,8 @@ export function buildFormat069Data(
   manual: ManualFormData,
   contributions: ContributionCalculation,
   summary: ValidationSummary,
-  paymentSheet2Data?: PlanillaShort
+  paymentSheet2Data?: PlanillaShort,
+  signatureImage?: string
 ): Format069Data {
   const { contract, arl, contract2 } = extracted
   const year = manual.paymentRequestPeriod.split("/")[1]
@@ -178,8 +180,13 @@ export function buildFormat069Data(
     deductionPrepaidMedicine: manual.deductionPrepaidMedicine,
     deductionAFC: manual.deductionAFC,
     deductionVoluntaryPension: manual.deductionVoluntaryPension,
-    formalDeclaration: summary.formalDeclaration,
+    formalDeclaration: calcularDeclaracionCedular(
+      manual.paymentNumber,
+      manual.paymentRequestPeriod,
+      laterPeriod(extracted.paymentSheet!.period, paymentSheet2Data?.period)
+    ),
     signerName: contract!.contractorName,
     signerDocumentRef: `${contract!.documentType} ${contract!.documentNumber}`,
+    signatureImage,
   }
 }

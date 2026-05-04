@@ -7,13 +7,16 @@ import { extractWithValidation } from "@/lib/ai/extraction"
 import { ARLSchema } from "@/lib/schemas/arl"
 import { ContractSchema } from "@/lib/schemas/contract"
 import { PaymentSheetSchema } from "@/lib/schemas/payment-sheet"
+import { ActivityReportSchema } from "@/lib/schemas/activity-report"
 import type { ARLExtracted } from "@/lib/schemas/arl"
 import type { ContractExtracted } from "@/lib/schemas/contract"
 import type { PaymentSheetExtracted } from "@/lib/schemas/payment-sheet"
+import type { ActivityReportExtracted } from "@/lib/schemas/activity-report"
 import {
   extractARLCandidates,
   extractPILACandidates,
   extractContractCandidates,
+  extractActivityReportCandidates,
   extractDocumentTypeFromPILA,
   detectIssuer,
   joinSplitDates,
@@ -64,10 +67,11 @@ const ProfileHintSchema = z.object({
 
 const ExtractRequestSchema = z.object({
   rawText: z.object({
-    paymentSheet: z.string(),
-    arl: z.string(),
-    contract: z.string(),
+    paymentSheet: z.string().optional(),
+    arl: z.string().optional(),
+    contract: z.string().optional(),
     contract2: z.string().optional(),
+    activityReport: z.string().optional(),
   }),
   profiles: z.array(ProfileHintSchema).default([]),
 })
@@ -148,10 +152,11 @@ export async function POST(request: NextRequest) {
   ;(async () => {
     try {
       const cleanText = {
-        paymentSheet: joinSplitDates(rawText.paymentSheet),
-        arl: joinSplitDates(rawText.arl),
-        contract: joinSplitDates(rawText.contract),
-        contract2: rawText.contract2 ? joinSplitDates(rawText.contract2) : "",
+        paymentSheet: joinSplitDates(rawText.paymentSheet ?? ""),
+        arl: joinSplitDates(rawText.arl ?? ""),
+        contract: joinSplitDates(rawText.contract ?? ""),
+        contract2: joinSplitDates(rawText.contract2 ?? ""),
+        activityReport: joinSplitDates(rawText.activityReport ?? ""),
       }
 
       const issuerKeys = {
@@ -166,6 +171,9 @@ export async function POST(request: NextRequest) {
       const contractCand = extractContractCandidates(cleanText.contract)
       const contract2Cand = cleanText.contract2
         ? extractContractCandidates(cleanText.contract2)
+        : null
+      const reportCand = cleanText.activityReport
+        ? extractActivityReportCandidates(cleanText.activityReport)
         : null
 
       // The PILA shows the contractor's own document type unambiguously.
@@ -185,6 +193,9 @@ export async function POST(request: NextRequest) {
         contract2: cleanText.contract2
           ? isDocumentMatch(cleanText.contract2, "contract")
           : null,
+        activityReport: cleanText.activityReport
+          ? isDocumentMatch(cleanText.activityReport, "report")
+          : null,
       }
 
       // Snapshot providers ONCE so all parallel extractions start from the same
@@ -198,7 +209,7 @@ export async function POST(request: NextRequest) {
           send({ type, doc, model } as ExtractionStreamEvent)
         }
 
-      const [r0, r1, r2, r3] = await Promise.allSettled([
+      const [r0, r1, r2, r3, r4] = await Promise.allSettled([
         docChecks.paymentSheet.valid
           ? extractWithValidation<PaymentSheetExtracted>({
               text: cleanText.paymentSheet,
@@ -230,6 +241,14 @@ export async function POST(request: NextRequest) {
               candidates: arlCandidate,
               profileExample: findProfile(profiles, "arl", issuerKeys.arl),
               snapshot,
+              extraInstructions:
+                "Reglas para fechas:\n" +
+                "1. Si el documento tiene las etiquetas 'Fecha inicio contrato' y/o 'Fecha fin contrato' " +
+                "(o variantes como 'Fecha de inicio contrato', 'Fecha de fin contrato'), " +
+                "SIEMPRE usa ESAS fechas para startDate y endDate. " +
+                "NO uses la 'Fecha de inicio de cobertura' ni la 'Fecha de inicio de afiliación' en ese caso.\n" +
+                "2. Solo si el documento NO tiene etiquetas de 'contrato', usa la fecha de inicio/fin de cobertura o afiliación.\n" +
+                "3. El candidato startDate ya fue calculado priorizando las fechas de contrato — confía en él si es no nulo.",
               onProgress: makeOnProgress("arl"),
             })
           : Promise.resolve(null),
@@ -261,6 +280,22 @@ export async function POST(request: NextRequest) {
               onProgress: makeOnProgress("contract2"),
             })
           : Promise.resolve(null),
+        docChecks.activityReport?.valid
+          ? extractWithValidation<ActivityReportExtracted>({
+              text: cleanText.activityReport,
+              schema: ActivityReportSchema,
+              docLabel: "Informe de actividades",
+              candidates: reportCand ?? {},
+              snapshot,
+              extraInstructions:
+                "Reglas para el Informe de Actividades:\n" +
+                "1. Extrae todos los items de la tabla de actividades. Cada item debe tener descripción, % periodo y % acumulado.\n" +
+                "2. La columna 'ACTIVIDADES EJECUTADAS' suele ser el texto descriptivo.\n" +
+                "3. 'periodo (%)' y 'acumulada a la fecha (%)' son números decimales o enteros.\n" +
+                "4. isSigned: busca evidencias visuales de firma (texto como 'Firmado digitalmente', '(Fdo.)', o la presencia de un bloque de firma manuscrita).",
+              onProgress: makeOnProgress("activityReport"),
+            })
+          : Promise.resolve(null),
       ])
 
       const warnings: string[] = []
@@ -287,6 +322,14 @@ export async function POST(request: NextRequest) {
         warnings.push(
           `Contrato 2 — el PDF no parece ser un ${docChecks.contract2.label}. Verifica que subiste el archivo correcto.`
         )
+      if (
+        docChecks.activityReport &&
+        !docChecks.activityReport.valid &&
+        cleanText.activityReport.trim().length > 0
+      )
+        warnings.push(
+          `Informe — el PDF no parece ser un ${docChecks.activityReport.label}. Verifica que subiste el archivo correcto.`
+        )
 
       const aiPS =
         r0.status === "fulfilled"
@@ -303,6 +346,10 @@ export async function POST(request: NextRequest) {
       const aiC2 =
         r3.status === "fulfilled"
           ? (r3.value as Record<string, unknown> | null)
+          : null
+      const aiReport =
+        r4.status === "fulfilled"
+          ? (r4.value as Record<string, unknown> | null)
           : null
 
       const psRaw = fillFromCandidates(
@@ -399,11 +446,26 @@ export async function POST(request: NextRequest) {
       if (c2Raw)
         confidence.contract2 = computeConfidence(c2Candidates, c2Raw)
 
+      const reportCandidates = (reportCand ?? {}) as Record<string, unknown>
+      const reportRaw = fillFromCandidates(aiReport, reportCandidates)
+      const activityReport = reportRaw as ActivityReportExtracted | null
+      if (r4.status === "rejected" && cleanText.activityReport)
+        warnings.push(`Informe — error de extracción: ${r4.reason}`)
+      else if (
+        r4.status === "fulfilled" &&
+        !aiReport &&
+        cleanText.activityReport.trim().length > 0
+      )
+        warnings.push("Informe — la IA no pudo interpretar el documento")
+      if (reportRaw)
+        confidence.activityReport = computeConfidence(reportCandidates, reportRaw)
+
       const extractedData: ExtractedData = {
         paymentSheet,
         arl,
         contract,
         ...(contract2 ? { contract2 } : {}),
+        ...(activityReport ? { activityReport } : {}),
       }
 
       send({

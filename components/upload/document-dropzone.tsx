@@ -19,6 +19,8 @@ interface DocumentDropzoneProps {
   disabled?: boolean
   /** Número de orden para mostrar como badge (1, 2, 3…) */
   stepNumber?: number
+  /** Muestra estado de procesamiento IA */
+  loading?: boolean
 }
 
 export function DocumentDropzone({
@@ -29,14 +31,24 @@ export function DocumentDropzone({
   onFileChange,
   disabled = false,
   stepNumber,
+  accept = "application/pdf",
+  loading = false,
 }: DocumentDropzoneProps) {
   const inputRef = useRef<HTMLInputElement>(null)
   const [isDragging, setIsDragging] = useState(false)
 
   function processFile(f: File | null) {
     if (!f) return
-    if (f.type !== "application/pdf") {
-      alert("Solo se aceptan archivos PDF.")
+    // Simple check: if accept contains "*" or the specific type
+    const isAccepted = accept === "*" || 
+      accept.split(",").some(type => {
+        const t = type.trim();
+        if (t === "image/*") return f.type.startsWith("image/");
+        return f.type === t || f.name.toLowerCase().endsWith(t.replace(".", ""));
+      });
+
+    if (!isAccepted) {
+      alert(`Solo se aceptan archivos de tipo: ${accept.replace("application/pdf", "PDF").replace("image/*", "Imagen")}`)
       return
     }
     onFileChange(f)
@@ -45,7 +57,7 @@ export function DocumentDropzone({
   function handleDrop(e: React.DragEvent) {
     e.preventDefault()
     setIsDragging(false)
-    if (disabled) return
+    if (disabled || loading) return
     processFile(e.dataTransfer.files[0] ?? null)
   }
 
@@ -56,7 +68,7 @@ export function DocumentDropzone({
   }
 
   function handleKeyDown(e: React.KeyboardEvent) {
-    if ((e.key === "Enter" || e.key === " ") && !disabled) {
+    if ((e.key === "Enter" || e.key === " ") && !disabled && !loading) {
       e.preventDefault()
       inputRef.current?.click()
     }
@@ -71,18 +83,27 @@ export function DocumentDropzone({
         <div className="flex items-center gap-2">
           <span
             className={cn(
-              "flex size-5 shrink-0 items-center justify-center rounded-full text-[10px] font-bold",
+              "flex size-5 shrink-0 items-center justify-center rounded-full text-[10px] font-bold transition-all duration-300",
               uploaded
                 ? "bg-green-500 text-white"
-                : "bg-muted text-muted-foreground"
+                : "bg-muted text-muted-foreground",
+              loading && "animate-pulse ring-2 ring-primary/30"
             )}
           >
-            {uploaded ? <CheckCircle2Icon className="size-3.5" /> : stepNumber}
+            {loading ? (
+              <span className="flex size-full items-center justify-center">
+                <span className="size-2 animate-ping rounded-full bg-primary" />
+              </span>
+            ) : uploaded ? (
+              <CheckCircle2Icon className="size-3.5" />
+            ) : (
+              stepNumber
+            )}
           </span>
           <span className="text-xs font-medium text-foreground">{label}</span>
           {uploaded && (
             <span className="ml-auto text-[10px] font-medium text-green-600 dark:text-green-400">
-              ✓ Listo
+              {loading ? "Analizando..." : "✓ Listo"}
             </span>
           )}
         </div>
@@ -91,14 +112,14 @@ export function DocumentDropzone({
       {/* Zona de drop */}
       <div
         role="button"
-        tabIndex={disabled ? -1 : 0}
+        tabIndex={disabled || loading ? -1 : 0}
         aria-label={`Subir ${label}`}
-        aria-disabled={disabled}
-        onClick={() => !disabled && inputRef.current?.click()}
+        aria-disabled={disabled || loading}
+        onClick={() => !disabled && !loading && inputRef.current?.click()}
         onKeyDown={handleKeyDown}
         onDragOver={(e) => {
           e.preventDefault()
-          if (!disabled) setIsDragging(true)
+          if (!disabled && !loading) setIsDragging(true)
         }}
         onDragLeave={() => setIsDragging(false)}
         onDrop={handleDrop}
@@ -115,20 +136,30 @@ export function DocumentDropzone({
             !isDragging &&
             "border-dashed border-border hover:border-primary/50 hover:bg-muted/30",
           // Estado: deshabilitado
-          disabled && "cursor-not-allowed opacity-50"
+          (disabled || loading) && "cursor-not-allowed opacity-50",
+          // Estado: cargando
+          loading && "border-primary/30 bg-primary/5"
         )}
       >
         <input
           ref={inputRef}
           type="file"
-          accept="application/pdf"
+          accept={accept}
           className="sr-only"
           onChange={handleInputChange}
-          disabled={disabled}
+          disabled={disabled || loading}
           tabIndex={-1}
         />
 
-        {uploaded ? (
+        {loading ? (
+          <div className="flex flex-col items-center gap-2">
+            <div className="relative size-10">
+              <div className="absolute inset-0 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+              <UploadCloudIcon className="absolute inset-0 m-auto size-5 text-primary opacity-50" />
+            </div>
+            <p className="text-xs font-medium text-primary">Procesando con IA...</p>
+          </div>
+        ) : uploaded ? (
           /* ── Estado: archivo cargado ── */
           <>
             <FileTextIcon className="size-6 shrink-0 text-green-600 dark:text-green-400" />
@@ -137,7 +168,7 @@ export function DocumentDropzone({
                 {file!.name}
               </p>
               <p className="text-[10px] text-muted-foreground">
-                {(file!.size / 1024).toFixed(0)} KB · PDF
+                {(file!.size / 1024).toFixed(0)} KB · {file!.type.startsWith("image/") ? "Imagen" : "PDF"}
               </p>
             </div>
             <p className="text-[10px] text-muted-foreground/70">
@@ -175,7 +206,7 @@ export function DocumentDropzone({
                 </p>
               )}
               <p className="mt-1 text-[10px] text-muted-foreground/50">
-                PDF · Arrastra aquí o haz clic
+                {accept.includes("image") ? "Imagen (PNG/JPG)" : "PDF"} · Arrastra aquí o haz clic
               </p>
             </div>
           </>
