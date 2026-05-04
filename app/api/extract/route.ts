@@ -512,11 +512,18 @@ export async function POST(request: NextRequest) {
         ...(activityReport ? { activityReport } : {}),
       }
 
+      const finalIssuers: Record<string, string> = {}
+      if (issuerKeys.paymentSheet) finalIssuers.paymentSheet = issuerKeys.paymentSheet
+      if (issuerKeys.arl) finalIssuers.arl = issuerKeys.arl
+      if (issuerKeys.contract) finalIssuers.contract = issuerKeys.contract
+      if (issuerKeys.contract2) finalIssuers.contract2 = issuerKeys.contract2
+      if (issuerKeys.paymentSheet2) finalIssuers.paymentSheet2 = issuerKeys.paymentSheet2
+
       send({
         type: "result",
         data: extractedData,
         warnings,
-        issuerKeys,
+        issuerKeys: finalIssuers,
         confidence,
       })
     } catch (error) {
