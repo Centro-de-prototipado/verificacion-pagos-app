@@ -195,6 +195,7 @@ export interface RawPDFText {
   arl?: string
   contract?: string
   contract2?: string
+  paymentSheet2?: string
   activityReport?: string
 }
 
