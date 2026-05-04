@@ -218,7 +218,7 @@ export async function POST(request: NextRequest) {
         const ab = planilla2Bytes.buffer.slice(
           planilla2Bytes.byteOffset,
           planilla2Bytes.byteOffset + planilla2Bytes.byteLength
-        )
+        ) as ArrayBuffer
         const text = await extractTextFromPDF(ab)
         const cands = extractPILACandidates(joinSplitDates(text))
         paymentSheet2Data = {

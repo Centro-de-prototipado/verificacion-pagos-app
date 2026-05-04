@@ -19,6 +19,7 @@ interface DocumentDropzoneProps {
   disabled?: boolean
   /** Número de orden para mostrar como badge (1, 2, 3…) */
   stepNumber?: number
+  accept?: string
   /** Muestra estado de procesamiento IA */
   loading?: boolean
 }

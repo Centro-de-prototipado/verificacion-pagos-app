@@ -184,10 +184,11 @@ export interface ValidationResult {
 // ─── Raw PDF text (Phase 2) ───────────────────────────────────────────────────
 
 export interface RawPDFText {
-  paymentSheet: string
-  arl: string
-  contract: string
+  paymentSheet?: string
+  arl?: string
+  contract?: string
   contract2?: string
+  activityReport?: string
 }
 
 // ─── Contribution calculations (Phase 4 output / Phase 5 input) ──────────────
