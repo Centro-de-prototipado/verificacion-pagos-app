@@ -123,6 +123,71 @@ export function Step3() {
   } = useWizardStore()
 
   const [isExtractingReport, setIsExtractingReport] = useState(false)
+  const [isExtractingPS2, setIsExtractingPS2] = useState(false)
+
+  const handlePaymentSheet2Upload = async (file: File | null) => {
+    setDocuments({ paymentSheet2: file })
+    if (!file) {
+      if (extractedData) {
+        setExtractedData({ ...extractedData, paymentSheet2: null })
+      }
+      return
+    }
+
+    setIsExtractingPS2(true)
+    try {
+      const formData = new FormData()
+      formData.append("paymentSheet", file) // API expects 'paymentSheet' key for PILA
+
+      const textRes = await fetch("/api/extract-text", {
+        method: "POST",
+        body: formData,
+      })
+      if (!textRes.ok) throw new Error("Error extrayendo texto de la planilla")
+      const rawText = await textRes.json()
+
+      const aiRes = await fetch("/api/extract", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          rawText: { paymentSheet2: rawText.paymentSheet },
+          profiles: [],
+        }),
+      })
+
+      if (!aiRes.ok || !aiRes.body)
+        throw new Error("Error analizando la planilla con IA")
+
+      const reader = aiRes.body.getReader()
+      const decoder = new TextDecoder()
+      let buffer = ""
+      while (true) {
+        const { done, value } = await reader.read()
+        if (done) break
+        buffer += decoder.decode(value, { stream: true })
+        const lines = buffer.split("\n")
+        buffer = lines.pop() ?? ""
+        for (const line of lines) {
+          if (!line.trim()) continue
+          try {
+            const event = JSON.parse(line)
+            if (event.type === "result" && event.data.paymentSheet2) {
+              if (extractedData) {
+                setExtractedData({
+                  ...extractedData,
+                  paymentSheet2: event.data.paymentSheet2,
+                })
+              }
+            }
+          } catch (e) {}
+        }
+      }
+    } catch (err) {
+      console.error("Error extracting ps2:", err)
+    } finally {
+      setIsExtractingPS2(false)
+    }
+  }
 
   const handleReportUpload = async (file: File | null) => {
     setDocuments({ activityReport: file })
@@ -250,7 +315,8 @@ export function Step3() {
               description="Planilla de seguridad social del período posterior"
               hint="Mismo formato que la planilla original"
               file={documents.paymentSheet2 ?? null}
-              onFileChange={(file) => setDocuments({ paymentSheet2: file })}
+              onFileChange={handlePaymentSheet2Upload}
+              loading={isExtractingPS2}
             />
           </div>
         </div>
@@ -277,6 +343,12 @@ export function Step3() {
               <div className="flex items-center gap-2 rounded-lg border border-primary/20 bg-primary/5 px-4 py-3">
                 <Loader2Icon className="size-4 animate-spin text-primary" />
                 <p className="text-sm">Analizando contenido del informe con IA...</p>
+              </div>
+            )}
+            {isExtractingPS2 && (
+              <div className="flex items-center gap-2 rounded-lg border border-primary/20 bg-primary/5 px-4 py-3">
+                <Loader2Icon className="size-4 animate-spin text-primary" />
+                <p className="text-sm">Analizando planilla del mes siguiente con IA...</p>
               </div>
             )}
             {summary.results.map((r, i) => (

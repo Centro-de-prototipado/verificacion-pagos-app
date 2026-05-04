@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState, useRef } from "react"
+import { useEffect, useState, useRef, useMemo } from "react"
 import { Controller, useForm, type Resolver } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import {
@@ -163,7 +163,17 @@ export function ManualForm({
   })
 
   const contractCount = form.watch("contractCount")
-  const { setDocuments, documents } = useWizardStore()
+  const { setDocuments, documents, extractedData } = useWizardStore()
+
+  // Lógica para deshabilitar Final/Único si ya tenemos la fecha fin del contrato
+  const canSelectFinal = useMemo(() => {
+    if (!extractedData?.contract?.endDate) return true
+    const [d, m, y] = extractedData.contract.endDate.split("/").map(Number)
+    const endDate = new Date(y, m - 1, d)
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+    return today >= endDate
+  }, [extractedData])
 
   // Notifica al padre cada vez que cambia contractCount
   useEffect(() => {
@@ -291,22 +301,35 @@ export function ManualForm({
                     Selecciona el tipo que corresponde a este pago.
                   </FieldDescription>
                   <div className="grid grid-cols-3 gap-2">
-                    {(["Parcial", "Final", "Único"] as const).map((val) => (
-                      <button
-                        key={val}
-                        type="button"
-                        onClick={() => field.onChange(val)}
-                        className={[
-                          "rounded-lg border-2 px-3 py-2 text-sm font-semibold transition-all focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
-                          field.value === val
-                            ? "border-primary bg-primary/10 text-primary"
-                            : "border-border text-foreground hover:border-primary/40",
-                        ].join(" ")}
-                      >
-                        {val}
-                      </button>
-                    ))}
+                    {(["Parcial", "Final", "Único"] as const).map((val) => {
+                      const isDisabled = (val === "Final" || val === "Único") && !canSelectFinal
+                      return (
+                        <button
+                          key={val}
+                          type="button"
+                          disabled={isDisabled}
+                          onClick={() => field.onChange(val)}
+                          className={[
+                            "rounded-lg border-2 px-3 py-2 text-sm font-semibold transition-all focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
+                            field.value === val
+                              ? "border-primary bg-primary/10 text-primary"
+                              : "border-border text-foreground hover:border-primary/40",
+                            isDisabled && "cursor-not-allowed opacity-40 grayscale",
+                          ]
+                            .filter(Boolean)
+                            .join(" ")}
+                          title={isDisabled ? "Solo disponible al finalizar el contrato" : ""}
+                        >
+                          {val}
+                        </button>
+                      )
+                    })}
                   </div>
+                  {!canSelectFinal && (
+                    <p className="mt-1.5 text-[10px] text-amber-600">
+                      ⚠ Pago Final/Único bloqueado hasta el {extractedData!.contract!.endDate}
+                    </p>
+                  )}
                   {fieldState.invalid && (
                     <FieldError errors={[fieldState.error]} />
                   )}
@@ -336,6 +359,8 @@ export function ManualForm({
                   placeholder="Ej. DIRECCIÓN DE INVESTIGACIÓN Y EXTENSIÓN"
                   onChange={(e) => field.onChange(e.target.value.toUpperCase())}
                   aria-invalid={fieldState.invalid}
+                  spellCheck={true}
+                  lang="es"
                 />
                 {fieldState.invalid && (
                   <FieldError errors={[fieldState.error]} />
@@ -486,6 +511,8 @@ export function ManualForm({
                   id={field.name}
                   placeholder="Nombre completo"
                   aria-invalid={fieldState.invalid}
+                  spellCheck={true}
+                  lang="es"
                 />
                 {fieldState.invalid && (
                   <FieldError errors={[fieldState.error]} />

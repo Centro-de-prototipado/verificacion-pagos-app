@@ -57,7 +57,7 @@ const FINGERPRINTS: Record<DocType, DocFingerprint> = {
   contract: {
     label: "contrato u orden contractual",
     require: [
-      ["contrato", "orden de", "orden contractual", "orden de servicio", "orden de compra"],
+      ["contrato", "orden de", "orden contractual", "orden de servicio", "orden de compra", "otro si", "otro sí", "adición", "adicion"],
       ["contratista", "universidad nacional", "unal"],
     ],
   },

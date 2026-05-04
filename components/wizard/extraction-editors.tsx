@@ -101,6 +101,8 @@ export function EditField({
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         className={`w-full bg-transparent text-sm font-medium outline-none placeholder:text-muted-foreground/50 ${color}`}
+        spellCheck={true}
+        lang="es"
       />
     </div>
   )

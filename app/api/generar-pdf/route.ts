@@ -11,7 +11,12 @@ import {
   buildFormat053Data,
   buildFormat069Data,
 } from "@/lib/pdf/build-format-data"
-import { fill053, fill069, combinePDFs } from "@/lib/pdf/fill-forms"
+import {
+  fill053,
+  fill069,
+  combinePDFs,
+  generateValidationCertificate,
+} from "@/lib/pdf/fill-forms"
 import { getPdfPageCount } from "@/lib/pdf/page-count"
 import { extractTextFromPDF } from "@/lib/pdf/extract-text"
 import {
@@ -247,9 +252,14 @@ export async function POST(request: NextRequest) {
       signatureBase64
     )
 
-    const [bytes053, bytes069] = await Promise.all([
+    const [bytes053, bytes069, bytesCertificado] = await Promise.all([
       fill053(datos053),
       fill069(datos069),
+      generateValidationCertificate({
+        contractorName: extracted.contract!.contractorName,
+        orderNumber: extracted.contract!.orderNumber,
+        expeditionDate: datos053.expeditionDate,
+      }),
     ])
 
     if (!bytes053 && !bytes069) {
@@ -269,6 +279,7 @@ export async function POST(request: NextRequest) {
       bytesDeduccionFiles: deductionFileBytes.length
         ? deductionFileBytes
         : undefined,
+      bytesCertificado: bytesCertificado,
     })
 
     const contract = extracted.contract!

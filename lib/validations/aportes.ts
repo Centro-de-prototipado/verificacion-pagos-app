@@ -66,19 +66,37 @@ export function calcularAporteARL(
  */
 export function combineContributions(
   c1: ContributionCalculation,
-  c2: ContributionCalculation
+  c2: ContributionCalculation,
+  isPensioner: boolean,
+  cotizationRate: number
 ): ContributionCalculation {
+  const totalMonthlyValue = c1.monthlyValue + c2.monthlyValue
+  const totalIBC = c1.ibc + c2.ibc
+  const effectiveBase = calcularBaseEfectiva(totalIBC)
+
+  const healthContribution = calcularAporteSalud(effectiveBase)
+  const pensionContribution = isPensioner
+    ? 0
+    : calcularAportePension(effectiveBase)
+  const arlContribution = calcularAporteARL(cotizationRate, effectiveBase)
+
+  // FSP: Pendiente confirmar si aplica sobre la base total
+  const solidarityFund = 0
+
+  const totalObligatory =
+    healthContribution + pensionContribution + arlContribution + solidarityFund
+
   return {
-    calculationBase: c1.calculationBase + c2.calculationBase,
-    monthlyValue: c1.monthlyValue + c2.monthlyValue,
-    contractMonths: c1.contractMonths,
-    ibc: c1.ibc + c2.ibc,
-    healthContribution: c1.healthContribution + c2.healthContribution,
-    pensionContribution: c1.pensionContribution + c2.pensionContribution,
-    arlContribution: c1.arlContribution + c2.arlContribution,
-    solidarityFund: c1.solidarityFund + c2.solidarityFund,
-    totalObligatory: c1.totalObligatory + c2.totalObligatory,
-    monthlyRetentionBase: c1.monthlyRetentionBase + c2.monthlyRetentionBase,
+    calculationBase: effectiveBase,
+    monthlyValue: totalMonthlyValue,
+    contractMonths: c1.contractMonths, // Se asume el mismo periodo
+    ibc: totalIBC,
+    healthContribution,
+    pensionContribution,
+    arlContribution,
+    solidarityFund,
+    totalObligatory,
+    monthlyRetentionBase: totalMonthlyValue,
   }
 }
 

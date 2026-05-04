@@ -56,6 +56,8 @@ export type DocumentType = "CC" | "NIT" | "CE"
 /** Data entered manually by the user — not extracted by AI. */
 export interface ManualFormData {
   contractCount: "1" | "2"
+  /** Which contract(s) are being claimed in this payment request. Only for contractCount === "2" */
+  involvedContracts?: "1" | "2" | "Ambos"
   paymentsToRequest: number
   institutionalEmail: string
   isPensioner: boolean
@@ -159,11 +161,16 @@ export interface ActivityReportData {
   opsStartDate: string
   /** PLAZO OPS: Fecha Terminación */
   opsEndDate: string
+  /** Extraído del informe para validar con el contrato */
+  contractorName: string
+  /** Extraído del informe para validar con el contrato */
+  documentNumber: string
   isSigned: boolean
 }
 
 export interface ExtractedData {
   paymentSheet: PaymentSheetData | null
+  paymentSheet2?: PaymentSheetData | null
   arl: ARLData | null
   contract: ContractData | null
   contract2?: ContractData | null

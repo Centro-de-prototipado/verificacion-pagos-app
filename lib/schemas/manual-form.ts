@@ -3,20 +3,32 @@ import { z } from "zod"
 /** Regex para período MM/YYYY (ej. 04/2026) */
 const periodRegex = /^(0[1-9]|1[0-2])\/\d{4}$/
 
+/** Regex para CSI #/año (ej. CSI 1/2026) */
+const csiRegex = /^CSI \d+\/\d{4}$/
+
 export const ManualFormSchema = z.object({
   // ── Contrato ──────────────────────────────────────────────────────────────
   contractCount: z.enum(["1", "2"], {
     error: "Selecciona 1 o 2 contratos",
   }),
+  involvedContracts: z.enum(["1", "2", "Ambos"]).optional(),
 
   quipuCompany: z
     .string()
     .min(1, "El código QUIPU es requerido")
     .regex(/^\d+$/, "Solo se permiten dígitos"),
 
-  amendmentNumber: z.string().optional(),
+  amendmentNumber: z
+    .string()
+    .regex(csiRegex, "Usa el formato CSI #/año — ej. CSI 1/2026")
+    .optional()
+    .or(z.literal("")),
 
-  additionNumber: z.string().optional(),
+  additionNumber: z
+    .string()
+    .regex(csiRegex, "Usa el formato CSI #/año — ej. CSI 1/2026")
+    .optional()
+    .or(z.literal("")),
 
   // ── Pago ──────────────────────────────────────────────────────────────────
   paymentsToRequest: z.coerce

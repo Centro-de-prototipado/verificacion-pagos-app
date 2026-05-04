@@ -54,6 +54,9 @@ export function Step1() {
   const [contractCount, setContractCount] = useState<"1" | "2">(
     manualData?.contractCount ?? "1"
   )
+  const [involvedContracts, setInvolvedContracts] = useState<"1" | "2" | "Ambos">(
+    manualData?.involvedContracts ?? "Ambos"
+  )
 
   const uploadStatus = {
     paymentSheet: documents.paymentSheet !== null,
@@ -87,7 +90,11 @@ export function Step1() {
       window.scrollTo({ top: 0, behavior: "smooth" })
       return
     }
-    setManualData({ ...data, contractCount } as ManualFormData)
+    setManualData({
+      ...data,
+      contractCount,
+      involvedContracts: contractCount === "2" ? involvedContracts : undefined,
+    } as ManualFormData)
     setStep(2)
   }
 
@@ -127,6 +134,35 @@ export function Step1() {
             </button>
           ))}
         </div>
+
+        {/* ¿Qué contrato cobrar? Solo si son 2 */}
+        {contractCount === "2" && (
+          <div className="mt-2 flex flex-col gap-3 pl-9">
+            <p className="text-sm font-medium text-muted-foreground uppercase tracking-wider">
+              ¿Qué contrato(s) vas a cobrar en este periodo?
+            </p>
+            <div className="grid grid-cols-2 gap-2">
+              {(["1", "2"] as const).map((val) => (
+                <button
+                  key={val}
+                  type="button"
+                  onClick={() => setInvolvedContracts(val)}
+                  className={[
+                    "rounded-lg border px-3 py-2 text-xs font-semibold transition-all",
+                    involvedContracts === val
+                      ? "border-primary bg-primary/10 text-primary"
+                      : "border-border text-foreground hover:bg-muted",
+                  ].join(" ")}
+                >
+                  Contrato {val}
+                </button>
+              ))}
+            </div>
+            <p className="text-[10px] leading-relaxed text-muted-foreground italic">
+              Nota: Si las fechas se cruzan y el periodo coincide, se sumarán los IBCs para el cálculo de aportes.
+            </p>
+          </div>
+        )}
       </div>
 
       <Separator />

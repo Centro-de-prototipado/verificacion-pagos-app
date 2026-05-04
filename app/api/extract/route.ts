@@ -71,6 +71,7 @@ const ExtractRequestSchema = z.object({
     arl: z.string().optional(),
     contract: z.string().optional(),
     contract2: z.string().optional(),
+    paymentSheet2: z.string().optional(),
     activityReport: z.string().optional(),
   }),
   profiles: z.array(ProfileHintSchema).default([]),
@@ -156,6 +157,7 @@ export async function POST(request: NextRequest) {
         arl: joinSplitDates(rawText.arl ?? ""),
         contract: joinSplitDates(rawText.contract ?? ""),
         contract2: joinSplitDates(rawText.contract2 ?? ""),
+        paymentSheet2: joinSplitDates(rawText.paymentSheet2 ?? ""),
         activityReport: joinSplitDates(rawText.activityReport ?? ""),
       }
 
@@ -164,6 +166,7 @@ export async function POST(request: NextRequest) {
         arl: detectIssuer(cleanText.arl, "arl"),
         contract: "unal",
         ...(cleanText.contract2 ? { contract2: "unal" } : {}),
+        ...(cleanText.paymentSheet2 ? { paymentSheet2: detectIssuer(cleanText.paymentSheet2, "pila") } : {}),
       }
 
       const pilaCandidate = extractPILACandidates(cleanText.paymentSheet)
@@ -175,6 +178,9 @@ export async function POST(request: NextRequest) {
       const reportCand = cleanText.activityReport
         ? extractActivityReportCandidates(cleanText.activityReport)
         : null
+      const ps2Candidate = cleanText.paymentSheet2
+        ? extractPILACandidates(cleanText.paymentSheet2)
+        : null
 
       // The PILA shows the contractor's own document type unambiguously.
       // Override whatever the contract extractor guessed — the contract always
@@ -184,6 +190,7 @@ export async function POST(request: NextRequest) {
       )
       contractCand.documentType = pilaDocumentType
       if (contract2Cand) contract2Cand.documentType = pilaDocumentType
+      // Document type for both payment sheets should be the same
 
       // Validate that each PDF is the expected document type before calling the AI.
       const docChecks = {
@@ -195,6 +202,9 @@ export async function POST(request: NextRequest) {
           : null,
         activityReport: cleanText.activityReport
           ? isDocumentMatch(cleanText.activityReport, "report")
+          : null,
+        paymentSheet2: cleanText.paymentSheet2
+          ? isDocumentMatch(cleanText.paymentSheet2, "pila")
           : null,
       }
 
@@ -209,7 +219,7 @@ export async function POST(request: NextRequest) {
           send({ type, doc, model } as ExtractionStreamEvent)
         }
 
-      const [r0, r1, r2, r3, r4] = await Promise.allSettled([
+      const [r0, r1, r2, r3, r4, r5] = await Promise.allSettled([
         docChecks.paymentSheet.valid
           ? extractWithValidation<PaymentSheetExtracted>({
               text: cleanText.paymentSheet,
@@ -296,6 +306,22 @@ export async function POST(request: NextRequest) {
               onProgress: makeOnProgress("activityReport"),
             })
           : Promise.resolve(null),
+        docChecks.paymentSheet2?.valid
+          ? extractWithValidation<PaymentSheetExtracted>({
+              text: cleanText.paymentSheet2,
+              schema: PaymentSheetSchema,
+              docLabel: "Planilla PILA (mes siguiente)",
+              candidates: ps2Candidate ?? {},
+              profileExample: findProfile(
+                profiles,
+                "pila",
+                issuerKeys.paymentSheet2
+              ),
+              snapshot,
+              extraInstructions: "Extrae los datos de la planilla del mes siguiente.",
+              onProgress: makeOnProgress("paymentSheet2"),
+            })
+          : Promise.resolve(null),
       ])
 
       const warnings: string[] = []
@@ -351,6 +377,10 @@ export async function POST(request: NextRequest) {
         r4.status === "fulfilled"
           ? (r4.value as Record<string, unknown> | null)
           : null
+      const aiPS2 =
+        r5.status === "fulfilled"
+          ? (r5.value as Record<string, unknown> | null)
+          : null
 
       const psRaw = fillFromCandidates(
         aiPS,
@@ -378,6 +408,19 @@ export async function POST(request: NextRequest) {
         confidence.paymentSheet = computeConfidence(
           pilaCandidate as Record<string, unknown>,
           psRaw
+        )
+
+      const ps2Raw = fillFromCandidates(
+        aiPS2,
+        ps2Candidate as Record<string, unknown>
+      )
+      const paymentSheet2 = ps2Raw as PaymentSheetExtracted | null
+      if (r5.status === "rejected" && cleanText.paymentSheet2)
+        warnings.push(`Planilla 2 — error de extracción: ${r5.reason}`)
+      if (ps2Raw)
+        confidence.paymentSheet2 = computeConfidence(
+          ps2Candidate as Record<string, unknown>,
+          ps2Raw
         )
 
       const arlRaw = fillFromCandidates(
@@ -465,6 +508,7 @@ export async function POST(request: NextRequest) {
         arl,
         contract,
         ...(contract2 ? { contract2 } : {}),
+        ...(paymentSheet2 ? { paymentSheet2 } : {}),
         ...(activityReport ? { activityReport } : {}),
       }
 

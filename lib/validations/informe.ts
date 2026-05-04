@@ -6,12 +6,12 @@ import type { ActivityReportData, ContractData, ValidationResult } from "@/lib/t
 function isRecent(dateStr: string, referenceDate: Date, maxDays: number): boolean {
   const [d, m, y] = dateStr.split("/").map(Number)
   const target = new Date(y, m - 1, d)
-  
+
   if (target > referenceDate) return true // Signed in the future? Treat as ok for this check
-  
+
   let businessDays = 0
   const current = new Date(target)
-  
+
   while (current < referenceDate) {
     current.setDate(current.getDate() + 1)
     const day = current.getDay()
@@ -20,8 +20,19 @@ function isRecent(dateStr: string, referenceDate: Date, maxDays: number): boolea
     }
     if (businessDays > 30) break // Safety
   }
-  
+
   return businessDays <= maxDays
+}
+
+/**
+ * Normalizes a name string by removing accents and converting to lowercase.
+ */
+function normalizeName(name: string): string {
+  return name
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .trim()
 }
 
 /**
@@ -55,7 +66,7 @@ export function validarInformeActividades(
       ok: false,
       blocking: false,
       type: "report",
-      message: "Todas las filas de la columna ACTIVIDADES EJECUTADAS deben estar diligenciadas.",
+      message: "Todas las filas de la columna ACTIVIDADES EJECUTADAS deben estar diligenciadas en el informe de actividades.",
     })
   }
 
@@ -66,7 +77,7 @@ export function validarInformeActividades(
       ok: false,
       blocking: false,
       type: "report",
-      message: `La fecha de firma (${data.signatureDate}) es demasiado antigua. No debe superar los 3 días hábiles de antigüedad respecto a hoy.`,
+      message: `La fecha de firma del informe de actividades (${data.signatureDate}) es demasiado antigua. No debe superar los 3 días hábiles de antigüedad respecto a hoy.`,
     })
   }
 
@@ -86,7 +97,7 @@ export function validarInformeActividades(
       ok: false,
       blocking: false,
       type: "report",
-      message: `El periodo 'Desde' (${data.periodFrom}) debe coincidir con la fecha de inicio del contrato (${contract.startDate}).`,
+      message: `El periodo del contrato 'Desde' (${data.periodFrom}) en el informe de actividades debe coincidir con la fecha de inicio del contrato (${contract.startDate}).`,
     })
   }
 
@@ -96,7 +107,7 @@ export function validarInformeActividades(
       ok: false,
       blocking: false,
       type: "report",
-      message: `El periodo 'Hasta' (${data.periodTo}) debe coincidir con la fecha de firma del informe (${data.signatureDate}).`,
+      message: `El periodo del contrato 'Hasta' (${data.periodTo}) en el informe de actividades debe coincidir con la fecha de firma del informe (${data.signatureDate}).`,
     })
   }
 
@@ -106,7 +117,7 @@ export function validarInformeActividades(
       ok: false,
       blocking: false,
       type: "report",
-      message: `La fecha de inicio en PLAZO OPS (${data.opsStartDate}) debe coincidir con el contrato (${contract.startDate}).`,
+      message: `La fecha de inicio en PLAZO OPS (${data.opsStartDate}) en el informe de actividades debe coincidir con el contrato (${contract.startDate}).`,
     })
   }
   if (data.opsEndDate !== contract.endDate) {
@@ -114,7 +125,27 @@ export function validarInformeActividades(
       ok: false,
       blocking: false,
       type: "report",
-      message: `La fecha de terminación en PLAZO OPS (${data.opsEndDate}) debe coincidir con el contrato (${contract.endDate}).`,
+      message: `La fecha de terminación en PLAZO OPS (${data.opsEndDate}) en el informe de actividades debe coincidir con el contrato (${contract.endDate}).`,
+    })
+  }
+
+  // 7. Nombre del contratista y C.C.
+  if (normalizeName(data.contractorName) !== normalizeName(contract.contractorName)) {
+    results.push({
+      ok: false,
+      blocking: true,
+      type: "report",
+      message: `El nombre del contratista en el informe (${data.contractorName}) no coincide con el del contrato (${contract.contractorName}).`,
+    })
+  }
+  const cleanDocReport = data.documentNumber.replace(/\D/g, "")
+  const cleanDocContract = contract.documentNumber.replace(/\D/g, "")
+  if (cleanDocReport !== cleanDocContract) {
+    results.push({
+      ok: false,
+      blocking: true,
+      type: "report",
+      message: `El número de documento en el informe (${data.documentNumber}) no coincide con el del contrato (${contract.documentNumber}).`,
     })
   }
 

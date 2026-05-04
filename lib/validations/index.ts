@@ -79,13 +79,57 @@ export function runValidations(
     })
   }
 
-  // ── 2. Fecha de pago dentro del plazo ────────────────────────────────────────
   const deadlineCalc = paymentSheet.period
     ? calcularFechaLimite(paymentSheet.period, contract.documentNumber)
     : undefined
   const fechaPagoResult = validarFechaPago(paymentSheet, deadlineCalc)
-  const isLatePayment = !fechaPagoResult.ok
-  results.push(fechaPagoResult)
+  let isLatePayment = !fechaPagoResult.ok
+
+  if (isLatePayment && extracted.paymentSheet2) {
+    const ps2 = extracted.paymentSheet2
+    // Check if it's the same planilla
+    if (ps2.sheetNumber === paymentSheet.sheetNumber) {
+      results.push({
+        ok: false,
+        blocking: true,
+        type: "date",
+        message: "La segunda planilla adjunta es la misma que la primera. Adjunta la del mes siguiente.",
+      })
+    } else {
+      // Check if it's the next month
+      const [m1, y1] = paymentSheet.period.split("/").map(Number)
+      const [m2, y2] = ps2.period.split("/").map(Number)
+      const nextMonth = m1 === 12 ? 1 : m1 + 1
+      const nextYear = m1 === 12 ? y1 + 1 : y1
+
+      if (m2 === nextMonth && y2 === nextYear) {
+        isLatePayment = false // Clear late payment warning
+        results.push({
+          ok: true,
+          blocking: false,
+          type: "date",
+          message: `Planilla del mes siguiente (${ps2.period}) validada correctamente.`,
+        })
+      } else {
+        results.push({
+          ok: false,
+          blocking: true,
+          type: "date",
+          message: `La segunda planilla adjunta (${ps2.period}) no corresponde al mes siguiente (${String(nextMonth).padStart(2, "0")}/${nextYear}).`,
+        })
+      }
+    }
+  } else {
+    // If late payment and no second sheet yet, make it blocking
+    if (isLatePayment) {
+      results.push({
+        ...fechaPagoResult,
+        blocking: true,
+      })
+    } else {
+      results.push(fechaPagoResult)
+    }
+  }
 
   // ── 3. Gavela ARL ─────────────────────────────────────────────────────────
   const toISO = (ddmmyyyy: string) => {
@@ -136,12 +180,98 @@ export function runValidations(
   const contributions2 = contract2
     ? calcularContribuciones(contract2, arl, manual.isPensioner)
     : null
-  const contributions = contributions2
-    ? combineContributions(contributions1, contributions2)
-    : contributions1
+
+  let contributions: ContributionCalculation
+
+  if (contract2 && contributions2 && manual.involvedContracts) {
+    const toDate = (dmy: string) => {
+      const [d, m, y] = dmy.split("/").map(Number)
+      return new Date(y, m - 1, d)
+    }
+
+    const s1 = toDate(contract.startDate)
+    const e1 = toDate(contract.endDate)
+    const s2 = toDate(contract2.startDate)
+    const e2 = toDate(contract2.endDate)
+
+    // Determinar solapamiento
+    const overlapStart = new Date(Math.max(s1.getTime(), s2.getTime()))
+    const overlapEnd = new Date(Math.min(e1.getTime(), e2.getTime()))
+    const hasOverlap = overlapStart <= overlapEnd
+
+    // Determinar si el periodo de solicitud está en el solapamiento
+    const [reqM, reqY] = manual.paymentRequestPeriod.split("/").map(Number)
+    const periodDate = new Date(reqY, reqM - 1, 1)
+    const isInOverlap = hasOverlap &&
+      periodDate >= new Date(overlapStart.getFullYear(), overlapStart.getMonth(), 1) &&
+      periodDate <= new Date(overlapEnd.getFullYear(), overlapEnd.getMonth(), 1)
+
+    if (isInOverlap) {
+      // HAY SOLAPAMIENTO: SE SUMAN LOS IBCs independientemente de cuál cobre
+      contributions = combineContributions(
+        contributions1,
+        contributions2,
+        manual.isPensioner,
+        arl.cotizationRate
+      )
+      results.push({
+        ok: true,
+        blocking: false,
+        type: "contribution",
+        message: `Se detectó solapamiento con el otro contrato. Los aportes se calculan sobre la suma de IBCs.`,
+      })
+    } else {
+      // NO HAY SOLAPAMIENTO: Solo se usa el contrato seleccionado
+      contributions = manual.involvedContracts === "1" ? contributions1 : contributions2
+      results.push({
+        ok: true,
+        blocking: false,
+        type: "contribution",
+        message: `No hay solapamiento de fechas. Los aportes se calculan solo para el Contrato ${manual.involvedContracts}.`,
+      })
+    }
+  } else {
+    contributions = contributions1
+  }
+
   results.push(
     validarPago(contributions.totalObligatory, paymentSheet.totalAmountPaid)
   )
+
+  // Validar también la segunda planilla si existe
+  if (extracted.paymentSheet2) {
+    const val2 = validarPago(contributions.totalObligatory, extracted.paymentSheet2.totalAmountPaid)
+    results.push({
+      ...val2,
+      message: val2.ok
+        ? `Segunda planilla: Total aportes ($${contributions.totalObligatory.toLocaleString("es-CO")}) cubiertos por planilla ${extracted.paymentSheet2.period} ($${extracted.paymentSheet2.totalAmountPaid.toLocaleString("es-CO")}).`
+        : `Segunda planilla ${extracted.paymentSheet2.period}: Valor insuficiente ($${extracted.paymentSheet2.totalAmountPaid.toLocaleString("es-CO")}). Se requieren al menos $${contributions.totalObligatory.toLocaleString("es-CO")}.`,
+    })
+  }
+
+  // ── 6. Tipo de pago vs Fin de contrato ─────────────────────────────────────
+  if (manual.paymentType === "Final" || manual.paymentType === "Único") {
+    const [d, m, y] = contract.endDate.split("/").map(Number)
+    const endDate = new Date(y, m - 1, d)
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+
+    if (today < endDate) {
+      results.push({
+        ok: false,
+        blocking: true,
+        type: "date",
+        message: `El tipo de pago "${manual.paymentType}" solo se puede seleccionar a partir del fin del contrato (${contract.endDate}).`,
+      })
+    } else {
+      results.push({
+        ok: true,
+        blocking: false,
+        type: "date",
+        message: `Tipo de pago "${manual.paymentType}" válido para la fecha actual.`,
+      })
+    }
+  }
 
   // ── 5. Declaración cedular ────────────────────────────────────────────────
   const formalDeclaration = calcularDeclaracionCedular(
