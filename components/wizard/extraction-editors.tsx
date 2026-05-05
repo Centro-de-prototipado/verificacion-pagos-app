@@ -260,6 +260,8 @@ export function PlanillaEditor({
     paymentDeadline: null,
     period: "",
     totalAmountPaid: 0,
+    contractorName: "",
+    documentNumber: "",
   }
   const d = data ?? empty
   const set = (patch: Partial<PaymentSheetData>) => onChange({ ...d, ...patch })
@@ -305,6 +307,18 @@ export function PlanillaEditor({
         onChange={(v) => set({ totalAmountPaid: v })}
         confidence={c?.totalAmountPaid}
       />
+      <EditField
+        label="Nombre cotizante (Planilla)"
+        value={d.contractorName}
+        onChange={(v) => set({ contractorName: v })}
+        confidence={c?.contractorName}
+      />
+      <EditField
+        label="Documento (Planilla)"
+        value={d.documentNumber}
+        onChange={(v) => set({ documentNumber: v })}
+        confidence={c?.documentNumber}
+      />
     </DocSection>
   )
 }
@@ -341,6 +355,8 @@ export function ARLEditor({
     coverageStatus: "ACTIVA",
     riskClass: "I",
     cotizationRate: 0,
+    contractorName: "",
+    documentNumber: "",
   }
   const d = data ?? empty
   const set = (patch: Partial<ARLData>) => onChange({ ...d, ...patch })
@@ -380,6 +396,18 @@ export function ARLEditor({
         value={String(d.cotizationRate)}
         onChange={(v) => set({ cotizationRate: Number(v) || 0 })}
         confidence={c?.cotizationRate}
+      />
+      <EditField
+        label="Nombre afiliado (ARL)"
+        value={d.contractorName}
+        onChange={(v) => set({ contractorName: v })}
+        confidence={c?.contractorName}
+      />
+      <EditField
+        label="Documento (ARL)"
+        value={d.documentNumber}
+        onChange={(v) => set({ documentNumber: v })}
+        confidence={c?.documentNumber}
       />
     </DocSection>
   )
