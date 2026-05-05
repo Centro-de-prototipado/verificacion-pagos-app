@@ -1,0 +1,106 @@
+{
+  "last_run": {
+    "run_id": "run_1778018545888",
+    "created_at": "2026-05-05T22:02:26.037Z",
+    "parent_event_id": null,
+    "selected_gene_id": "gene_tool_integrity",
+    "selected_capsule_id": null,
+    "selector": {
+      "selected": "gene_tool_integrity",
+      "reason": [
+        "signals match gene.signals_match",
+        "signals: log_error, errsig:- [ERROR] Multiple contract validation is failing: when two contracts are present, the IBC from the second contract is being ignored in `lib/validations/index.ts`., recurring_error, hub_search_miss_with_problem",
+        "drift_intensity: 0.577",
+        "selection_path: random"
+      ],
+      "alternatives": [
+        "gene_gep_repair_from_errors"
+      ],
+      "selectionPath": "random",
+      "memoryUsed": false
+    },
+    "signals": [
+      "log_error",
+      "errsig:- [ERROR] Multiple contract validation is failing: when two contracts are present, the IBC from the second contract is being ignored in `lib/validations/index.ts`.",
+      "recurring_error",
+      "hub_search_miss_with_problem"
+    ],
+    "mutation": {
+      "type": "Mutation",
+      "id": "mut_1778018545881",
+      "category": "repair",
+      "trigger_signals": [
+        "log_error",
+        "errsig:- [ERROR] Multiple contract validation is failing: when two contracts are present, the IBC from the second contract is being ignored in `lib/validations/index.ts`.",
+        "recurring_error",
+        "hub_search_miss_with_problem"
+      ],
+      "target": "gene:gene_tool_integrity",
+      "expected_effect": "reduce runtime errors, increase stability, and lower failure rate",
+      "risk_level": "low"
+    },
+    "mutation_id": "mut_1778018545881",
+    "personality_state": {
+      "type": "PersonalityState",
+      "rigor": 0.7,
+      "creativity": 0.35,
+      "verbosity": 0.25,
+      "risk_tolerance": 0.4,
+      "obedience": 0.85
+    },
+    "personality_key": "rigor=0.7|creativity=0.3|verbosity=0.3|risk_tolerance=0.4|obedience=0.9",
+    "personality_known": false,
+    "personality_mutations": [],
+    "drift": false,
+    "selected_by": "selector",
+    "source_type": "generated",
+    "reused_asset_id": null,
+    "reused_source_node": null,
+    "reused_chain_id": null,
+    "baseline_untracked": [
+      "assets/gep/candidates.jsonl",
+      "assets/gep/capsules.json",
+      "assets/gep/events.jsonl",
+      "assets/gep/failed_capsules.json",
+      "assets/gep/genes.json",
+      "assets/gep/genes.jsonl",
+      "memory/2026-05-05.md",
+      "memory/atp-autobuyer-ledger.json",
+      "memory/evolution/evolution_solidify_state.json",
+      "memory/evolution/evolution_state.json",
+      "memory/evolution/memory_graph.jsonl",
+      "memory/evolution/memory_graph_state.json",
+      "memory/evolution/personality_state.json",
+      "memory/evolver_update_check.json"
+    ],
+    "baseline_git_head": "0eeec2a895d982c8b3ccc90fde63ee73354193c8",
+    "blast_radius_estimate": {
+      "files": 4,
+      "lines": 320
+    },
+    "strategy_policy": {
+      "name": "harden",
+      "label": "Hardening",
+      "description": "After a big change. Focus on stability and robustness.",
+      "forceInnovate": false,
+      "cautiousExecution": false,
+      "highRiskGene": false,
+      "repairStreak": 0,
+      "failureStreak": 0,
+      "blastRadiusMaxFiles": 4,
+      "directives": [
+        "Base strategy: Hardening (After a big change. Focus on stability and robustness.)",
+        "Target max files for this cycle: 4."
+      ]
+    },
+    "active_task_id": null,
+    "active_task_title": null,
+    "worker_assignment_id": null,
+    "worker_pending": false,
+    "commitment_deadline": null,
+    "applied_lessons": [],
+    "hub_lessons": [],
+    "cycleId": "0002",
+    "initial_user_prompt": null
+  }
+}

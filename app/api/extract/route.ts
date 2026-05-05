@@ -239,7 +239,8 @@ export async function POST(request: NextRequest) {
                 "En SOI, el número de planilla tiene 10 dígitos y va DESPUÉS de la Clave Pago (8-9 dígitos) — no confundas los dos.\n" +
                 "2. period: extrae el mes cotizado exactamente del texto en formato MM/YYYY. No lo deduzcas de paymentDate.\n" +
                 "3. paymentDate: fecha en que se realizó el pago (DD/MM/YYYY).\n" +
-                "4. paymentDeadline: fecha límite de pago; si parece invertida con paymentDate, corrígela (paymentDeadline ≥ paymentDate).",
+                "4. paymentDeadline: fecha límite de pago; si parece invertida con paymentDate, corrígela (paymentDeadline ≥ paymentDate).\n" +
+                "5. contractorName y documentNumber: búscalos en la sección de 'Datos del Cotizante' o 'Información General'.",
               onProgress: makeOnProgress("paymentSheet"),
             })
           : Promise.resolve(null),
@@ -258,7 +259,9 @@ export async function POST(request: NextRequest) {
                 "SIEMPRE usa ESAS fechas para startDate y endDate. " +
                 "NO uses la 'Fecha de inicio de cobertura' ni la 'Fecha de inicio de afiliación' en ese caso.\n" +
                 "2. Solo si el documento NO tiene etiquetas de 'contrato', usa la fecha de inicio/fin de cobertura o afiliación.\n" +
-                "3. El candidato startDate ya fue calculado priorizando las fechas de contrato — confía en él si es no nulo.",
+                "3. El candidato startDate ya fue calculado priorizando las fechas de contrato — confía en él si es no nulo.\n" +
+                "4. riskClass: clase de riesgo (I, II, III, IV, V). Cruza con la tasa: 0.522%=I, 1.044%=II, 2.436%=III, 4.350%=IV, 6.960%=V.\n" +
+                "5. contractorName y documentNumber: extrae el nombre y documento del AFILIADO/TRABAJADOR independiente, NO el de la empresa.",
               onProgress: makeOnProgress("arl"),
             })
           : Promise.resolve(null),
@@ -387,14 +390,14 @@ export async function POST(request: NextRequest) {
         pilaCandidate as Record<string, unknown>
       )
       const paymentSheet = psRaw as PaymentSheetExtracted | null
-      if (r0.status === "rejected")
+      if (r0.status === "rejected") {
         warnings.push(`Planilla — error de extracción: ${r0.reason}`)
-      else if (!aiPS) {
+      } else if (!aiPS) {
         const len = cleanText.paymentSheet.trim().length
         warnings.push(
           len === 0
             ? "Planilla — el PDF no contiene texto extraíble (¿es un PDF escaneado o protegido?)"
-            : `Planilla — la IA no pudo interpretar el documento (${len} caracteres extraídos)`
+            : `Planilla — el documento tiene muy poco texto extraíble (${len} caracteres). Podría ser un escaneo; intenta con uno más legible.`
         )
       } else {
         if (!psRaw?.sheetNumber)
@@ -428,14 +431,14 @@ export async function POST(request: NextRequest) {
         arlCandidate as Record<string, unknown>
       )
       const arl = arlRaw as ARLExtracted | null
-      if (r1.status === "rejected")
+      if (r1.status === "rejected") {
         warnings.push(`ARL — error de extracción: ${r1.reason}`)
-      else if (!aiARL) {
+      } else if (!aiARL) {
         const len = cleanText.arl.trim().length
         warnings.push(
           len === 0
             ? "ARL — el PDF no contiene texto extraíble (¿es un PDF escaneado o protegido?)"
-            : `ARL — la IA no pudo interpretar el documento (${len} caracteres extraídos)`
+            : `ARL — el documento tiene muy poco texto extraíble (${len} caracteres). Podría ser un escaneo; verifica su legibilidad.`
         )
       } else {
         if (!arlRaw?.startDate)
@@ -454,14 +457,14 @@ export async function POST(request: NextRequest) {
         contractCand as Record<string, unknown>
       )
       const contract = c1Raw as ContractExtracted | null
-      if (r2.status === "rejected")
+      if (r2.status === "rejected") {
         warnings.push(`Contrato — error de extracción: ${r2.reason}`)
-      else if (!aiC1) {
+      } else if (!aiC1) {
         const len = cleanText.contract.trim().length
         warnings.push(
           len === 0
             ? "Contrato — el PDF no contiene texto extraíble (¿es un PDF escaneado o protegido?)"
-            : `Contrato — la IA no pudo interpretar el documento (${len} caracteres extraídos)`
+            : `Contrato — el texto extraído es inusualmente corto (${len} caracteres). Podría estar incompleto o ser un escaneo.`
         )
       } else {
         if (!c1Raw?.orderNumber)

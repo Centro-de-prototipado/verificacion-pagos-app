@@ -115,6 +115,8 @@ export interface PaymentSheetData {
   paymentDeadline: string | null
   period: string
   totalAmountPaid: number
+  contractorName: string
+  documentNumber: string
 }
 
 export interface ARLData {
@@ -124,6 +126,8 @@ export interface ARLData {
   riskClass: RiskClass
   /** ARL cotization rate as percentage, e.g. 1.044 means 1.044% */
   cotizationRate: number
+  contractorName: string
+  documentNumber: string
 }
 
 export interface ContractData {

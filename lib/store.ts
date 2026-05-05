@@ -57,7 +57,37 @@ export const useWizardStore = create<WizardState>()(
     (set) => ({
       ...INITIAL_STATE,
 
-      setStep: (step) => set({ step }),
+      setStep: (newStep) =>
+        set((s) => {
+          const isMovingBack = newStep < s.step
+          if (!isMovingBack) return { step: newStep }
+
+          // If moving back to Step 1: clear everything
+          if (newStep === 1) {
+            return {
+              step: 1,
+              documents: INITIAL_STATE.documents,
+              rawText: null,
+              extractedData: null,
+            }
+          }
+
+          // If moving back to Step 2: clear extraction results and Step 3 specific files
+          if (newStep === 2) {
+            return {
+              step: 2,
+              rawText: null,
+              extractedData: null,
+              documents: {
+                ...s.documents,
+                activityReport: null,
+                paymentSheet2: null,
+              }
+            }
+          }
+
+          return { step: newStep }
+        }),
 
       setDocuments: (docs) =>
         set((s) => ({ documents: { ...s.documents, ...docs } })),

@@ -14,6 +14,7 @@ import {
 } from "./aportes"
 
 import { validarInformeActividades } from "./informe"
+import { parseRobustDate, formatToISO } from "@/lib/utils/date-parser"
 
 export interface ValidationSummary {
   results: ValidationResult[]
@@ -59,6 +60,116 @@ export function runValidations(
       blocked: true,
       isLatePayment: false,
       formalDeclaration: "SI",
+    }
+  }
+
+  // ── 0. Validación de Identidad (Cruce de documentos) ───────────────────────
+  const normalize = (s: string) =>
+    s
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-z0-9 ]/g, "")
+      .trim()
+  
+  const cleanDoc = (s: string) => s.replace(/[^0-9]/g, "")
+
+  const contractDoc = cleanDoc(contract.documentNumber)
+  const arlDoc = cleanDoc(arl.documentNumber)
+  const psDoc = cleanDoc(paymentSheet.documentNumber)
+
+  // Name Validation (Order-agnostic / Fuzzy)
+  const getWords = (s: string) =>
+    normalize(s)
+      .split(/\s+/)
+      .filter((w) => w.length > 2) // Ignorar "de", "la", "el", "del"
+
+  const compareNames = (name1: string, name2: string) => {
+    const w1 = getWords(name1)
+    const w2 = getWords(name2)
+    if (w1.length === 0 || w2.length === 0) return false
+    // Verificar cuántas palabras de name1 están en name2
+    const matches = w1.filter((w) => w2.includes(w)).length
+    const ratio = matches / w1.length
+    // Exigimos que al menos el 75% de las palabras coincidan
+    return ratio >= 0.75
+  }
+
+  // Document Validation
+  if (contractDoc !== arlDoc || contractDoc !== psDoc) {
+    const mismatch = contractDoc !== arlDoc ? "ARL" : "Planilla"
+    results.push({
+      ok: false,
+      blocking: true,
+      type: "cedular",
+      message: `El número de documento no coincide. Contrato: ${contract.documentNumber} vs ${mismatch}: ${mismatch === "ARL" ? arl.documentNumber : paymentSheet.documentNumber}. Corrige el documento adjunto.`,
+    })
+  } else {
+    results.push({
+      ok: true,
+      blocking: false,
+      type: "cedular",
+      message: "Número de documento validado correctamente en todos los soportes.",
+    })
+  }
+
+  // Name Validation
+  if (!compareNames(contract.contractorName, arl.contractorName)) {
+    results.push({
+      ok: false,
+      blocking: true,
+      type: "cedular",
+      message: `El nombre en la ARL (${arl.contractorName}) no coincide con el del contrato (${contract.contractorName}).`,
+    })
+  }
+  if (!compareNames(contract.contractorName, paymentSheet.contractorName)) {
+    results.push({
+      ok: false,
+      blocking: true,
+      type: "cedular",
+      message: `El nombre en la Planilla (${paymentSheet.contractorName}) no coincide con el del contrato (${contract.contractorName}).`,
+    })
+  }
+
+  // ── 0.1 Validación para segundo contrato (si existe) ─────────────────────
+  if (extracted.contract2) {
+    const c2Doc = cleanDoc(extracted.contract2.documentNumber)
+    if (c2Doc !== contractDoc) {
+      results.push({
+        ok: false,
+        blocking: true,
+        type: "cedular",
+        message: `El documento del segundo contrato (${extracted.contract2.documentNumber}) no coincide con el primero (${contract.documentNumber}).`,
+      })
+    }
+    if (!compareNames(contract.contractorName, extracted.contract2.contractorName)) {
+      results.push({
+        ok: false,
+        blocking: true,
+        type: "cedular",
+        message: `El nombre en el segundo contrato (${extracted.contract2.contractorName}) no coincide con el primero (${contract.contractorName}).`,
+      })
+    }
+  }
+
+  // ── 0.2 Validación para segunda planilla (si existe) ─────────────────────
+  if (extracted.paymentSheet2) {
+    const ps2Doc = cleanDoc(extracted.paymentSheet2.documentNumber)
+    if (ps2Doc !== contractDoc) {
+      results.push({
+        ok: false,
+        blocking: true,
+        type: "cedular",
+        message: `El documento en la segunda planilla (${extracted.paymentSheet2.documentNumber}) no coincide con el contrato (${contract.documentNumber}).`,
+      })
+    }
+    if (!compareNames(contract.contractorName, extracted.paymentSheet2.contractorName)) {
+      results.push({
+        ok: false,
+        blocking: true,
+        type: "cedular",
+        message: `El nombre en la segunda planilla (${extracted.paymentSheet2.contractorName}) no coincide con el contrato (${contract.contractorName}).`,
+      })
     }
   }
 
@@ -132,13 +243,21 @@ export function runValidations(
   }
 
   // ── 3. Gavela ARL ─────────────────────────────────────────────────────────
-  const toISO = (ddmmyyyy: string) => {
-    const [d, m, y] = ddmmyyyy.split("/")
-    return `${y}-${m}-${d}`
+  const contractStart = parseRobustDate(contract.startDate)
+  const contractEnd = parseRobustDate(contract.endDate)
+
+  if (!contractStart || !contractEnd) {
+    results.push({
+      ok: false,
+      blocking: true,
+      type: "date",
+      message: "No se pudo determinar el inicio o fin del contrato. Formato de fecha inválido.",
+    })
+  } else {
+    results.push(
+      validarGavelaARL(arl, formatToISO(contractStart)!, formatToISO(contractEnd)!)
+    )
   }
-  results.push(
-    validarGavelaARL(arl, toISO(contract.startDate), toISO(contract.endDate))
-  )
 
   // ── 4. Informe de actividades ─────────────────────────────────────────────
   const { required, frequencyMonths } = contract.activityReport
@@ -184,51 +303,56 @@ export function runValidations(
   let contributions: ContributionCalculation
 
   if (contract2 && contributions2 && manual.involvedContracts) {
-    const toDate = (dmy: string) => {
-      const [d, m, y] = dmy.split("/").map(Number)
-      return new Date(y, m - 1, d)
-    }
+    const s1 = parseRobustDate(contract.startDate)
+    const e1 = parseRobustDate(contract.endDate)
+    const s2 = parseRobustDate(contract2.startDate)
+    const e2 = parseRobustDate(contract2.endDate)
 
-    const s1 = toDate(contract.startDate)
-    const e1 = toDate(contract.endDate)
-    const s2 = toDate(contract2.startDate)
-    const e2 = toDate(contract2.endDate)
-
-    // Determinar solapamiento
-    const overlapStart = new Date(Math.max(s1.getTime(), s2.getTime()))
-    const overlapEnd = new Date(Math.min(e1.getTime(), e2.getTime()))
-    const hasOverlap = overlapStart <= overlapEnd
-
-    // Determinar si el periodo de solicitud está en el solapamiento
-    const [reqM, reqY] = manual.paymentRequestPeriod.split("/").map(Number)
-    const periodDate = new Date(reqY, reqM - 1, 1)
-    const isInOverlap = hasOverlap &&
-      periodDate >= new Date(overlapStart.getFullYear(), overlapStart.getMonth(), 1) &&
-      periodDate <= new Date(overlapEnd.getFullYear(), overlapEnd.getMonth(), 1)
-
-    if (isInOverlap) {
-      // HAY SOLAPAMIENTO: SE SUMAN LOS IBCs independientemente de cuál cobre
-      contributions = combineContributions(
-        contributions1,
-        contributions2,
-        manual.isPensioner,
-        arl.cotizationRate
-      )
+    if (!s1 || !e1 || !s2 || !e2) {
       results.push({
-        ok: true,
-        blocking: false,
+        ok: false,
+        blocking: true,
         type: "contribution",
-        message: `Se detectó solapamiento con el otro contrato. Los aportes se calculan sobre la suma de IBCs.`,
+        message: "Error al validar solapamiento: formato de fechas de contratos inválido.",
       })
+      contributions = contributions1
     } else {
-      // NO HAY SOLAPAMIENTO: Solo se usa el contrato seleccionado
-      contributions = manual.involvedContracts === "1" ? contributions1 : contributions2
-      results.push({
-        ok: true,
-        blocking: false,
-        type: "contribution",
-        message: `No hay solapamiento de fechas. Los aportes se calculan solo para el Contrato ${manual.involvedContracts}.`,
-      })
+      // Determinar solapamiento
+      const overlapStart = new Date(Math.max(s1.getTime(), s2.getTime()))
+      const overlapEnd = new Date(Math.min(e1.getTime(), e2.getTime()))
+      const hasOverlap = overlapStart <= overlapEnd
+
+      // Determinar si el periodo de solicitud está en el solapamiento
+      const [reqM, reqY] = manual.paymentRequestPeriod.split("/").map(Number)
+      const periodDate = new Date(reqY, reqM - 1, 1)
+      const isInOverlap = hasOverlap &&
+        periodDate >= new Date(overlapStart.getFullYear(), overlapStart.getMonth(), 1) &&
+        periodDate <= new Date(overlapEnd.getFullYear(), overlapEnd.getMonth(), 1)
+
+      if (isInOverlap) {
+        // HAY SOLAPAMIENTO: SE SUMAN LOS IBCs independientemente de cuál cobre
+        contributions = combineContributions(
+          contributions1,
+          contributions2,
+          manual.isPensioner,
+          arl.cotizationRate
+        )
+        results.push({
+          ok: true,
+          blocking: false,
+          type: "contribution",
+          message: `Se detectó solapamiento con el otro contrato. Los aportes se calculan sobre la suma de IBCs.`,
+        })
+      } else {
+        // NO HAY SOLAPAMIENTO: Solo se usa el contrato seleccionado
+        contributions = manual.involvedContracts === "1" ? contributions1 : contributions2
+        results.push({
+          ok: true,
+          blocking: false,
+          type: "contribution",
+          message: `No hay solapamiento de fechas para este periodo. Los aportes se calculan solo para el Contrato ${manual.involvedContracts}.`,
+        })
+      }
     }
   } else {
     contributions = contributions1
@@ -251,12 +375,11 @@ export function runValidations(
 
   // ── 6. Tipo de pago vs Fin de contrato ─────────────────────────────────────
   if (manual.paymentType === "Final" || manual.paymentType === "Único") {
-    const [d, m, y] = contract.endDate.split("/").map(Number)
-    const endDate = new Date(y, m - 1, d)
+    const endDate = parseRobustDate(contract.endDate)
     const today = new Date()
     today.setHours(0, 0, 0, 0)
 
-    if (today < endDate) {
+    if (!endDate || today < endDate) {
       results.push({
         ok: false,
         blocking: true,

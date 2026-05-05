@@ -1,0 +1,50 @@
+{
+  "last_action": {
+    "action_id": "act_1778018545886_f86b9291",
+    "signal_key": "errsig_norm:e5d986a7|hub_search_miss_with_problem|log_error|recurring_error",
+    "signals": [
+      "log_error",
+      "errsig:- [ERROR] Multiple contract validation is failing: when two contracts are present, the IBC from the second contract is being ignored in `lib/validations/index.ts`.",
+      "recurring_error",
+      "hub_search_miss_with_problem"
+    ],
+    "mutation_id": "mut_1778018545881",
+    "mutation_category": "repair",
+    "mutation_risk_level": "low",
+    "personality_key": "rigor=0.7|creativity=0.3|verbosity=0.3|risk_tolerance=0.4|obedience=0.9",
+    "personality_state": {
+      "type": "PersonalityState",
+      "rigor": 0.7,
+      "creativity": 0.35,
+      "verbosity": 0.25,
+      "risk_tolerance": 0.4,
+      "obedience": 0.85
+    },
+    "gene_id": "gene_tool_integrity",
+    "gene_category": "repair",
+    "hypothesis_id": "hyp_1778018545884_3865e723",
+    "capsules_used": [],
+    "had_error": true,
+    "created_at": "2026-05-05T22:02:25.886Z",
+    "outcome_recorded": false,
+    "baseline_observed": {
+      "agent": "main",
+      "session_scope": null,
+      "drift_enabled": false,
+      "review_mode": false,
+      "dry_run": false,
+      "system_health": "Uptime: 8.0h | Node: v24.15.0 | Agent RSS: 87.3MB | Disk: 49% (482.0G free) | Node Processes: 10 | Integrations: Nominal",
+      "mood": "Mood: Unknown",
+      "scan_ms": 250,
+      "memory_size_bytes": 0,
+      "recent_error_count": 0,
+      "node": "v24.15.0",
+      "platform": "win32",
+      "cwd": "D:\\Documents\\verificacion-pagos-app",
+      "evidence": {
+        "recent_session_tail": "[NO SESSION LOGS FOUND]",
+        "today_log_tail": "# Memory Log - 2026-05-05\n\n## CRITICAL ERRORS DETECTED\n- [ERROR] Multiple contract validation is failing: when two contracts are present, the IBC from the second contract is being ignored in `lib/validations/index.ts`.\n- [ERROR] PDF extraction is fragile: some users report that scanned PDFs cause the whole pipeline to crash instead of returning a graceful error.\n- [ERROR] ARL values are hardcoded in `lib/validations/constantes.ts` and differ from the latest 2026 legal table.\n- [SECURITY] No CSRF protection or rate limiting on the `/api/extract` and `/api/generar-pdf` endpoints.\n- [SECURITY] File uploads do not verify magic numbers, allowing potentially malicious files to be processed by pdf-lib.\n\n## System State\nThe system is unstable when handling edge cases like multiple contracts or corrupted PDFs. Robustness needs to be improved in `lib/validations/` and `app/api/`.\n"
+      }
+    }
+  }
+}
