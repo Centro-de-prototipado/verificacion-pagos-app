@@ -129,9 +129,13 @@ export async function POST(request: NextRequest) {
 
   let rawText: RawPDFText
   let profiles: ProfileHint[]
+  let obligationsHint: string[] = []
 
   try {
-    ;({ rawText, profiles } = await parseRequest(request))
+    const body = await request.json()
+    rawText = body.rawText
+    profiles = body.profiles || []
+    obligationsHint = body.obligationsHint || []
   } catch (error) {
     const message =
       error instanceof Error ? error.message : "No se pudo leer la solicitud."
@@ -275,7 +279,9 @@ export async function POST(request: NextRequest) {
               snapshot,
               extraInstructions:
                 `Tipos de contrato válidos (usa solo estas siglas exactas): ${CONTRACT_TYPES_PROMPT}. ` +
-                "NO extraigas startDate ni endDate del contrato — se tomarán del certificado ARL.",
+                "Reglas adicionales:\n" +
+                "1. NO extraigas startDate ni endDate del contrato — se tomarán del certificado ARL.\n" +
+                "2. specificObligations: Busca la sección 'OBLIGACIONES ESPECÍFICAS DEL CONTRATISTA' y extrae cada obligación enumerada como un elemento del array. Usa el texto lo más fiel posible.",
               onProgress: makeOnProgress("contract"),
             })
           : Promise.resolve(null),
@@ -289,7 +295,9 @@ export async function POST(request: NextRequest) {
               snapshot,
               extraInstructions:
                 `Tipos de contrato válidos (usa solo estas siglas exactas): ${CONTRACT_TYPES_PROMPT}. ` +
-                "NO extraigas startDate ni endDate del contrato — se tomarán del certificado ARL.",
+                "Reglas adicionales:\n" +
+                "1. NO extraigas startDate ni endDate del contrato — se tomarán del certificado ARL.\n" +
+                "2. specificObligations: Busca la sección 'OBLIGACIONES ESPECÍFICAS DEL CONTRATISTA' y extrae cada obligación enumerada como un elemento del array. Usa el texto lo más fiel posible.",
               onProgress: makeOnProgress("contract2"),
             })
           : Promise.resolve(null),
@@ -302,10 +310,13 @@ export async function POST(request: NextRequest) {
               snapshot,
               extraInstructions:
                 "Reglas para el Informe de Actividades:\n" +
-                "1. Extrae todos los items de la tabla de actividades. Cada item debe tener descripción, % periodo y % acumulado.\n" +
-                "2. La columna 'ACTIVIDADES EJECUTADAS' suele ser el texto descriptivo.\n" +
-                "3. 'periodo (%)' y 'acumulada a la fecha (%)' son números decimales o enteros.\n" +
-                "4. isSigned: busca evidencias visuales de firma (texto como 'Firmado digitalmente', '(Fdo.)', o la presencia de un bloque de firma manuscrita).",
+                "1. La tabla de actividades suele tener muchos items (ej. del 1 al 13) y puede extenderse por MUCHAS PÁGINAS. Debes extraer TODOS los items de todas las páginas.\n" +
+                "2. Para el campo 'activityDescription', usa ÚNICAMENTE el texto de la columna 'OBLIGACIÓN ESPECÍFICA' (Incluir cada obligación tal como se pactó en la OPS). IGNORA la columna 'ACTIVIDADES EJECUTADAS'.\n" +
+                "3. Asegúrate de capturar los valores numéricos de '% periodo' y '% acumulado' para cada fila.\n" +
+                "4. isSigned: busca evidencias de firma al final del documento (página final).\n" +
+                (obligationsHint.length > 0
+                  ? `\nNOTA: El contrato tiene estas obligaciones, búscalas exactamente en el reporte:\n${obligationsHint.map((o) => `- ${o}`).join("\n")}`
+                  : ""),
               onProgress: makeOnProgress("activityReport"),
             })
           : Promise.resolve(null),

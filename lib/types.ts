@@ -145,6 +145,7 @@ export interface ContractData {
     required: boolean
     frequencyMonths: number | null
   }
+  specificObligations: string[]
 }
 
 export interface ActivityReportItem {

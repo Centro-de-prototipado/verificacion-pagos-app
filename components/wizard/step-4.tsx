@@ -40,7 +40,9 @@ export function Step4() {
       !extractedData ||
       !manualData ||
       !documents.paymentSheet ||
-      !documents.arl
+      !documents.arl ||
+      !documents.contract ||
+      !documents.signature
     ) {
       toast.error("Faltan documentos o datos para generar el PDF.")
       return
@@ -56,6 +58,10 @@ export function Step4() {
       formData.append("manual", JSON.stringify(manualData))
       formData.append("planilla", documents.paymentSheet)
       formData.append("arl", documents.arl)
+      formData.append("contract", documents.contract)
+      if (documents.contract2) {
+        formData.append("contract2", documents.contract2)
+      }
       if (documents.paymentSheet2) {
         formData.append("planilla2", documents.paymentSheet2)
       }

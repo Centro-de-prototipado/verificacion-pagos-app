@@ -53,7 +53,7 @@ function ResultRow({ result }: { result: ValidationResult }) {
         <span className="text-xs font-medium text-muted-foreground uppercase">
           {typeLabel[result.type]}
         </span>
-        <p className="text-sm leading-snug">{result.message}</p>
+        <p className="text-sm leading-snug whitespace-pre-line">{result.message}</p>
       </div>
     </div>
   )
@@ -216,6 +216,7 @@ export function Step3() {
         body: JSON.stringify({
           rawText: { activityReport: rawText.activityReport },
           profiles: [],
+          obligationsHint: extractedData.contract?.specificObligations || [],
         }),
       })
 
@@ -423,7 +424,12 @@ export function Step3() {
         <Button
           size="lg"
           className="w-full text-base"
-          disabled={!summary || summary.blocked}
+          disabled={
+            !summary ||
+            summary.blocked ||
+            isExtractingReport ||
+            isExtractingPS2
+          }
           onClick={() => setStep(4 as WizardStep)}
         >
           Continuar — Generar PDF

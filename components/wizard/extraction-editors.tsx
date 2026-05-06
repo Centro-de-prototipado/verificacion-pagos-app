@@ -5,6 +5,7 @@ import { AlertCircleIcon } from "lucide-react"
 
 import { CONTRACT_TYPE_OPTIONS } from "@/lib/constants/contracts"
 import type {
+  ActivityReportData,
   ARLData,
   ConfidenceLevel,
   ConfidenceMap,
@@ -442,6 +443,7 @@ export function ContractEditor({
     startDate: "",
     endDate: "",
     activityReport: { required: false, frequencyMonths: null },
+    specificObligations: [],
   }
   const d = data ?? empty
   const set = (patch: Partial<ContractData>) => onChange({ ...d, ...patch })
@@ -541,6 +543,170 @@ export function ContractEditor({
               />
               <span className="text-xs text-muted-foreground">mes(es)</span>
             </>
+          )}
+        </div>
+      </div>
+      <div className="col-span-2 mt-2 sm:col-span-3">
+        {/* Las obligaciones se extraen para validación interna pero no se muestran al usuario */}
+      </div>
+    </DocSection>
+  )
+}
+
+export function ActivityReportEditor({
+  data,
+  onChange,
+  warnings,
+}: {
+  data: ActivityReportData | null
+  onChange: (d: ActivityReportData) => void
+  warnings?: string[]
+}) {
+  const empty: ActivityReportData = {
+    items: [],
+    signatureDate: "",
+    periodFrom: "",
+    periodTo: "",
+    opsStartDate: "",
+    opsEndDate: "",
+    contractorName: "",
+    documentNumber: "",
+    isSigned: false,
+  }
+  const d = data ?? empty
+  const set = (patch: Partial<ActivityReportData>) =>
+    onChange({ ...d, ...patch })
+
+  return (
+    <DocSection
+      title="Informe de actividades"
+      failed={!data}
+      warnings={warnings}
+    >
+      <EditField
+        label="Nombre contratista"
+        value={d.contractorName}
+        onChange={(v) => set({ contractorName: v })}
+      />
+      <EditField
+        label="C.C. No."
+        value={d.documentNumber}
+        onChange={(v) => set({ documentNumber: v })}
+      />
+      <EditField
+        label="Fecha de firma"
+        value={d.signatureDate}
+        onChange={(v) => set({ signatureDate: v })}
+      />
+      <EditField
+        label="Periodo Desde"
+        value={d.periodFrom}
+        onChange={(v) => set({ periodFrom: v })}
+      />
+      <EditField
+        label="Periodo Hasta"
+        value={d.periodTo}
+        onChange={(v) => set({ periodTo: v })}
+      />
+      <div className="flex items-center gap-2 rounded-lg border px-3 py-2">
+        <span className="text-xs text-muted-foreground">¿Está firmado?</span>
+        <input
+          type="checkbox"
+          checked={d.isSigned}
+          onChange={(e) => set({ isSigned: e.target.checked })}
+        />
+      </div>
+
+      <div className="col-span-2 mt-2 flex flex-col gap-2 sm:col-span-3">
+        <div className="flex items-center justify-between">
+          <p className="text-[11px] font-semibold tracking-wide text-muted-foreground uppercase">
+            Actividades / Obligaciones extraídas
+          </p>
+          <button
+            onClick={() => {
+              const newItems = [
+                ...d.items,
+                {
+                  activityDescription: "",
+                  periodPercentage: 0,
+                  accumulatedPercentage: 0,
+                },
+              ]
+              set({ items: newItems })
+            }}
+            className="rounded border bg-background px-2 py-0.5 text-[10px] font-medium hover:bg-muted"
+          >
+            + Añadir fila
+          </button>
+        </div>
+        <div className="flex flex-col gap-2 rounded-lg border bg-muted/10 p-3">
+          {d.items.length > 0 ? (
+            <div className="flex flex-col gap-2">
+              {d.items.map((item, i) => (
+                <div
+                  key={i}
+                  className="flex flex-col gap-1 border-b pb-2 last:border-0"
+                >
+                  <textarea
+                    value={item.activityDescription}
+                    onChange={(e) => {
+                      const newItems = [...d.items]
+                      newItems[i] = {
+                        ...item,
+                        activityDescription: e.target.value,
+                      }
+                      set({ items: newItems })
+                    }}
+                    className="w-full bg-transparent text-[11px] font-medium outline-none focus:ring-1 focus:ring-primary/20"
+                    rows={2}
+                  />
+                  <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-[10px] text-muted-foreground">
+                        Periodo:
+                      </span>
+                      <input
+                        type="number"
+                        value={item.periodPercentage}
+                        onChange={(e) => {
+                          const newItems = [...d.items]
+                          newItems[i] = {
+                            ...item,
+                            periodPercentage: Number(e.target.value) || 0,
+                          }
+                          set({ items: newItems })
+                        }}
+                        className="w-10 bg-transparent text-[11px] font-bold outline-none"
+                      />
+                      <span className="text-[10px] text-muted-foreground">%</span>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-[10px] text-muted-foreground">
+                        Acumulado:
+                      </span>
+                      <input
+                        type="number"
+                        value={item.accumulatedPercentage}
+                        onChange={(e) => {
+                          const newItems = [...d.items]
+                          newItems[i] = {
+                            ...item,
+                            accumulatedPercentage: Number(e.target.value) || 0,
+                          }
+                          set({ items: newItems })
+                        }}
+                        className="w-10 bg-transparent text-[11px] font-bold outline-none"
+                      />
+                      <span className="text-[10px] text-muted-foreground">%</span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-[11px] italic text-muted-foreground">
+              No se extrajeron actividades.
+            </p>
           )}
         </div>
       </div>

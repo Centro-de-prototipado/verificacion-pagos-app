@@ -28,8 +28,13 @@ export const ARLSchema = z.object({
       "Tasa de cotización ARL en porcentaje (ej: 1.044 para 1.044%). " +
         "Buscar campo 'Tasa cotización' o similar en el certificado."
     ),
-  contractorName: z.string().describe("Nombre completo del contratista que aparece en el certificado ARL"),
-  documentNumber: z.string().describe("Número de documento (CC o NIT) del contratista en la ARL"),
+  contractorName: z
+    .string()
+    .describe("Nombre completo del contratista que aparece en el certificado ARL"),
+  documentNumber: z
+    .string()
+    .transform((v) => v.replace(/\D/g, ""))
+    .describe("Número de documento (CC o NIT) del contratista en la ARL"),
 })
 
 export type ARLExtracted = z.infer<typeof ARLSchema>

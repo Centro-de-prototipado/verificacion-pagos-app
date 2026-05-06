@@ -66,21 +66,19 @@ export async function POST(request: NextRequest) {
       // The client only sends the documents it has at each step.
       if (!field) return [key, ""]
 
-      const file = await readPdfFile(field, key, {
+      const bytes = await readPdfFile(field, key, {
         required: false,
         maxBytes: MAX_PDF_BYTES,
       })
-      if (!file) return [key, ""]
+      if (!bytes) return [key, ""]
 
-      const buffer = await file.arrayBuffer()
-      const bytes = new Uint8Array(buffer)
       const pages = await getPdfPageCount(bytes)
       if (pages > MAX_PDF_PAGES) {
         throw new Error(
           `El archivo "${key}" tiene ${pages} páginas. El máximo permitido es ${MAX_PDF_PAGES}.`
         )
       }
-      const text = await extractTextFromPDF(buffer)
+      const text = await extractTextFromPDF(bytes.buffer)
       return [key, text]
     })
 

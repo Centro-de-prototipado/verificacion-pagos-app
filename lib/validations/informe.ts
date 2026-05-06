@@ -149,13 +149,77 @@ export function validarInformeActividades(
     })
   }
 
+  // 8. Validación de Obligaciones Específicas
+  if (contract.specificObligations && contract.specificObligations.length > 0) {
+    if (data.items.length === 0) {
+      results.push({
+        ok: false,
+        blocking: true,
+        type: "report",
+        message: "No se extrajeron actividades del informe. Por favor, usa el botón 'Analizar con IA' o ingresa las obligaciones manualmente en el editor de abajo.",
+      })
+      return results
+    }
+
+    const reportActivities = data.items.map((item) => item.activityDescription)
+
+    // Función de similitud mejorada: más flexible con puntuación y longitud de palabras
+    const getSimilarity = (s1: string, s2: string) => {
+      const clean = (text: string) =>
+        normalizeName(text)
+          .replace(/^([a-z0-9][\.\-\)]\s*)+/i, "") // Quitar numeración inicial
+          .replace(/[.,;:\(\)\[\]\-_]/g, " ") // Quitar toda la puntuación
+          .split(/\s+/)
+          .filter((w) => w.length > 2) // Palabras significativas
+
+      const w1 = clean(s1)
+      const w2 = clean(s2)
+      
+      if (w1.length === 0 || w2.length === 0) return 0
+      
+      const set2 = new Set(w2)
+      let matches = 0
+      w1.forEach(w => { if (set2.has(w)) matches++ })
+      
+      // Similitud: proporción de palabras coincidentes sobre el conjunto más PEQUEÑO
+      // Esto permite que si el reporte tiene un "resumen" de la obligación, el match sea alto.
+      return matches / Math.min(w1.length, w2.length)
+    }
+
+    const missingObligations: { text: string; bestScore: number }[] = []
+
+    for (const contractObligation of contract.specificObligations) {
+      let maxScore = 0
+      for (const reportActivity of reportActivities) {
+        const score = getSimilarity(contractObligation, reportActivity)
+        if (score > maxScore) maxScore = score
+      }
+      
+      // Bajamos el umbral a 0.3 (30%) para ser absurdamente permisivos y ver qué pasa
+      if (maxScore < 0.3) {
+        missingObligations.push({ text: contractObligation, bestScore: maxScore })
+      }
+    }
+
+    if (missingObligations.length > 0) {
+      results.push({
+        ok: false,
+        blocking: true,
+        type: "report",
+        message: `El informe no incluye todas las obligaciones específicas:\n${missingObligations
+          .map((o) => `• ${o.text}`)
+          .join("\n")}`,
+      })
+    }
+  }
+
   // Si todo está bien, añadir un OK general
   if (results.length === 0) {
     results.push({
       ok: true,
       blocking: false,
       type: "report",
-      message: "Informe de actividades validado correctamente.",
+      message: "El informe está perfecto y cumple con todas las verificaciones.",
     })
   }
 

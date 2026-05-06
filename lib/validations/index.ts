@@ -267,15 +267,20 @@ export function runValidations(
       if (!informeAdjunto) {
         results.push({
           ok: false,
-          blocking: false,
+          blocking: true,
           type: "report",
-          message: `El contrato exige informe de actividades cada ${frequencyMonths} mes(es). No se adjuntó en este pago — recuerda incluirlo.`,
+          message: `El contrato exige informe de actividades cada ${frequencyMonths} mes(es). No se adjuntó en este pago — es obligatorio para continuar.`,
         })
       } else if (extracted.activityReport) {
         // Validation of report content
+        const targetContract =
+          manual.involvedContracts === "2" && extracted.contract2
+            ? extracted.contract2
+            : contract
+            
         const reportResults = validarInformeActividades(
           extracted.activityReport,
-          contract
+          targetContract
         )
         results.push(...reportResults)
       } else {

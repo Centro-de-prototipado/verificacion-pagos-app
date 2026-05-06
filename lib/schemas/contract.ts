@@ -89,6 +89,11 @@ export const ContractSchema = z.object({
         "Frecuencia del informe en número de meses; null si no se requiere informe"
       ),
   }),
+  specificObligations: z
+    .array(z.string())
+    .describe(
+      "Lista de las OBLIGACIONES ESPECIFICAS DEL CONTRATISTA tal como aparecen en el contrato."
+    ),
 })
 
 export type ContractExtracted = z.infer<typeof ContractSchema>

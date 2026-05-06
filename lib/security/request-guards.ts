@@ -53,7 +53,7 @@ export async function readPdfFile(
   value: FormDataEntryValue | null,
   fieldName: string,
   options: { required: boolean; maxBytes: number }
-): Promise<File | null> {
+): Promise<Uint8Array | null> {
   if (!value) {
     if (options.required) {
       throw new Error(`El archivo "${fieldName}" es obligatorio.`)
@@ -83,6 +83,7 @@ export async function readPdfFile(
 
   // 1. Validar Magic Number de PDF (%PDF-)
   if (
+    bytes.length < 4 ||
     bytes[0] !== 0x25 ||
     bytes[1] !== 0x50 ||
     bytes[2] !== 0x44 ||
@@ -95,7 +96,6 @@ export async function readPdfFile(
   }
 
   // 2. Escaneo de patrones maliciosos básicos (JS/OpenAction)
-  // Analizamos los primeros 5KB para detectar inyecciones comunes
   const headerContent = new TextDecoder().decode(bytes.slice(0, 5120))
   const dangerousPatterns = ["/JS", "/JavaScript", "/OpenAction"]
   for (const pattern of dangerousPatterns) {
@@ -109,7 +109,7 @@ export async function readPdfFile(
     }
   }
 
-  return value
+  return bytes
 }
 
 export async function readImageFile(

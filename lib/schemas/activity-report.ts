@@ -3,7 +3,7 @@ import { z } from "zod"
 export const ActivityReportSchema = z.object({
   items: z.array(
     z.object({
-      activityDescription: z.string().describe("Descripción de la actividad ejecutada"),
+      activityDescription: z.string().describe("Texto de la columna 'OBLIGACIÓN ESPECÍFICA (Incluir cada obligación tal como se pactó en la OPS)'. IGNORA la de Actividades Ejecutadas."),
       periodPercentage: z.number().describe("Valor de la columna Periodo (%) para este item"),
       accumulatedPercentage: z.number().describe("Valor de la columna Acumulada a la fecha (%) para este item"),
     })
