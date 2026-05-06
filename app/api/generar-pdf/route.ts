@@ -246,12 +246,11 @@ export async function POST(request: NextRequest) {
       signatureBase64 = `data:${type};base64,${Buffer.from(buffer).toString("base64")}`
     }
     for (const key of DEDUCTION_FILE_KEYS) {
-      const file = await readPdfFile(formData.get(key), key, {
+      const bytes = await readPdfFile(formData.get(key), key, {
         required: false,
         maxBytes: MAX_PDF_BYTES,
       })
-      if (file) {
-        const bytes = new Uint8Array(await file.arrayBuffer())
+      if (bytes) {
         if ((await getPdfPageCount(bytes)) > MAX_PDF_PAGES) {
           return NextResponse.json(
             { error: `El archivo "${key}" supera ${MAX_PDF_PAGES} páginas.` },
