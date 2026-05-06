@@ -4,7 +4,6 @@ import { z } from "zod"
 import type { ExtractedData, ManualFormData } from "@/lib/types"
 import { runValidations } from "@/lib/validations"
 import { ARLSchema } from "@/lib/schemas/arl"
-import { ActivityReportSchema } from "@/lib/schemas/activity-report"
 import { ContractSchema } from "@/lib/schemas/contract"
 import { ManualFormSchema } from "@/lib/schemas/manual-form"
 import { PaymentSheetSchema } from "@/lib/schemas/payment-sheet"
@@ -32,21 +31,15 @@ import {
   readPdfFile,
   readImageFile,
 } from "@/lib/security/request-guards"
-import {
-  validateExtractedDataIntegrity,
-  validateNoBlockingResults,
-} from "@/lib/security/document-integrity"
 
 export const runtime = "nodejs"
 export const maxDuration = 60 // 60 segundos (requiere plan Pro en Vercel, o aumenta el límite en Hobby)
 
 const ExtractedDataSchema = z.object({
   paymentSheet: PaymentSheetSchema.nullable(),
-  paymentSheet2: PaymentSheetSchema.nullable().optional(),
   arl: ARLSchema.nullable(),
   contract: ContractSchema.nullable(),
   contract2: ContractSchema.nullable().optional(),
-  activityReport: ActivityReportSchema.nullable().optional(),
 })
 
 const MAX_FORM_BYTES = 50 * 1024 * 1024 // 50 MB
@@ -81,18 +74,9 @@ export async function POST(request: NextRequest) {
   let manual: ManualFormData
   let planillaBytes: Uint8Array
   let arlBytes: Uint8Array
-  let contractBytes: Uint8Array
-  let contract2Bytes: Uint8Array | undefined
   let planilla2Bytes: Uint8Array | undefined
   let informeBytes: Uint8Array | undefined
   let signatureBase64: string | undefined
-  let sourceText: {
-    paymentSheet: string
-    arl: string
-    contract: string
-    contract2?: string
-    paymentSheet2?: string
-  }
   let informeAdjunto = false
   const deductionFileBytes: Uint8Array[] = []
 
@@ -119,21 +103,6 @@ export async function POST(request: NextRequest) {
       required: true,
       maxBytes: MAX_PDF_BYTES,
     }))!
-
-    contractBytes = (await readPdfFile(formData.get("contract"), "contract", {
-      required: true,
-      maxBytes: MAX_PDF_BYTES,
-    }))!
-
-    const contract2FileBytes = await readPdfFile(
-      formData.get("contract2"),
-      "contract2",
-      {
-        required: false,
-        maxBytes: MAX_PDF_BYTES,
-      }
-    )
-    if (contract2FileBytes) contract2Bytes = contract2FileBytes
 
     const planilla2FileBytes = await readPdfFile(
       formData.get("planilla2"),
@@ -172,13 +141,12 @@ export async function POST(request: NextRequest) {
       !manualRaw ||
       !planillaBytes ||
       !arlBytes ||
-      !contractBytes ||
       !signatureFile
     ) {
       return NextResponse.json(
         {
           error:
-            "Se requieren los campos: extracted, manual, planilla, arl, contract, signature.",
+            "Se requieren los campos: extracted, manual, planilla, arl, signature.",
         },
         { status: 400 }
       )
@@ -216,21 +184,12 @@ export async function POST(request: NextRequest) {
         { status: 422 }
       )
     }
-    if ((await getPdfPageCount(contractBytes)) > MAX_PDF_PAGES) {
-      return NextResponse.json(
-        { error: `El archivo "contract" supera ${MAX_PDF_PAGES} paginas.` },
-        { status: 422 }
-      )
-    }
-    if (planilla2Bytes && (await getPdfPageCount(planilla2Bytes)) > MAX_PDF_PAGES) {
+    if (
+      planilla2Bytes &&
+      (await getPdfPageCount(planilla2Bytes)) > MAX_PDF_PAGES
+    ) {
       return NextResponse.json(
         { error: `El archivo "planilla2" supera ${MAX_PDF_PAGES} páginas.` },
-        { status: 422 }
-      )
-    }
-    if (contract2Bytes && (await getPdfPageCount(contract2Bytes)) > MAX_PDF_PAGES) {
-      return NextResponse.json(
-        { error: `El archivo "contract2" supera ${MAX_PDF_PAGES} paginas.` },
         { status: 422 }
       )
     }
@@ -261,47 +220,6 @@ export async function POST(request: NextRequest) {
         deductionFileBytes.push(bytes)
       }
     }
-
-    sourceText = {
-      paymentSheet: joinSplitDates(
-        await extractTextFromPDF(
-          planillaBytes.buffer.slice(
-            planillaBytes.byteOffset,
-            planillaBytes.byteOffset + planillaBytes.byteLength
-          ) as ArrayBuffer
-        )
-      ),
-      arl: joinSplitDates(
-        await extractTextFromPDF(
-          arlBytes.buffer.slice(
-            arlBytes.byteOffset,
-            arlBytes.byteOffset + arlBytes.byteLength
-          ) as ArrayBuffer
-        )
-      ),
-      contract: joinSplitDates(
-        await extractTextFromPDF(
-          contractBytes.buffer.slice(
-            contractBytes.byteOffset,
-            contractBytes.byteOffset + contractBytes.byteLength
-          ) as ArrayBuffer
-        )
-      ),
-    }
-    if (planilla2Bytes) {
-      const ab = planilla2Bytes.buffer.slice(
-        planilla2Bytes.byteOffset,
-        planilla2Bytes.byteOffset + planilla2Bytes.byteLength
-      ) as ArrayBuffer
-      sourceText.paymentSheet2 = joinSplitDates(await extractTextFromPDF(ab))
-    }
-    if (contract2Bytes) {
-      const ab = contract2Bytes.buffer.slice(
-        contract2Bytes.byteOffset,
-        contract2Bytes.byteOffset + contract2Bytes.byteLength
-      ) as ArrayBuffer
-      sourceText.contract2 = joinSplitDates(await extractTextFromPDF(ab))
-    }
   } catch {
     return NextResponse.json(
       { error: "No se pudo leer la solicitud." },
@@ -316,32 +234,6 @@ export async function POST(request: NextRequest) {
     if (!summary.contributions) {
       return NextResponse.json(
         { error: "No se pudieron calcular los aportes." },
-        { status: 422 }
-      )
-    }
-
-    const blockingErrors = validateNoBlockingResults(summary)
-    if (blockingErrors.length > 0) {
-      return NextResponse.json(
-        {
-          error: "La solicitud tiene validaciones bloqueantes.",
-          details: blockingErrors.join(" "),
-        },
-        { status: 422 }
-      )
-    }
-
-    const integrityErrors = validateExtractedDataIntegrity({
-      extracted,
-      manual,
-      sourceText,
-    })
-    if (integrityErrors.length > 0) {
-      return NextResponse.json(
-        {
-          error: "Los datos enviados no coinciden con los documentos adjuntos.",
-          details: integrityErrors.join(" "),
-        },
         { status: 422 }
       )
     }
