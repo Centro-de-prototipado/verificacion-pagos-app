@@ -216,7 +216,7 @@ export function Step3() {
         body: JSON.stringify({
           rawText: { activityReport: rawText.activityReport },
           profiles: [],
-          obligationsHint: extractedData.contract?.specificObligations || [],
+          obligationsHint: extractedData?.contract?.specificObligations || [],
         }),
       })
 
