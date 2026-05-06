@@ -38,6 +38,7 @@ import {
 } from "@/lib/security/document-integrity"
 
 export const runtime = "nodejs"
+export const maxDuration = 60 // 60 segundos (requiere plan Pro en Vercel, o aumenta el límite en Hobby)
 
 const ExtractedDataSchema = z.object({
   paymentSheet: PaymentSheetSchema.nullable(),
