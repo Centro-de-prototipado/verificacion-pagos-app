@@ -78,7 +78,7 @@ export async function POST(request: NextRequest) {
           `El archivo "${key}" tiene ${pages} páginas. El máximo permitido es ${MAX_PDF_PAGES}.`
         )
       }
-      const text = await extractTextFromPDF(bytes.buffer)
+      const text = await extractTextFromPDF(bytes.buffer as ArrayBuffer)
       return [key, text]
     })
 
