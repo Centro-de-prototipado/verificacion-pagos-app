@@ -1,0 +1,338 @@
+{
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\eslint.config.mjs": {
+    "mtime": 1777395253.4155219,
+    "hash": "1bc2a47bdd6b715509047e6dea94f909"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\next-env.d.ts": {
+    "mtime": 1776954924.4359095,
+    "hash": "29f60a376e12bf72b67d4994fcc84214"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\next.config.mjs": {
+    "mtime": 1778162812.6569536,
+    "hash": "dfa44f729f4872decb3bcfd5ee31e102"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\postcss.config.mjs": {
+    "mtime": 1777395253.5567489,
+    "hash": "1f0e8243a9a32c9f5266e4aa77a853ac"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\app\\layout.tsx": {
+    "mtime": 1778162812.6283696,
+    "hash": "3c89be6b6d33e1c4a1488f1b3dba8991"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\app\\page.tsx": {
+    "mtime": 1777561720.4964993,
+    "hash": "b5c4de0663dfba867d61cb8d0927e23d"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\app\\api\\extract\\route.ts": {
+    "mtime": 1778162812.6263692,
+    "hash": "efaacd395dc7c4e6f9d337649a8c5adf"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\app\\api\\extract-text\\route.ts": {
+    "mtime": 1778162812.62537,
+    "hash": "28795a5a9fd7d2316d2031c5922435f8"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\app\\api\\generar-pdf\\route.ts": {
+    "mtime": 1778162812.6273685,
+    "hash": "727538111275a9a92b07984dfefbe73e"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\app\\verificar\\page.tsx": {
+    "mtime": 1777561720.4980042,
+    "hash": "774d3905442b4cfa7098f9fe4c550a3a"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\components\\ui\\alert.tsx": {
+    "mtime": 1777395253.401917,
+    "hash": "9108d1b03130fcb014cbcb31a9adf6c2"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\components\\ui\\button.tsx": {
+    "mtime": 1777395253.402423,
+    "hash": "daafd007acc8e344a1c557ae9287fe14"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\components\\ui\\card.tsx": {
+    "mtime": 1777395253.4034302,
+    "hash": "ee74a83be6bb8fc3473cb6cceffe8813"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\components\\ui\\field.tsx": {
+    "mtime": 1777395253.4039805,
+    "hash": "2dae64581cff7d3a4d138cab216af010"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\components\\ui\\input.tsx": {
+    "mtime": 1777395253.4039805,
+    "hash": "ffe96ac26ee9c563f4ae55abc55f54d5"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\components\\ui\\label.tsx": {
+    "mtime": 1777395253.4049888,
+    "hash": "83a4dee523e5fa680b528a13f6cea20f"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\components\\ui\\logo.tsx": {
+    "mtime": 1778162812.63137,
+    "hash": "553d0e226a87232efe515ff698d6673c"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\components\\ui\\progress.tsx": {
+    "mtime": 1777395253.4049888,
+    "hash": "8b4b9a9a22bbd9d3ce17993609f65a69"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\components\\ui\\scroll-area.tsx": {
+    "mtime": 1777395253.4049888,
+    "hash": "5f8477ccc2dafc000b48267339d6b295"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\components\\ui\\select.tsx": {
+    "mtime": 1777561720.4990098,
+    "hash": "0440a7d9468faaa5605f5f2117ffa431"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\components\\ui\\separator.tsx": {
+    "mtime": 1777395253.4064946,
+    "hash": "5a960f39c32941873dbcf90b165ef32c"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\components\\ui\\sonner.tsx": {
+    "mtime": 1777561720.4990098,
+    "hash": "65d54128881f5c23d776f6371ac378d6"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\components\\ui\\switch.tsx": {
+    "mtime": 1777395253.4075017,
+    "hash": "09f5961b9ba49ec385801bf8779eeee5"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\components\\ui\\tabs.tsx": {
+    "mtime": 1777395253.4085028,
+    "hash": "9d4e4847d45b298fd1a083ed9904cd8c"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\components\\upload\\document-dropzone.tsx": {
+    "mtime": 1778162812.6323717,
+    "hash": "625319c0ff322bc2508eaabcd4ff77b8"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\components\\upload\\manual-form.tsx": {
+    "mtime": 1778162812.6323717,
+    "hash": "a1cb5dc25acb49ee2382ae262e1d4d64"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\components\\upload\\second-contract.tsx": {
+    "mtime": 1777395253.409502,
+    "hash": "d07bfa44bef7b7c4ccfaa9e85179ee80"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\components\\wizard\\doc-check-item.tsx": {
+    "mtime": 1777395253.4110065,
+    "hash": "7020d33828bb60cb722536eb37d5c0d5"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\components\\wizard\\extraction-editors.tsx": {
+    "mtime": 1778162812.6338787,
+    "hash": "8eb5b3f138dc8ae8e5d1e51bea4cbb21"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\components\\wizard\\section-header.tsx": {
+    "mtime": 1777395253.4110065,
+    "hash": "5fa99c01edc10cee4f92e3a8fdc8dca9"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\components\\wizard\\step-1.tsx": {
+    "mtime": 1778164107.0426507,
+    "hash": "ae298d1065e95994b2f609f8a7e54093"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\components\\wizard\\step-2.tsx": {
+    "mtime": 1778162812.6358867,
+    "hash": "d8540c32ce40cb16d3e1c48918b5c262"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\components\\wizard\\step-3.tsx": {
+    "mtime": 1778162812.6358867,
+    "hash": "8636bf3be74c799d5c151ba27447f5bd"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\components\\wizard\\step-4.tsx": {
+    "mtime": 1778162812.6369374,
+    "hash": "8b690269f02e638ec3929c75f522a594"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\components\\wizard\\step-indicator.tsx": {
+    "mtime": 1777561720.5030103,
+    "hash": "2b515b560eb9a37d4aff8cf8b01ec699"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\components\\wizard\\steps-config.ts": {
+    "mtime": 1777395253.4145164,
+    "hash": "d1004eda4f69a9611e5bc25073c77d3a"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\lib\\store.ts": {
+    "mtime": 1778162812.6454477,
+    "hash": "d48fcdf87eeb7a9cc8d50b52a8e19384"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\lib\\types.ts": {
+    "mtime": 1778162812.6484485,
+    "hash": "ae3f957110236b7bc1ce2f6bdab00b50"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\lib\\utils.ts": {
+    "mtime": 1777395253.5485437,
+    "hash": "5a6fd53fdcf2be529e9cc0b718fde352"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\lib\\ai\\client.ts": {
+    "mtime": 1777561720.5030103,
+    "hash": "fac524b1a226161ba6e67f8b79105bec"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\lib\\ai\\extraction.ts": {
+    "mtime": 1778162812.6379385,
+    "hash": "797b804ca455495cb72ed95a5b5eb84a"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\lib\\constants\\contracts.ts": {
+    "mtime": 1777561720.5045156,
+    "hash": "37a8121389fdf21ae765d1104588492e"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\lib\\constants\\institution.ts": {
+    "mtime": 1778162812.6379385,
+    "hash": "659f4ea134730feb50252452f04269ee"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\lib\\constants\\months.ts": {
+    "mtime": 1777395253.4200344,
+    "hash": "55cff919d1af8456982fdfcec12ad9bd"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\lib\\constants\\pdf.ts": {
+    "mtime": 1777395253.4210334,
+    "hash": "4f4133f9ddb5b572ea3f163900fa3739"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\lib\\pdf\\build-format-data.ts": {
+    "mtime": 1778162812.638938,
+    "hash": "0f051671442cf3a3c74c8065eb32def6"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\lib\\pdf\\document-profiles.ts": {
+    "mtime": 1777395253.5343184,
+    "hash": "6a348493a070f7dc43d7263d07a416a8"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\lib\\pdf\\document-validator.ts": {
+    "mtime": 1778162812.638938,
+    "hash": "f2f64dd42a639f7504d52dce6fa643db"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\lib\\pdf\\extract-helpers.ts": {
+    "mtime": 1777395253.5358346,
+    "hash": "acaee7f35fbdac8aaa38f91937ee3814"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\lib\\pdf\\extract-text.ts": {
+    "mtime": 1777395253.5358346,
+    "hash": "e78e37c8d734669fd2b2c8a5a803a697"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\lib\\pdf\\fill-forms.ts": {
+    "mtime": 1778162812.639938,
+    "hash": "42e9b4fe469bfafffe892aba7924e75b"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\lib\\pdf\\page-count.ts": {
+    "mtime": 1777561720.505521,
+    "hash": "6c78ff181b9f3e45c820ef8531039635"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\lib\\pdf\\utils.ts": {
+    "mtime": 1777395253.5378666,
+    "hash": "d7ecae6696ab2402af3d88bd3260fdce"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\lib\\pdf\\parsers\\keyword-extractor.ts": {
+    "mtime": 1778162812.639938,
+    "hash": "6e4e8a997c6233f615350853751a625c"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\lib\\schemas\\activity-report.ts": {
+    "mtime": 1778162812.641443,
+    "hash": "8e0a28271f3cfa16ee8bec2178d3865f"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\lib\\schemas\\arl.test.mjs": {
+    "mtime": 1778162812.641443,
+    "hash": "fc96eed4578df13317887e2134cd6ea9"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\lib\\schemas\\arl.ts": {
+    "mtime": 1778162812.6424506,
+    "hash": "c066e5dbae3e83e84734dc569b9e53e5"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\lib\\schemas\\contract.ts": {
+    "mtime": 1778162812.6424506,
+    "hash": "c17f735d3be197acef14b1700c164dd4"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\lib\\schemas\\manual-form.ts": {
+    "mtime": 1778162812.6434505,
+    "hash": "9511d27778630437fa11f90c4351a5a2"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\lib\\schemas\\payment-sheet.ts": {
+    "mtime": 1778162812.6434505,
+    "hash": "49b339ad7ff488f26bf7e07eea7f3317"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\lib\\security\\document-integrity.test.mjs": {
+    "mtime": 1778162812.6444497,
+    "hash": "1c9e9fbdeae062b7f12f63acef6c35a0"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\lib\\security\\request-guards.ts": {
+    "mtime": 1778162812.6444497,
+    "hash": "c588ec4c33457d47ac45ce76241e22a8"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\lib\\utils\\date-parser.ts": {
+    "mtime": 1778162812.6484485,
+    "hash": "4bf105f21f1b3525d0bbe149dfa2206c"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\lib\\validations\\aportes.ts": {
+    "mtime": 1778162812.6494477,
+    "hash": "dcd79a5b0d7a2fea10385b8d80344985"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\lib\\validations\\cedular.ts": {
+    "mtime": 1778162812.650449,
+    "hash": "6e782b0d820c19d9ef97efe85dd913d2"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\lib\\validations\\constantes.ts": {
+    "mtime": 1777492587.3870087,
+    "hash": "65cd4fdad5e53ac5eadd24b9d565ac72"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\lib\\validations\\fecha-limite.ts": {
+    "mtime": 1777395253.5506291,
+    "hash": "980d50f5b7792ce4b54200407bb1e9d7"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\lib\\validations\\fechas.ts": {
+    "mtime": 1778162812.650449,
+    "hash": "8936f7188b80b2d1824caa558cfc6258"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\lib\\validations\\index.ts": {
+    "mtime": 1778162812.651447,
+    "hash": "1ddb67cf48be18d3dcd2350166b429a5"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\lib\\validations\\informe.ts": {
+    "mtime": 1778162812.6524496,
+    "hash": "9c653f2812786f44911badfdb7fee5e6"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\scratch\\debug_pdf.py": {
+    "mtime": 1778162812.6609595,
+    "hash": "d46fdccb3b7c9e87c6167f45fd691742"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\scratch\\debug_pdf_text.ts": {
+    "mtime": 1778162812.6609595,
+    "hash": "99b708e757e314589360c88b89a313d7"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\AGENTS.md": {
+    "mtime": 1778162812.6243696,
+    "hash": "26fd98a483542d13d4e6cd1ef4e796f7"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\CLAUDE.md": {
+    "mtime": 1777395253.3918903,
+    "hash": "f0697804f5ce310cbe98e92099c35157"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\ESPECIFICACIONES.md": {
+    "mtime": 1777492680.150803,
+    "hash": "2f9c7fbe6569d0031522d6cba3f4563b"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\PLAN.md": {
+    "mtime": 1777395253.393142,
+    "hash": "9c76fc0240d0d8c85f0dd2d2b73c04ce"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\README.md": {
+    "mtime": 1777395253.3941476,
+    "hash": "fab60f412cc9016f85fcc1f484d778bc"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\memory\\2026-05-05.md": {
+    "mtime": 1778162812.6524496,
+    "hash": "ef9cb62dd13c0ba639c9df35e023ed34"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\scratch\\contract_text.txt": {
+    "mtime": 1778162812.6599588,
+    "hash": "bfe231793be6b8d4618c71eee8292c3c"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\lib\\docs-test\\ARL.pdf": {
+    "mtime": 1777395253.4260848,
+    "hash": "582dc03c40811f4080fbf5800904ded1"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\lib\\docs-test\\CONTRATO.pdf": {
+    "mtime": 1777395253.4270883,
+    "hash": "d8b04d0db25ae6ce9f7dfad2de015223"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\lib\\docs-test\\Ejemplo respuesta correcta.pdf": {
+    "mtime": 1777395253.430176,
+    "hash": "fa072d3aaf5548f7a93c6fc2ce67ed9a"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\lib\\docs-test\\PLANILLA.pdf": {
+    "mtime": 1777395253.4311912,
+    "hash": "8cead9fe6b4ac64a7d82d8126c5c38d2"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\public\\un.svg": {
+    "mtime": 1777561720.5170307,
+    "hash": "24017ead016c2db892e18a166b760df0"
+  }
+}

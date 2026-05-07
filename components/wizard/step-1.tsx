@@ -21,7 +21,7 @@ const REQUIRED_DOCUMENTS = [
     key: "paymentSheet" as const,
     stepNumber: 1,
     label: "Planilla de Seguridad Social",
-    description: "Comprobante de pago de salud, pensión y ARL",
+    description: "Comprobante de pago",
     hint: "Archivo de la PILA o equivalente",
   },
   {
@@ -54,9 +54,9 @@ export function Step1() {
   const [contractCount, setContractCount] = useState<"1" | "2">(
     manualData?.contractCount ?? "1"
   )
-  const [involvedContracts, setInvolvedContracts] = useState<"1" | "2" | "Ambos">(
-    manualData?.involvedContracts ?? "Ambos"
-  )
+  const [involvedContracts, setInvolvedContracts] = useState<
+    "1" | "2" | "Ambos"
+  >(manualData?.involvedContracts ?? "Ambos")
 
   const uploadStatus = {
     paymentSheet: documents.paymentSheet !== null,
@@ -138,7 +138,7 @@ export function Step1() {
         {/* ¿Qué contrato cobrar? Solo si son 2 */}
         {contractCount === "2" && (
           <div className="mt-2 flex flex-col gap-3 pl-9">
-            <p className="text-sm font-medium text-muted-foreground uppercase tracking-wider">
+            <p className="text-sm font-medium tracking-wider text-muted-foreground uppercase">
               ¿Qué contrato(s) vas a cobrar en este periodo?
             </p>
             <div className="grid grid-cols-2 gap-2">
@@ -159,7 +159,8 @@ export function Step1() {
               ))}
             </div>
             <p className="text-[10px] leading-relaxed text-muted-foreground italic">
-              Nota: Si las fechas se cruzan y el periodo coincide, se sumarán los IBCs para el cálculo de aportes.
+              Nota: Si las fechas se cruzan y el periodo coincide, se sumarán
+              los IBCs para el cálculo de aportes.
             </p>
           </div>
         )}
@@ -190,7 +191,7 @@ export function Step1() {
           </div>
         </div>
 
-        <div className="grid gap-4 pl-9 sm:grid-cols-3">
+        <div className="grid gap-4 pl-9 sm:grid-cols-4">
           {REQUIRED_DOCUMENTS.map(
             ({ key, stepNumber, label, description, hint }) => (
               <DocumentDropzone

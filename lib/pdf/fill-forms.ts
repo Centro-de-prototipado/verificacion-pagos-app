@@ -122,6 +122,7 @@ export async function fill069(
         fecha_fin_contrato: datos.endDate,
         clase_riesgo: `Riesgo ${datos.riskClassLabel}`,
         // Sección 2 — Contrato 2 (vacío si solo hay uno)
+        codigo_quipu_2: datos.contract2Type != null ? datos.quipuCompany : "",
         tipo_contrato_2: datos.contract2Type ?? "",
         numero_orden_2: datos.contract2OrderNumber ?? "",
         valor_total_contrato_2:
@@ -130,6 +131,9 @@ export async function fill069(
             : "",
         fecha_inicio_contrato_2: datos.contract2StartDate ?? "",
         fecha_fin_contrato_2: datos.contract2EndDate ?? "",
+        clase_riesgo_2: datos.contract2RiskClassLabel
+          ? `Riesgo ${datos.contract2RiskClassLabel}`
+          : "",
         // Fila TOTAL de la tabla de contratos
         valor_total_suma: num(totalContractValue),
         // Sección 3 — Períodos
@@ -155,10 +159,10 @@ export async function fill069(
         fondo_solidaridad: datos.isPensioner ? "" : num(datos.solidarityFund),
         aporte_arl: num(datos.arlContribution),
         total_aportes: num(datos.totalObligatory),
-        // Sección 5 — Tabla mensualización (fila de datos)
-        valor_mensualizado: num(datos.monthlyValue),
-        numero_meses: String(datos.contractMonths),
-        ibc: num(datos.ibc),
+        // Sección 5 — Tabla mensualización (fila contrato 1)
+        valor_mensualizado: num(datos.monthlyValue1),
+        numero_meses: String(datos.contractMonths1),
+        ibc: num(datos.ibc1),
         aporte_salud_tabla: num(datos.healthContribution),
         aporte_pension_tabla: datos.isPensioner
           ? ""
@@ -166,7 +170,33 @@ export async function fill069(
         fondo_solidaridad_tabla: datos.isPensioner
           ? ""
           : num(datos.solidarityFund),
-        base_retencion: num(datos.monthlyRetentionBase),
+        base_retencion: num(datos.monthlyRetentionBase1),
+        // Sección 5 — Tabla mensualización (fila contrato 2)
+        valor_mensualizado_2:
+          datos.monthlyValue2 != null ? num(datos.monthlyValue2) : "",
+        numero_meses_2:
+          datos.contractMonths2 != null ? String(datos.contractMonths2) : "",
+        ibc_2: datos.ibc2 != null ? num(datos.ibc2) : "",
+        aporte_salud_tabla_2:
+          datos.healthContribution2 != null
+            ? num(datos.healthContribution2)
+            : "",
+        aporte_pension_tabla_2:
+          datos.pensionContribution2 != null
+            ? datos.isPensioner
+              ? ""
+              : num(datos.pensionContribution2)
+            : "",
+        fondo_solidaridad_tabla_2:
+          datos.solidarityFund2 != null
+            ? datos.isPensioner
+              ? ""
+              : num(datos.solidarityFund2)
+            : "",
+        base_retencion_2:
+          datos.monthlyRetentionBase2 != null
+            ? num(datos.monthlyRetentionBase2)
+            : "",
         // Sección 5 — Tabla mensualización (fila TOTAL)
         valor_mensualizado_total: num(datos.monthlyValue),
         calculo_base_total: num(calculationBase),

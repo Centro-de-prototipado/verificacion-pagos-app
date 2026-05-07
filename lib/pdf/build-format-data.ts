@@ -134,6 +134,9 @@ export function buildFormat069Data(
   const today = todayDDMMYYYY()
 
   const deductionsContractRef = `${manual.quipuCompany}-${contract!.contractType}-${contract!.orderNumber}-${year}`
+  const riskLabel = { I: "1", II: "2", III: "3", IV: "4", V: "5" }[arl!.riskClass] ?? arl!.riskClass
+  const c1 = summary.contributions1!
+  const c2 = summary.contributions2
 
   return {
     contractorName: contract!.contractorName,
@@ -148,9 +151,7 @@ export function buildFormat069Data(
     contractTotalValue: contract!.totalValueBeforeTax,
     startDate: contract!.startDate,
     endDate: contract!.endDate,
-    riskClassLabel:
-      { I: "1", II: "2", III: "3", IV: "4", V: "5" }[arl!.riskClass] ??
-      arl!.riskClass,
+    riskClassLabel: riskLabel,
     ...(contract2
       ? {
           contract2Type: contract2.contractType,
@@ -158,6 +159,7 @@ export function buildFormat069Data(
           contract2TotalValue: contract2.totalValueBeforeTax,
           contract2StartDate: contract2.startDate,
           contract2EndDate: contract2.endDate,
+          contract2RiskClassLabel: riskLabel,
         }
       : {}),
     deductionsContractRef,
@@ -170,6 +172,24 @@ export function buildFormat069Data(
     solidarityFund: contributions.solidarityFund,
     arlContribution: contributions.arlContribution,
     totalObligatory: contributions.totalObligatory,
+    // Fila contrato 1
+    monthlyValue1: c1.monthlyValue,
+    contractMonths1: c1.contractMonths,
+    ibc1: c1.ibc,
+    monthlyRetentionBase1: c1.monthlyRetentionBase,
+    // Fila contrato 2 (solo cuando existe)
+    ...(c2
+      ? {
+          monthlyValue2: c2.monthlyValue,
+          contractMonths2: c2.contractMonths,
+          ibc2: c2.ibc,
+          monthlyRetentionBase2: c2.monthlyRetentionBase,
+          healthContribution2: c2.healthContribution,
+          pensionContribution2: c2.pensionContribution,
+          solidarityFund2: c2.solidarityFund,
+        }
+      : {}),
+    // Fila total (suma de ambos; igual a c1 cuando hay un solo contrato)
     monthlyValue: contributions.monthlyValue,
     contractMonths: contributions.contractMonths,
     ibc: contributions.ibc,

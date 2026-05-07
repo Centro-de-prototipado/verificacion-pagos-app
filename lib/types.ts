@@ -302,7 +302,21 @@ export interface Format069Data {
   solidarityFund: number
   arlContribution: number
   totalObligatory: number
-  // Sección 5 — Mensualización
+  // Sección 5 — Mensualización — fila contrato 1
+  monthlyValue1: number
+  contractMonths1: number
+  ibc1: number
+  monthlyRetentionBase1: number
+  // Sección 5 — Mensualización — fila contrato 2 (solo cuando contractCount === "2")
+  monthlyValue2?: number
+  contractMonths2?: number
+  ibc2?: number
+  monthlyRetentionBase2?: number
+  healthContribution2?: number
+  pensionContribution2?: number
+  solidarityFund2?: number
+  contract2RiskClassLabel?: string
+  // Sección 5 — Mensualización — fila TOTAL (suma de ambos; igual a _1 cuando hay un solo contrato)
   monthlyValue: number
   contractMonths: number
   ibc: number
