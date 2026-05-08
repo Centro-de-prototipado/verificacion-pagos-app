@@ -204,19 +204,23 @@ export function extractARLCandidates(text: string): Partial<ARLData> {
     "fecha de terminación del contrato",
     "fecha terminación contrato",
   ]
-  
-  let startDate = normalizeDate(findNear(flatText, explicitStartLabels, DATE_RE))
+
+  let startDate = normalizeDate(
+    findNear(flatText, explicitStartLabels, DATE_RE)
+  )
   let rawEnd = normalizeDate(findNear(flatText, explicitEndLabels, DATE_RE))
   let endDate = rawEnd !== startDate ? rawEnd : null
 
-  // Specific fix for Positiva's table layout where the date is visually *under* the 
+  // Specific fix for Positiva's table layout where the date is visually *under* the
   // "Fecha inicio contrato" header, meaning the PDF parser puts the date *before* the label.
   if (
-    !startDate && 
-    issuer === "positiva" && 
+    !startDate &&
+    issuer === "positiva" &&
     flatText.toLowerCase().includes("fecha inicio contrato")
   ) {
-    const preTipoMatch = flatText.match(new RegExp(`(${DATE_RE.source})\\s+tipo de vinculación`, "i"))
+    const preTipoMatch = flatText.match(
+      new RegExp(`(${DATE_RE.source})\\s+tipo de vinculación`, "i")
+    )
     if (preTipoMatch) {
       startDate = normalizeDate(preTipoMatch[1])
     }
@@ -225,9 +229,14 @@ export function extractARLCandidates(text: string): Partial<ARLData> {
   // Strategy 1: scan for full ISO dates (YYYY-MM-DD) — most reliable after
   // joinSplitDates fixes the line-broken format used by Sura and others.
   if (!startDate || !endDate) {
-    const isoDates = [...flatText.matchAll(/\d{4}-\d{2}-\d{2}/g)].map((m) => m[0])
+    const isoDates = [...flatText.matchAll(/\d{4}-\d{2}-\d{2}/g)].map(
+      (m) => m[0]
+    )
     startDate ??= isoDates[0] ? normalizeDate(isoDates[0]) : null
-    endDate ??= isoDates[1] && isoDates[1] !== isoDates[0] ? normalizeDate(isoDates[1]) : null
+    endDate ??=
+      isoDates[1] && isoDates[1] !== isoDates[0]
+        ? normalizeDate(isoDates[1])
+        : null
   }
 
   // Strategy 2: range patterns ("del … al", "desde … hasta", "date – date")
@@ -313,8 +322,8 @@ export function extractPILACandidates(text: string): Partial<PaymentSheetData> {
     // ... Fecha Pago (col 3) = fecha límite del sistema
     // ... Limite Pago (col 4) = fecha en que el usuario realizó el pago
     // Los nombres de las columnas son contraintuitivos — se asignan correctamente:
-    soiPaymentDate = normalizeDate(soiMatches[0][4]) ?? undefined  // "Limite Pago" = fecha real de pago
-    soiDeadline = normalizeDate(soiMatches[0][3]) ?? undefined      // "Fecha Pago" = fecha límite sistema
+    soiPaymentDate = normalizeDate(soiMatches[0][4]) ?? undefined // "Limite Pago" = fecha real de pago
+    soiDeadline = normalizeDate(soiMatches[0][3]) ?? undefined // "Fecha Pago" = fecha límite sistema
     // Period: YYYY-MM → MM/YYYY
     const [yr, mo] = soiMatches[0][1].split("-")
     soiPeriod = `${mo}/${yr}`
@@ -618,12 +627,22 @@ export function detectIssuer(
 
 // ─── Informe de Actividades ───────────────────────────────────────────────────
 
-export function extractActivityReportCandidates(text: string): Record<string, unknown> {
-  const signatureDate = normalizeDate(findNear(text, ["firma el presente informe el"], DATE_RE, 50))
-  const periodFrom = normalizeDate(findNear(text, ["PERIODO DEL INFORME:", "Desde:"], DATE_RE, 50))
+export function extractActivityReportCandidates(
+  text: string
+): Record<string, unknown> {
+  const signatureDate = normalizeDate(
+    findNear(text, ["firma el presente informe el"], DATE_RE, 50)
+  )
+  const periodFrom = normalizeDate(
+    findNear(text, ["PERIODO DEL INFORME:", "Desde:"], DATE_RE, 50)
+  )
   const periodTo = normalizeDate(findNear(text, ["Hasta:"], DATE_RE, 50))
-  const opsStartDate = normalizeDate(findNear(text, ["PLAZO OPS:", "Fecha inicio"], DATE_RE, 50))
-  const opsEndDate = normalizeDate(findNear(text, ["Fecha Terminación"], DATE_RE, 50))
+  const opsStartDate = normalizeDate(
+    findNear(text, ["PLAZO OPS:", "Fecha inicio"], DATE_RE, 50)
+  )
+  const opsEndDate = normalizeDate(
+    findNear(text, ["Fecha Terminación"], DATE_RE, 50)
+  )
 
   return {
     signatureDate,

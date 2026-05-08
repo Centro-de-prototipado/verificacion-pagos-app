@@ -57,7 +57,17 @@ const FINGERPRINTS: Record<DocType, DocFingerprint> = {
   contract: {
     label: "contrato u orden contractual",
     require: [
-      ["contrato", "orden de", "orden contractual", "orden de servicio", "orden de compra", "otro si", "otro sí", "adición", "adicion"],
+      [
+        "contrato",
+        "orden de",
+        "orden contractual",
+        "orden de servicio",
+        "orden de compra",
+        "otro si",
+        "otro sí",
+        "adición",
+        "adicion",
+      ],
       ["contratista", "universidad nacional", "unal"],
     ],
   },
@@ -81,7 +91,10 @@ export interface DocCheckResult {
  * using keyword fingerprints. A mismatch means the user likely uploaded
  * the wrong PDF — skip AI extraction and warn instead.
  */
-export function isDocumentMatch(text: string, docType: DocType): DocCheckResult {
+export function isDocumentMatch(
+  text: string,
+  docType: DocType
+): DocCheckResult {
   const fp = FINGERPRINTS[docType]
   const lower = text.toLowerCase()
   const valid = fp.require.every((group) =>

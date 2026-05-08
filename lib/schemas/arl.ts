@@ -30,7 +30,9 @@ export const ARLSchema = z.object({
     ),
   contractorName: z
     .string()
-    .describe("Nombre completo del contratista que aparece en el certificado ARL"),
+    .describe(
+      "Nombre completo del contratista que aparece en el certificado ARL"
+    ),
   documentNumber: z
     .string()
     .transform((v) => v.replace(/\D/g, ""))

@@ -4,7 +4,7 @@ import type {
   ValidationResult,
   ContributionCalculation,
 } from "@/lib/types"
-import { validarFechaPago, validarGavelaARL } from "./fechas"
+import { validarFechaPago, validarGavelaARL, calcularMesesContrato } from "./fechas"
 import { calcularFechaLimite } from "./fecha-limite"
 import { calcularDeclaracionCedular } from "./cedular"
 import {
@@ -63,6 +63,16 @@ export function runValidations(
     }
   }
 
+  // ── Aviso de constantes desactualizadas ───────────────────────────────────
+  if (new Date().getFullYear() > 2026) {
+    results.push({
+      ok: false,
+      blocking: false,
+      type: "contribution",
+      message: `Las constantes normativas (SMMLV, tasas) están configuradas para 2026. Actualiza lib/validations/constantes.ts con los valores oficiales de ${new Date().getFullYear()} antes de continuar.`,
+    })
+  }
+
   // ── 0. Validación de Identidad (Cruce de documentos) ───────────────────────
   const normalize = (s: string) =>
     s
@@ -71,7 +81,7 @@ export function runValidations(
       .replace(/[\u0300-\u036f]/g, "")
       .replace(/[^a-z0-9 ]/g, "")
       .trim()
-  
+
   const cleanDoc = (s: string) => s.replace(/[^0-9]/g, "")
 
   const contractDoc = cleanDoc(contract.documentNumber)
@@ -109,7 +119,8 @@ export function runValidations(
       ok: true,
       blocking: false,
       type: "cedular",
-      message: "Número de documento validado correctamente en todos los soportes.",
+      message:
+        "Número de documento validado correctamente en todos los soportes.",
     })
   }
 
@@ -142,7 +153,9 @@ export function runValidations(
         message: `El documento del segundo contrato (${extracted.contract2.documentNumber}) no coincide con el primero (${contract.documentNumber}).`,
       })
     }
-    if (!compareNames(contract.contractorName, extracted.contract2.contractorName)) {
+    if (
+      !compareNames(contract.contractorName, extracted.contract2.contractorName)
+    ) {
       results.push({
         ok: false,
         blocking: true,
@@ -163,7 +176,12 @@ export function runValidations(
         message: `El documento en la segunda planilla (${extracted.paymentSheet2.documentNumber}) no coincide con el contrato (${contract.documentNumber}).`,
       })
     }
-    if (!compareNames(contract.contractorName, extracted.paymentSheet2.contractorName)) {
+    if (
+      !compareNames(
+        contract.contractorName,
+        extracted.paymentSheet2.contractorName
+      )
+    ) {
       results.push({
         ok: false,
         blocking: true,
@@ -204,7 +222,8 @@ export function runValidations(
         ok: false,
         blocking: true,
         type: "date",
-        message: "La segunda planilla adjunta es la misma que la primera. Adjunta la del mes siguiente.",
+        message:
+          "La segunda planilla adjunta es la misma que la primera. Adjunta la del mes siguiente.",
       })
     } else {
       // Check if it's the next month
@@ -251,11 +270,16 @@ export function runValidations(
       ok: false,
       blocking: true,
       type: "date",
-      message: "No se pudo determinar el inicio o fin del contrato. Formato de fecha inválido.",
+      message:
+        "No se pudo determinar el inicio o fin del contrato. Formato de fecha inválido.",
     })
   } else {
     results.push(
-      validarGavelaARL(arl, formatToISO(contractStart)!, formatToISO(contractEnd)!)
+      validarGavelaARL(
+        arl,
+        formatToISO(contractStart)!,
+        formatToISO(contractEnd)!
+      )
     )
   }
 
@@ -277,7 +301,7 @@ export function runValidations(
           manual.involvedContracts === "2" && extracted.contract2
             ? extracted.contract2
             : contract
-            
+
         const reportResults = validarInformeActividades(
           extracted.activityReport,
           targetContract
@@ -318,7 +342,8 @@ export function runValidations(
         ok: false,
         blocking: true,
         type: "contribution",
-        message: "Error al validar solapamiento: formato de fechas de contratos inválido.",
+        message:
+          "Error al validar solapamiento: formato de fechas de contratos inválido.",
       })
       contributions = contributions1
     } else {
@@ -330,17 +355,25 @@ export function runValidations(
       // Determinar si el periodo de solicitud está en el solapamiento
       const [reqM, reqY] = manual.paymentRequestPeriod.split("/").map(Number)
       const periodDate = new Date(reqY, reqM - 1, 1)
-      const isInOverlap = hasOverlap &&
-        periodDate >= new Date(overlapStart.getFullYear(), overlapStart.getMonth(), 1) &&
-        periodDate <= new Date(overlapEnd.getFullYear(), overlapEnd.getMonth(), 1)
+      const isInOverlap =
+        hasOverlap &&
+        periodDate >=
+          new Date(overlapStart.getFullYear(), overlapStart.getMonth(), 1) &&
+        periodDate <=
+          new Date(overlapEnd.getFullYear(), overlapEnd.getMonth(), 1)
 
       if (isInOverlap) {
         // HAY SOLAPAMIENTO: SE SUMAN LOS IBCs independientemente de cuál cobre
+        const overlapMonths = calcularMesesContrato(
+          overlapStart.toISOString().split("T")[0],
+          overlapEnd.toISOString().split("T")[0]
+        )
         contributions = combineContributions(
           contributions1,
           contributions2,
           manual.isPensioner,
-          arl.cotizationRate
+          arl.cotizationRate,
+          overlapMonths
         )
         results.push({
           ok: true,
@@ -350,7 +383,8 @@ export function runValidations(
         })
       } else {
         // NO HAY SOLAPAMIENTO: Solo se usa el contrato seleccionado
-        contributions = manual.involvedContracts === "1" ? contributions1 : contributions2
+        contributions =
+          manual.involvedContracts === "1" ? contributions1 : contributions2
         results.push({
           ok: true,
           blocking: false,
@@ -369,7 +403,10 @@ export function runValidations(
 
   // Validar también la segunda planilla si existe
   if (extracted.paymentSheet2) {
-    const val2 = validarPago(contributions.totalObligatory, extracted.paymentSheet2.totalAmountPaid)
+    const val2 = validarPago(
+      contributions.totalObligatory,
+      extracted.paymentSheet2.totalAmountPaid
+    )
     results.push({
       ...val2,
       message: val2.ok

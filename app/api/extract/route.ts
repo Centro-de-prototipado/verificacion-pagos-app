@@ -170,7 +170,9 @@ export async function POST(request: NextRequest) {
         arl: detectIssuer(cleanText.arl, "arl"),
         contract: "unal",
         contract2: cleanText.contract2 ? "unal" : undefined,
-        paymentSheet2: cleanText.paymentSheet2 ? detectIssuer(cleanText.paymentSheet2, "pila") : undefined,
+        paymentSheet2: cleanText.paymentSheet2
+          ? detectIssuer(cleanText.paymentSheet2, "pila")
+          : undefined,
       }
 
       const pilaCandidate = extractPILACandidates(cleanText.paymentSheet)
@@ -332,7 +334,8 @@ export async function POST(request: NextRequest) {
                 issuerKeys.paymentSheet2 || ""
               ),
               snapshot,
-              extraInstructions: "Extrae los datos de la planilla del mes siguiente.",
+              extraInstructions:
+                "Extrae los datos de la planilla del mes siguiente.",
               onProgress: makeOnProgress("paymentSheet2"),
             })
           : Promise.resolve(null),
@@ -342,7 +345,10 @@ export async function POST(request: NextRequest) {
       const confidence: Record<string, ConfidenceMap> = {}
 
       // Warn immediately for documents that don't match the expected type.
-      if (!docChecks.paymentSheet.valid && cleanText.paymentSheet.trim().length > 0)
+      if (
+        !docChecks.paymentSheet.valid &&
+        cleanText.paymentSheet.trim().length > 0
+      )
         warnings.push(
           `Planilla — el PDF no parece ser una ${docChecks.paymentSheet.label}. Verifica que subiste el archivo correcto.`
         )
@@ -500,8 +506,7 @@ export async function POST(request: NextRequest) {
         cleanText.contract2.trim().length > 0
       )
         warnings.push("Contrato 2 — la IA no pudo interpretar el documento")
-      if (c2Raw)
-        confidence.contract2 = computeConfidence(c2Candidates, c2Raw)
+      if (c2Raw) confidence.contract2 = computeConfidence(c2Candidates, c2Raw)
 
       const reportCandidates = (reportCand ?? {}) as Record<string, unknown>
       const reportRaw = fillFromCandidates(aiReport, reportCandidates)
@@ -515,7 +520,10 @@ export async function POST(request: NextRequest) {
       )
         warnings.push("Informe — la IA no pudo interpretar el documento")
       if (reportRaw)
-        confidence.activityReport = computeConfidence(reportCandidates, reportRaw)
+        confidence.activityReport = computeConfidence(
+          reportCandidates,
+          reportRaw
+        )
 
       const extractedData: ExtractedData = {
         paymentSheet,
@@ -527,11 +535,13 @@ export async function POST(request: NextRequest) {
       }
 
       const finalIssuers: Record<string, string> = {}
-      if (issuerKeys.paymentSheet) finalIssuers.paymentSheet = issuerKeys.paymentSheet
+      if (issuerKeys.paymentSheet)
+        finalIssuers.paymentSheet = issuerKeys.paymentSheet
       if (issuerKeys.arl) finalIssuers.arl = issuerKeys.arl
       if (issuerKeys.contract) finalIssuers.contract = issuerKeys.contract
       if (issuerKeys.contract2) finalIssuers.contract2 = issuerKeys.contract2
-      if (issuerKeys.paymentSheet2) finalIssuers.paymentSheet2 = issuerKeys.paymentSheet2
+      if (issuerKeys.paymentSheet2)
+        finalIssuers.paymentSheet2 = issuerKeys.paymentSheet2
 
       send({
         type: "result",

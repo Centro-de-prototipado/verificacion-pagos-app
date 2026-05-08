@@ -678,7 +678,9 @@ export function ActivityReportEditor({
                         }}
                         className="w-10 bg-transparent text-[11px] font-bold outline-none"
                       />
-                      <span className="text-[10px] text-muted-foreground">%</span>
+                      <span className="text-[10px] text-muted-foreground">
+                        %
+                      </span>
                     </div>
                     <div className="flex items-center gap-1.5">
                       <span className="text-[10px] text-muted-foreground">
@@ -697,14 +699,16 @@ export function ActivityReportEditor({
                         }}
                         className="w-10 bg-transparent text-[11px] font-bold outline-none"
                       />
-                      <span className="text-[10px] text-muted-foreground">%</span>
+                      <span className="text-[10px] text-muted-foreground">
+                        %
+                      </span>
                     </div>
                   </div>
                 </div>
               ))}
             </div>
           ) : (
-            <p className="text-[11px] italic text-muted-foreground">
+            <p className="text-[11px] text-muted-foreground italic">
               No se extrajeron actividades.
             </p>
           )}

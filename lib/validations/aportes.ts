@@ -3,6 +3,10 @@ import {
   APORTE_SALUD_PORCENTAJE,
   APORTE_PENSION_PORCENTAJE,
   SMMLV_2026,
+  FSP_UMBRAL_1,
+  FSP_UMBRAL_2,
+  FSP_TASA_1,
+  FSP_TASA_2,
 } from "./constantes"
 import { calcularMesesContrato } from "./fechas"
 import type {
@@ -50,6 +54,18 @@ export function calcularAportePension(calculationBase: number): number {
 }
 
 /**
+ * Fondo de Solidaridad Pensional (FSP).
+ * Aplica cuando la base de cotización supera 4 × SMMLV.
+ * Por encima de 16 × SMMLV se aplica la tasa mayor (solidaridad + subsistencia).
+ */
+export function calcularFSP(calculationBase: number): number {
+  if (calculationBase <= FSP_UMBRAL_1 * SMMLV_2026) return 0
+  if (calculationBase <= FSP_UMBRAL_2 * SMMLV_2026)
+    return Math.round(calculationBase * FSP_TASA_1)
+  return Math.round(calculationBase * FSP_TASA_2)
+}
+
+/**
  * Aporte ARL: tasaCotizacion (del certificado) × base efectiva.
  * cotizationRate viene como porcentaje, e.g. 1.044 para 1.044%.
  */
@@ -68,20 +84,17 @@ export function combineContributions(
   c1: ContributionCalculation,
   c2: ContributionCalculation,
   isPensioner: boolean,
-  cotizationRate: number
+  cotizationRate: number,
+  overlapMonths?: number
 ): ContributionCalculation {
   const totalMonthlyValue = c1.monthlyValue + c2.monthlyValue
   const totalIBC = c1.ibc + c2.ibc
   const effectiveBase = calcularBaseEfectiva(totalIBC)
 
   const healthContribution = calcularAporteSalud(effectiveBase)
-  const pensionContribution = isPensioner
-    ? 0
-    : calcularAportePension(effectiveBase)
+  const pensionContribution = isPensioner ? 0 : calcularAportePension(effectiveBase)
   const arlContribution = calcularAporteARL(cotizationRate, effectiveBase)
-
-  // FSP: Pendiente confirmar si aplica sobre la base total
-  const solidarityFund = 0
+  const solidarityFund = calcularFSP(effectiveBase)
 
   const totalObligatory =
     healthContribution + pensionContribution + arlContribution + solidarityFund
@@ -89,7 +102,7 @@ export function combineContributions(
   return {
     calculationBase: effectiveBase,
     monthlyValue: totalMonthlyValue,
-    contractMonths: c1.contractMonths, // Se asume el mismo periodo
+    contractMonths: overlapMonths ?? Math.max(c1.contractMonths, c2.contractMonths),
     ibc: totalIBC,
     healthContribution,
     pensionContribution,
@@ -153,7 +166,7 @@ export function calcularContribuciones(
     ? 0
     : calcularAportePension(calculationBase)
   const arlContribution = calcularAporteARL(arl.cotizationRate, calculationBase)
-  const solidarityFund = 0 // FSP pendiente confirmar: aplica cuando IBC > 4 SMMLV
+  const solidarityFund = calcularFSP(calculationBase)
   const totalObligatory =
     healthContribution + pensionContribution + arlContribution + solidarityFund
 

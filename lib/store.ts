@@ -72,17 +72,24 @@ export const useWizardStore = create<WizardState>()(
             }
           }
 
-          // If moving back to Step 2: clear extraction results and Step 3 specific files
+          // If moving back to Step 2: keep extracted data so AI doesn't re-run,
+          // but clear Step 3-specific files and their extracted results.
           if (newStep === 2) {
             return {
               step: 2,
               rawText: null,
-              extractedData: null,
               documents: {
                 ...s.documents,
                 activityReport: null,
                 paymentSheet2: null,
-              }
+              },
+              extractedData: s.extractedData
+                ? {
+                    ...s.extractedData,
+                    activityReport: null,
+                    paymentSheet2: null,
+                  }
+                : null,
             }
           }
 

@@ -24,6 +24,7 @@ import {
   diasHabilAsignados,
 } from "@/lib/validations/fecha-limite"
 import type {
+  ActivityReportData,
   ARLData,
   ConfidenceMap,
   ContractData,
@@ -53,6 +54,102 @@ type ExtractionStatus =
   | "error"
   | "manual"
 
+function validateExtractedData(
+  planilla: PaymentSheetData | null,
+  arl: ARLData | null,
+  contract: ContractData | null,
+  contract2: ContractData | null,
+  contractCount: "1" | "2"
+): string[] {
+  const errors: string[] = []
+  const isDMY = (s: string) => /^\d{2}\/\d{2}\/\d{4}$/.test(s)
+  const isISO = (s: string) => /^\d{4}-\d{2}-\d{2}$/.test(s)
+  const isDate = (s: string) => isDMY(s) || isISO(s)
+  const isMY = (s: string) => /^\d{2}\/\d{4}$/.test(s)
+
+  if (!planilla) {
+    errors.push("Planilla PILA: no se encontraron datos.")
+  } else {
+    if (!planilla.sheetNumber?.trim())
+      errors.push("Planilla: número de planilla requerido.")
+    if (!isDMY(planilla.paymentDate ?? ""))
+      errors.push(
+        `Planilla: fecha de pago inválida ("${planilla.paymentDate ?? ""}"). Usa DD/MM/YYYY.`
+      )
+    if (!isMY(planilla.period ?? ""))
+      errors.push(
+        `Planilla: período inválido ("${planilla.period ?? ""}"). Usa MM/YYYY.`
+      )
+    if (!planilla.totalAmountPaid || planilla.totalAmountPaid <= 0)
+      errors.push("Planilla: valor total pagado debe ser mayor a cero.")
+    if (!planilla.contractorName?.trim())
+      errors.push("Planilla: nombre del cotizante requerido.")
+    if (!planilla.documentNumber?.trim())
+      errors.push("Planilla: número de documento requerido.")
+  }
+
+  if (!arl) {
+    errors.push("ARL: no se encontraron datos.")
+  } else {
+    if (!isDate(arl.startDate ?? ""))
+      errors.push(`ARL: fecha de inicio inválida ("${arl.startDate ?? ""}").`)
+    if (!isDate(arl.endDate ?? ""))
+      errors.push(`ARL: fecha de fin inválida ("${arl.endDate ?? ""}").`)
+    if (!arl.cotizationRate || arl.cotizationRate <= 0)
+      errors.push("ARL: tasa de cotización debe ser mayor a cero.")
+    if (!arl.contractorName?.trim())
+      errors.push("ARL: nombre del contratista requerido.")
+    if (!arl.documentNumber?.trim())
+      errors.push("ARL: número de documento requerido.")
+  }
+
+  if (!contract) {
+    errors.push("Contrato: no se encontraron datos.")
+  } else {
+    if (!contract.orderNumber?.trim())
+      errors.push("Contrato: número de orden requerido.")
+    if (!contract.contractorName?.trim())
+      errors.push("Contrato: nombre del contratista requerido.")
+    if (!contract.documentNumber?.trim())
+      errors.push("Contrato: número de documento requerido.")
+    if (!contract.totalValueBeforeTax || contract.totalValueBeforeTax <= 0)
+      errors.push("Contrato: valor total debe ser mayor a cero.")
+    if (!isDate(contract.startDate ?? ""))
+      errors.push(
+        `Contrato: fecha de inicio inválida ("${contract.startDate ?? ""}"). Usa DD/MM/YYYY.`
+      )
+    if (!isDate(contract.endDate ?? ""))
+      errors.push(
+        `Contrato: fecha de fin inválida ("${contract.endDate ?? ""}"). Usa DD/MM/YYYY.`
+      )
+  }
+
+  if (contractCount === "2") {
+    if (!contract2) {
+      errors.push("Contrato 2: no se encontraron datos.")
+    } else {
+      if (!contract2.orderNumber?.trim())
+        errors.push("Contrato 2: número de orden requerido.")
+      if (!contract2.contractorName?.trim())
+        errors.push("Contrato 2: nombre del contratista requerido.")
+      if (!contract2.documentNumber?.trim())
+        errors.push("Contrato 2: número de documento requerido.")
+      if (!contract2.totalValueBeforeTax || contract2.totalValueBeforeTax <= 0)
+        errors.push("Contrato 2: valor total debe ser mayor a cero.")
+      if (!isDate(contract2.startDate ?? ""))
+        errors.push(
+          `Contrato 2: fecha de inicio inválida ("${contract2.startDate ?? ""}"). Usa DD/MM/YYYY.`
+        )
+      if (!isDate(contract2.endDate ?? ""))
+        errors.push(
+          `Contrato 2: fecha de fin inválida ("${contract2.endDate ?? ""}"). Usa DD/MM/YYYY.`
+        )
+    }
+  }
+
+  return errors
+}
+
 export function Step2() {
   const {
     documents,
@@ -65,6 +162,7 @@ export function Step2() {
 
   const [status, setStatus] = useState<ExtractionStatus>("idle")
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
+  const [confirmErrors, setConfirmErrors] = useState<string[]>([])
 
   type DocStatus = "waiting" | "trying" | "done" | "failed"
   type DocProgress = { status: DocStatus; model?: string; finalModel?: string }
@@ -82,7 +180,7 @@ export function Step2() {
   const [arl, setArl] = useState<ARLData | null>(null)
   const [contract, setContract] = useState<ContractData | null>(null)
   const [contract2, setContract2] = useState<ContractData | null>(null)
-  const [activityReport, setActivityReport] = useState<any>(null)
+  const [activityReport, setActivityReport] = useState<ActivityReportData | null>(null)
   const [issuerKeys, setIssuerKeys] = useState<Record<string, string>>({})
   const [warnings, setWarnings] = useState<string[]>([])
   const [confidence, setConfidence] = useState<Record<string, ConfidenceMap>>(
@@ -352,6 +450,19 @@ export function Step2() {
   }, [])
 
   const handleConfirm = () => {
+    const errors = validateExtractedData(
+      planilla,
+      arl,
+      contract,
+      contract2,
+      manualData?.contractCount ?? "1"
+    )
+    if (errors.length > 0) {
+      setConfirmErrors(errors)
+      return
+    }
+    setConfirmErrors([])
+
     if (issuerKeys.paymentSheet && planilla)
       saveProfile(
         "pila",
@@ -665,6 +776,23 @@ export function Step2() {
                   Algunos documentos no se pudieron leer automáticamente
                   (aparecen en naranja). Completa los campos vacíos manualmente
                   — son todos editables.
+                </AlertDescription>
+              </Alert>
+            )}
+            {confirmErrors.length > 0 && (
+              <Alert variant="destructive">
+                <AlertCircleIcon className="size-4" />
+                <AlertDescription>
+                  <p className="mb-1 font-semibold">
+                    Corrige los siguientes campos antes de continuar:
+                  </p>
+                  <ul className="list-disc space-y-0.5 pl-4">
+                    {confirmErrors.map((e, i) => (
+                      <li key={i} className="text-sm">
+                        {e}
+                      </li>
+                    ))}
+                  </ul>
                 </AlertDescription>
               </Alert>
             )}

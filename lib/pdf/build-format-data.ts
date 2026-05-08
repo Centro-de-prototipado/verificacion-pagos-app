@@ -134,7 +134,9 @@ export function buildFormat069Data(
   const today = todayDDMMYYYY()
 
   const deductionsContractRef = `${manual.quipuCompany}-${contract!.contractType}-${contract!.orderNumber}-${year}`
-  const riskLabel = { I: "1", II: "2", III: "3", IV: "4", V: "5" }[arl!.riskClass] ?? arl!.riskClass
+  const riskLabel =
+    { I: "1", II: "2", III: "3", IV: "4", V: "5" }[arl!.riskClass] ??
+    arl!.riskClass
   const c1 = summary.contributions1!
   const c2 = summary.contributions2
 

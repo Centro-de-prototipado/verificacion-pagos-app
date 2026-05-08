@@ -113,7 +113,7 @@ export function getHolidaysForYear(year: number): Set<string> {
 // Cache so we don't recompute on every call
 const holidayCache = new Map<number, Set<string>>()
 
-function esDiaHabil(date: Date): boolean {
+export function esDiaHabil(date: Date): boolean {
   const dow = date.getDay()
   if (dow === 0 || dow === 6) return false
   const year = date.getFullYear()

@@ -13,32 +13,6 @@ import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import Image from "next/image"
 
-// ─── Documentos que el usuario necesita tener listos ─────────────────────────
-
-const REQUIRED_DOCUMENTS = [
-  {
-    icon: FileSpreadsheetIcon,
-    name: "Planilla de Seguridad Social",
-    description:
-      "Comprobante de pago a salud, pensión y ARL del mes que vas a cobrar (PILA o equivalente).",
-    tip: "Descárgala desde tu operador de planilla",
-  },
-  {
-    icon: ShieldIcon,
-    name: "Certificado ARL",
-    description:
-      "Certificado vigente de afiliación a riesgos laborales, emitido por tu ARL.",
-    tip: "Positiva, Sura, Colmena, AXA, etc.",
-  },
-  {
-    icon: FileTextIcon,
-    name: "Contrato u Orden contractual",
-    description:
-      "Orden de prestación de servicios u otro tipo de contrato firmado con la UNAL.",
-    tip: "OSE, OPS, OCE, OFS…",
-  },
-] as const
-
 // ─── Pasos del proceso ────────────────────────────────────────────────────────
 
 const PROCESS_STEPS = [

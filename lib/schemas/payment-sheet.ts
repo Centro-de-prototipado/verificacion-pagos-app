@@ -17,8 +17,12 @@ export const PaymentSheetSchema = z.object({
     .describe(
       "Valor total pagado en pesos colombianos (COP), como número sin separadores de miles"
     ),
-  contractorName: z.string().describe("Nombre del cotizante que aparece en la planilla PILA"),
-  documentNumber: z.string().describe("Número de identificación del cotizante en la planilla PILA"),
+  contractorName: z
+    .string()
+    .describe("Nombre del cotizante que aparece en la planilla PILA"),
+  documentNumber: z
+    .string()
+    .describe("Número de identificación del cotizante en la planilla PILA"),
 })
 
 export type PaymentSheetExtracted = z.infer<typeof PaymentSheetSchema>

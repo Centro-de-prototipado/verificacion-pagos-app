@@ -1,24 +1,31 @@
-import type { ActivityReportData, ContractData, ValidationResult } from "@/lib/types"
+import type {
+  ActivityReportData,
+  ContractData,
+  ValidationResult,
+} from "@/lib/types"
+import { esDiaHabil } from "./fecha-limite"
 
 /**
  * Helper to check if a date is within N business days of another.
+ * Uses the full Colombian holiday calendar from esDiaHabil.
  */
-function isRecent(dateStr: string, referenceDate: Date, maxDays: number): boolean {
+function isRecent(
+  dateStr: string,
+  referenceDate: Date,
+  maxDays: number
+): boolean {
   const [d, m, y] = dateStr.split("/").map(Number)
   const target = new Date(y, m - 1, d)
 
-  if (target > referenceDate) return true // Signed in the future? Treat as ok for this check
+  if (target > referenceDate) return true
 
   let businessDays = 0
   const current = new Date(target)
 
   while (current < referenceDate) {
     current.setDate(current.getDate() + 1)
-    const day = current.getDay()
-    if (day !== 0 && day !== 6) { // Not Sat/Sun
-      businessDays++
-    }
-    if (businessDays > 30) break // Safety
+    if (esDiaHabil(current)) businessDays++
+    if (businessDays > 30) break
   }
 
   return businessDays <= maxDays
@@ -53,20 +60,22 @@ export function validarInformeActividades(
       ok: false,
       blocking: false,
       type: "report",
-      message: "En la tabla de actividades, el % Periodo debe ser menor o igual al % Acumulado en todos los items.",
+      message:
+        "En la tabla de actividades, el % Periodo debe ser menor o igual al % Acumulado en todos los items.",
     })
   }
 
   // 2. Actividades ejecutadas diligenciadas
-  const itemsDiligenciados = data.items.length > 0 && data.items.every(
-    (item) => item.activityDescription.trim().length > 0
-  )
+  const itemsDiligenciados =
+    data.items.length > 0 &&
+    data.items.every((item) => item.activityDescription.trim().length > 0)
   if (!itemsDiligenciados) {
     results.push({
       ok: false,
       blocking: false,
       type: "report",
-      message: "Todas las filas de la columna ACTIVIDADES EJECUTADAS deben estar diligenciadas en el informe de actividades.",
+      message:
+        "Todas las filas de la columna ACTIVIDADES EJECUTADAS deben estar diligenciadas en el informe de actividades.",
     })
   }
 
@@ -130,7 +139,10 @@ export function validarInformeActividades(
   }
 
   // 7. Nombre del contratista y C.C.
-  if (normalizeName(data.contractorName) !== normalizeName(contract.contractorName)) {
+  if (
+    normalizeName(data.contractorName) !==
+    normalizeName(contract.contractorName)
+  ) {
     results.push({
       ok: false,
       blocking: true,
@@ -156,7 +168,8 @@ export function validarInformeActividades(
         ok: false,
         blocking: true,
         type: "report",
-        message: "No se extrajeron actividades del informe. Por favor, usa el botón 'Analizar con IA' o ingresa las obligaciones manualmente en el editor de abajo.",
+        message:
+          "No se extrajeron actividades del informe. Por favor, usa el botón 'Analizar con IA' o ingresa las obligaciones manualmente en el editor de abajo.",
       })
       return results
     }
@@ -174,13 +187,15 @@ export function validarInformeActividades(
 
       const w1 = clean(s1)
       const w2 = clean(s2)
-      
+
       if (w1.length === 0 || w2.length === 0) return 0
-      
+
       const set2 = new Set(w2)
       let matches = 0
-      w1.forEach(w => { if (set2.has(w)) matches++ })
-      
+      w1.forEach((w) => {
+        if (set2.has(w)) matches++
+      })
+
       // Similitud: proporción de palabras coincidentes sobre el conjunto más PEQUEÑO
       // Esto permite que si el reporte tiene un "resumen" de la obligación, el match sea alto.
       return matches / Math.min(w1.length, w2.length)
@@ -194,10 +209,13 @@ export function validarInformeActividades(
         const score = getSimilarity(contractObligation, reportActivity)
         if (score > maxScore) maxScore = score
       }
-      
+
       // Bajamos el umbral a 0.3 (30%) para ser absurdamente permisivos y ver qué pasa
       if (maxScore < 0.3) {
-        missingObligations.push({ text: contractObligation, bestScore: maxScore })
+        missingObligations.push({
+          text: contractObligation,
+          bestScore: maxScore,
+        })
       }
     }
 
@@ -219,7 +237,8 @@ export function validarInformeActividades(
       ok: true,
       blocking: false,
       type: "report",
-      message: "El informe está perfecto y cumple con todas las verificaciones.",
+      message:
+        "El informe está perfecto y cumple con todas las verificaciones.",
     })
   }
 

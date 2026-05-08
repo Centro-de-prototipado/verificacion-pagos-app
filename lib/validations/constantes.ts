@@ -1,5 +1,8 @@
 // ─── Constantes normativas Colombia 2026 ─────────────────────────────────────
-// Verificar y actualizar anualmente en lib/validations/constantes.ts
+// ⚠️ Actualizar cada enero: SMMLV_ANIO, SMMLV_2026 y decretos vigentes.
+
+/** Año al que corresponden las constantes normativas. Actualizar cada enero. */
+export const SMMLV_ANIO = 2026
 
 /** Porcentaje IBC: 40% del valor mensualizado del contrato */
 export const IBC_PORCENTAJE = 0.4
@@ -23,3 +26,14 @@ export const SMMLV_2026 = 1_751_200
  * Las fechas de cobertura ARL pueden diferir hasta 2 días respecto al contrato.
  */
 export const GAVELA_DIAS_ARL = 2
+
+// ─── Fondo de Solidaridad Pensional (FSP) ────────────────────────────────────
+// Aplica a contratistas independientes cuando la base de cotización supera el umbral.
+// Ley 100/1993 art. 27, Decreto 1833/2016.
+
+/** Aplica 1% de FSP cuando base de cotización > FSP_UMBRAL_1 × SMMLV */
+export const FSP_UMBRAL_1 = 4
+/** Aplica 2% total (solidaridad + subsistencia) cuando base > FSP_UMBRAL_2 × SMMLV */
+export const FSP_UMBRAL_2 = 16
+export const FSP_TASA_1 = 0.01
+export const FSP_TASA_2 = 0.02

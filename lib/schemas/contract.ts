@@ -71,13 +71,17 @@ export const ContractSchema = z.object({
     .transform(toDMY)
     .optional()
     .default("")
-    .describe("Fecha de inicio del contrato en formato DD/MM/YYYY (opcional — se sobreescribe con fechas de la ARL)"),
+    .describe(
+      "Fecha de inicio del contrato en formato DD/MM/YYYY (opcional — se sobreescribe con fechas de la ARL)"
+    ),
   endDate: z
     .string()
     .transform(toDMY)
     .optional()
     .default("")
-    .describe("Fecha de terminación del contrato en formato DD/MM/YYYY (opcional — se sobreescribe con fechas de la ARL)"),
+    .describe(
+      "Fecha de terminación del contrato en formato DD/MM/YYYY (opcional — se sobreescribe con fechas de la ARL)"
+    ),
   activityReport: z.object({
     required: z
       .boolean()

@@ -41,53 +41,71 @@ export function DocumentDropzone({
   async function processFile(f: File | null) {
     if (!f) return
     // Simple check: if accept contains "*" or the specific type
-    const isAccepted = accept === "*" || 
-      accept.split(",").some(type => {
-        const t = type.trim();
-        if (t === "image/*") return f.type.startsWith("image/");
-        return f.type === t || f.name.toLowerCase().endsWith(t.replace(".", ""));
-      });
+    const isAccepted =
+      accept === "*" ||
+      accept.split(",").some((type) => {
+        const t = type.trim()
+        if (t === "image/*") return f.type.startsWith("image/")
+        return f.type === t || f.name.toLowerCase().endsWith(t.replace(".", ""))
+      })
 
     if (!isAccepted) {
       import("sonner").then(({ toast }) => {
-        toast.error(`Solo se aceptan archivos de tipo: ${accept.replace("application/pdf", "PDF").replace("image/*", "Imagen")}`)
+        toast.error(
+          `Solo se aceptan archivos de tipo: ${accept.replace("application/pdf", "PDF").replace("image/*", "Imagen")}`
+        )
       })
       return
     }
 
     // --- SECURITY CHECK (CLIENT SIDE) ---
     try {
-      const buffer = await f.arrayBuffer();
-      const bytes = new Uint8Array(buffer);
+      const buffer = await f.arrayBuffer()
+      const bytes = new Uint8Array(buffer)
 
       if (f.name.toLowerCase().endsWith(".pdf")) {
         // PDF Magic Number
-        if (bytes[0] !== 0x25 || bytes[1] !== 0x50 || bytes[2] !== 0x44 || bytes[3] !== 0x46) {
-          throw new Error("El archivo no es un PDF válido (firma incorrecta).");
+        if (
+          bytes[0] !== 0x25 ||
+          bytes[1] !== 0x50 ||
+          bytes[2] !== 0x44 ||
+          bytes[3] !== 0x46
+        ) {
+          throw new Error("El archivo no es un PDF válido (firma incorrecta).")
         }
         // Basic malware scan
-        const content = new TextDecoder().decode(bytes.slice(0, 5000));
-        const dangerousPatterns = ["/JS", "/JavaScript", "/OpenAction"];
+        const content = new TextDecoder().decode(bytes.slice(0, 5000))
+        const dangerousPatterns = ["/JS", "/JavaScript", "/OpenAction"]
         for (const pattern of dangerousPatterns) {
           if (content.includes(pattern)) {
-            throw new Error(`Seguridad: Se detectó un elemento potencialmente malicioso (${pattern})`);
+            throw new Error(
+              `Seguridad: Se detectó un elemento potencialmente malicioso (${pattern})`
+            )
           }
         }
-      } else if (f.type.startsWith("image/") || f.name.match(/\.(jpg|jpeg|png)$/i)) {
+      } else if (
+        f.type.startsWith("image/") ||
+        f.name.match(/\.(jpg|jpeg|png)$/i)
+      ) {
         // Image Magic Numbers
-        const isJpg = bytes[0] === 0xff && bytes[1] === 0xd8 && bytes[2] === 0xff;
-        const isPng = bytes[0] === 0x89 && bytes[1] === 0x50 && bytes[2] === 0x4e && bytes[3] === 0x47;
+        const isJpg =
+          bytes[0] === 0xff && bytes[1] === 0xd8 && bytes[2] === 0xff
+        const isPng =
+          bytes[0] === 0x89 &&
+          bytes[1] === 0x50 &&
+          bytes[2] === 0x4e &&
+          bytes[3] === 0x47
         if (!isJpg && !isPng) {
-          throw new Error("El archivo no es una imagen JPG o PNG válida.");
+          throw new Error("El archivo no es una imagen JPG o PNG válida.")
         }
       }
     } catch (error: any) {
       import("sonner").then(({ toast }) => {
         toast.error("Archivo rechazado por seguridad", {
-          description: error.message
-        });
+          description: error.message,
+        })
       })
-      return;
+      return
     }
     // --- END SECURITY CHECK ---
 
@@ -197,7 +215,9 @@ export function DocumentDropzone({
               <div className="absolute inset-0 animate-spin rounded-full border-2 border-primary border-t-transparent" />
               <UploadCloudIcon className="absolute inset-0 m-auto size-5 text-primary opacity-50" />
             </div>
-            <p className="text-xs font-medium text-primary">Procesando con IA...</p>
+            <p className="text-xs font-medium text-primary">
+              Procesando con IA...
+            </p>
           </div>
         ) : uploaded ? (
           /* ── Estado: archivo cargado ── */
@@ -208,7 +228,8 @@ export function DocumentDropzone({
                 {file!.name}
               </p>
               <p className="text-[10px] text-muted-foreground">
-                {(file!.size / 1024).toFixed(0)} KB · {file!.type.startsWith("image/") ? "Imagen" : "PDF"}
+                {(file!.size / 1024).toFixed(0)} KB ·{" "}
+                {file!.type.startsWith("image/") ? "Imagen" : "PDF"}
               </p>
             </div>
             <p className="text-[10px] text-muted-foreground/70">
@@ -246,7 +267,8 @@ export function DocumentDropzone({
                 </p>
               )}
               <p className="mt-1 text-[10px] text-muted-foreground/50">
-                {accept.includes("image") ? "Imagen (PNG/JPG)" : "PDF"} · Arrastra aquí o haz clic
+                {accept.includes("image") ? "Imagen (PNG/JPG)" : "PDF"} ·
+                Arrastra aquí o haz clic
               </p>
             </div>
           </>

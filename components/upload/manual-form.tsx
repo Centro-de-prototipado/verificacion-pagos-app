@@ -302,7 +302,8 @@ export function ManualForm({
                   </FieldDescription>
                   <div className="grid grid-cols-3 gap-2">
                     {(["Parcial", "Final", "Único"] as const).map((val) => {
-                      const isDisabled = (val === "Final" || val === "Único") && !canSelectFinal
+                      const isDisabled =
+                        (val === "Final" || val === "Único") && !canSelectFinal
                       return (
                         <button
                           key={val}
@@ -314,11 +315,16 @@ export function ManualForm({
                             field.value === val
                               ? "border-primary bg-primary/10 text-primary"
                               : "border-border text-foreground hover:border-primary/40",
-                            isDisabled && "cursor-not-allowed opacity-40 grayscale",
+                            isDisabled &&
+                              "cursor-not-allowed opacity-40 grayscale",
                           ]
                             .filter(Boolean)
                             .join(" ")}
-                          title={isDisabled ? "Solo disponible al finalizar el contrato" : ""}
+                          title={
+                            isDisabled
+                              ? "Solo disponible al finalizar el contrato"
+                              : ""
+                          }
                         >
                           {val}
                         </button>
@@ -327,7 +333,8 @@ export function ManualForm({
                   </div>
                   {!canSelectFinal && (
                     <p className="mt-1.5 text-[10px] text-amber-600">
-                      ⚠ Pago Final/Único bloqueado hasta el {extractedData!.contract!.endDate}
+                      ⚠ Pago Final/Único bloqueado hasta el{" "}
+                      {extractedData!.contract!.endDate}
                     </p>
                   )}
                   {fieldState.invalid && (
@@ -438,6 +445,9 @@ export function ManualForm({
                     id={field.name}
                     placeholder="Ej. CSI 1/2026"
                     aria-invalid={fieldState.invalid}
+                    onChange={(e) =>
+                      field.onChange(e.target.value.toUpperCase())
+                    }
                   />
                   {fieldState.invalid && (
                     <FieldError errors={[fieldState.error]} />
@@ -465,6 +475,9 @@ export function ManualForm({
                     id={field.name}
                     placeholder="Ej. Adición 1/2026"
                     aria-invalid={fieldState.invalid}
+                    onChange={(e) =>
+                      field.onChange(e.target.value.toUpperCase())
+                    }
                   />
                   {fieldState.invalid && (
                     <FieldError errors={[fieldState.error]} />

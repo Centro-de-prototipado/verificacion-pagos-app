@@ -3,12 +3,30 @@ import { readFile } from "fs/promises"
 import { generate } from "@pdfme/generator"
 import type { Template } from "@pdfme/common"
 import { multiVariableText, text, image } from "@pdfme/schemas"
-import { PDFDocument, StandardFonts, rgb } from "pdf-lib"
+import { PDFDocument } from "pdf-lib"
 import type { Format053Data, Format069Data } from "@/lib/types"
 import { SEDE } from "@/lib/constants/institution"
 import { CONTRACT_LABELS } from "@/lib/constants/contracts"
 
 const TEMPLATES_DIR = path.join(process.cwd(), "lib", "templates")
+const FONTS_DIR = path.join(process.cwd(), "fonts")
+
+// Module-level cache: the font is read from disk once per process lifetime.
+let _ancizarFont: Buffer | null = null
+
+async function getFontOptions(): Promise<Record<string, unknown>> {
+  if (!_ancizarFont) {
+    try {
+      _ancizarFont = await readFile(
+        path.join(FONTS_DIR, "AncizarSans-VariableFont_wght.ttf")
+      )
+    } catch {
+      return {}
+    }
+  }
+  // Register as "NotoSansJP" — the name used in all pdfme templates of this project.
+  return { font: { AncizarSans: { data: _ancizarFont, fallback: true, subset: false } } }
+}
 
 function num(value: number): string {
   return new Intl.NumberFormat("es-CO").format(Math.round(value))
@@ -244,98 +262,23 @@ export async function generateValidationCertificate(datos: {
   contractorName: string
   orderNumber: string
   expeditionDate: string
-}): Promise<Uint8Array> {
-  const pdfDoc = await PDFDocument.create()
-  const page = pdfDoc.addPage([612, 792]) // Letter size
-  const { width, height } = page.getSize()
+}): Promise<Uint8Array | null> {
+  const template = await loadTemplate("template_certificate.json")
+  if (!template) return null
+  const options = await getFontOptions()
 
-  const fontBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold)
-  const fontRegular = await pdfDoc.embedFont(StandardFonts.Helvetica)
-
-  // Decorative border
-  page.drawRectangle({
-    x: 40,
-    y: 40,
-    width: width - 80,
-    height: height - 80,
-    borderColor: rgb(0.2, 0.2, 0.2),
-    borderWidth: 1,
+  return generate({
+    template,
+    plugins: { text },
+    options,
+    inputs: [
+      {
+        contratista: datos.contractorName,
+        num_orden: datos.orderNumber,
+        fecha_generacion: datos.expeditionDate,
+      },
+    ],
   })
-
-  // Header
-  page.drawText("CERTIFICADO DE VALIDACIÓN DIGITAL", {
-    x: 120,
-    y: height - 120,
-    size: 20,
-    font: fontBold,
-    color: rgb(0, 0.45, 0.73), // UNAL Blue-ish
-  })
-
-  page.drawText("SISTEMA DE VERIFICACIÓN DE PAGOS - UNAL", {
-    x: 160,
-    y: height - 145,
-    size: 10,
-    font: fontBold,
-    color: rgb(0.4, 0.4, 0.4),
-  })
-
-  // Body
-  const bodyText = [
-    "Se certifica que el presente paquete documental ha sido generado y validado íntegramente",
-    "utilizando la plataforma oficial de verificación de pagos del Centro de Prototipado.",
-    "",
-    "Este proceso garantiza que:",
-    "1. La identidad del contratista coincide plenamente entre el contrato e informe de actividades.",
-    "2. El pago de seguridad social se realizó dentro de los plazos de ley (o se adjuntó el soporte de mora).",
-    "3. Los aportes a salud, pensión y ARL corresponden a los valores liquidados en el contrato.",
-    "4. El informe de actividades cumple con las fechas de ejecución y firma requeridas.",
-    "5. El formato 053 y 069 han sido diligenciados automáticamente con datos extraídos por IA.",
-    "",
-    `CONTRATISTA: ${datos.contractorName}`,
-    `ORDEN/CONTRATO: ${datos.orderNumber}`,
-    `FECHA DE GENERACIÓN: ${datos.expeditionDate}`,
-    "",
-    "Este certificado sirve como garantía para la División Financiera de que la documentación",
-    "adjunta es consistente y cumple con las reglas de negocio institucionales vigentes.",
-  ]
-
-  let currentY = height - 220
-  bodyText.forEach((line) => {
-    if (line.startsWith("CONTRATISTA") || line.startsWith("ORDEN") || line.startsWith("FECHA")) {
-      page.drawText(line, { x: 80, y: currentY, size: 11, font: fontBold })
-    } else {
-      page.drawText(line, { x: 80, y: currentY, size: 11, font: fontRegular })
-    }
-    currentY -= 20
-  })
-
-  // Footer / Stamp-like area
-  page.drawRectangle({
-    x: width / 2 - 100,
-    y: 100,
-    width: 200,
-    height: 60,
-    borderColor: rgb(0, 0.6, 0.3),
-    borderWidth: 2,
-  })
-
-  page.drawText("VALIDADO DIGITALMENTE", {
-    x: width / 2 - 85,
-    y: 135,
-    size: 14,
-    font: fontBold,
-    color: rgb(0, 0.6, 0.3),
-  })
-
-  page.drawText("SIN ERRORES BLOQUEANTES", {
-    x: width / 2 - 75,
-    y: 115,
-    size: 10,
-    font: fontRegular,
-    color: rgb(0, 0.6, 0.3),
-  })
-
-  return pdfDoc.save()
 }
 
 export async function combinePDFs({
@@ -355,7 +298,7 @@ export async function combinePDFs({
   bytesARL: Uint8Array
   bytesInforme?: Uint8Array | null
   bytesDeduccionFiles?: Uint8Array[]
-  bytesCertificado?: Uint8Array
+  bytesCertificado?: Uint8Array | null
 }): Promise<Uint8Array> {
   const merged = await PDFDocument.create()
 
@@ -377,7 +320,8 @@ export async function combinePDFs({
       await copy(bytesDeduccionFiles[i], `Documento de deducción ${i + 1}`)
     }
   }
-  if (bytesCertificado) await copy(bytesCertificado, "Certificado de Validación Digital")
+  if (bytesCertificado)
+    await copy(bytesCertificado, "Certificado de Validación Digital")
 
   return merged.save()
 }
