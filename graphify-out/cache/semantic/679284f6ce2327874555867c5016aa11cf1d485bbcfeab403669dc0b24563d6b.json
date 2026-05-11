@@ -1,0 +1,1 @@
+{"nodes": [{"id": "lib_schema_activity", "label": "Activity Report Zod Schema", "file_type": "code", "source_file": "lib/schemas/activity-report.ts", "tags": ["schema", "zod", "validation"], "summary": "ActivityReportSchema: items[], signatureDate, periodFrom/To, opsStart/End, isSigned, name/doc match"}], "edges": [], "hyperedges": []}

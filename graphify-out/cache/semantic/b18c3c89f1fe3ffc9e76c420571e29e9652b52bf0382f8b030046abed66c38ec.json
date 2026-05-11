@@ -1,0 +1,1 @@
+{"nodes": [{"id": "app_page", "label": "Landing Page", "file_type": "code", "source_file": "app/page.tsx", "tags": ["nextjs", "page", "wizard"], "summary": "Landing page describing the 4-step wizard workflow"}], "edges": [], "hyperedges": []}

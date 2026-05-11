@@ -1,0 +1,1 @@
+{"nodes": [{"id": "api_extract_text", "label": "PDF Text Extraction API Route", "file_type": "code", "source_file": "app/api/extract-text/route.ts", "tags": ["api", "pdf", "text"], "summary": "Extracts raw text from uploaded PDF files for downstream AI processing"}], "edges": [], "hyperedges": []}

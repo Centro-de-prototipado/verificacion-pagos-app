@@ -76,6 +76,28 @@ export function calcularAporteARL(
   return Math.round(calculationBase * (cotizationRate / 100))
 }
 
+function aportesDesdeBase(
+  base: number,
+  cotizationRate: number,
+  isPensioner: boolean
+) {
+  const healthContribution = calcularAporteSalud(base)
+  const pensionContribution = isPensioner ? 0 : calcularAportePension(base)
+  const arlContribution = calcularAporteARL(cotizationRate, base)
+  const solidarityFund = calcularFSP(base)
+  return {
+    healthContribution,
+    pensionContribution,
+    arlContribution,
+    solidarityFund,
+    totalObligatory:
+      healthContribution +
+      pensionContribution +
+      arlContribution +
+      solidarityFund,
+  }
+}
+
 /**
  * Suma dos ContributionCalculation (caso de dos contratos simultáneos).
  * Los campos de base se toman del primero; los monetarios se suman.
@@ -90,25 +112,15 @@ export function combineContributions(
   const totalMonthlyValue = c1.monthlyValue + c2.monthlyValue
   const totalIBC = c1.ibc + c2.ibc
   const effectiveBase = calcularBaseEfectiva(totalIBC)
-
-  const healthContribution = calcularAporteSalud(effectiveBase)
-  const pensionContribution = isPensioner ? 0 : calcularAportePension(effectiveBase)
-  const arlContribution = calcularAporteARL(cotizationRate, effectiveBase)
-  const solidarityFund = calcularFSP(effectiveBase)
-
-  const totalObligatory =
-    healthContribution + pensionContribution + arlContribution + solidarityFund
+  const aportes = aportesDesdeBase(effectiveBase, cotizationRate, isPensioner)
 
   return {
     calculationBase: effectiveBase,
     monthlyValue: totalMonthlyValue,
-    contractMonths: overlapMonths ?? Math.max(c1.contractMonths, c2.contractMonths),
+    contractMonths:
+      overlapMonths ?? Math.max(c1.contractMonths, c2.contractMonths),
     ibc: totalIBC,
-    healthContribution,
-    pensionContribution,
-    arlContribution,
-    solidarityFund,
-    totalObligatory,
+    ...aportes,
     monthlyRetentionBase: totalMonthlyValue,
   }
 }
@@ -160,26 +172,18 @@ export function calcularContribuciones(
   )
   const ibc = calcularIBC(monthlyValue)
   const calculationBase = calcularBaseEfectiva(ibc)
-
-  const healthContribution = calcularAporteSalud(calculationBase)
-  const pensionContribution = isPensioner
-    ? 0
-    : calcularAportePension(calculationBase)
-  const arlContribution = calcularAporteARL(arl.cotizationRate, calculationBase)
-  const solidarityFund = calcularFSP(calculationBase)
-  const totalObligatory =
-    healthContribution + pensionContribution + arlContribution + solidarityFund
+  const aportes = aportesDesdeBase(
+    calculationBase,
+    arl.cotizationRate,
+    isPensioner
+  )
 
   return {
     calculationBase,
     monthlyValue,
     contractMonths,
     ibc,
-    healthContribution,
-    pensionContribution,
-    arlContribution,
-    solidarityFund,
-    totalObligatory,
+    ...aportes,
     monthlyRetentionBase: monthlyValue,
   }
 }

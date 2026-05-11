@@ -106,13 +106,18 @@ export function runValidations(
   }
 
   // Document Validation
-  if (contractDoc !== arlDoc || contractDoc !== psDoc) {
-    const mismatch = contractDoc !== arlDoc ? "ARL" : "Planilla"
+  const docMismatches: string[] = []
+  if (contractDoc !== arlDoc)
+    docMismatches.push(`ARL: ${arl.documentNumber}`)
+  if (contractDoc !== psDoc)
+    docMismatches.push(`Planilla: ${paymentSheet.documentNumber}`)
+
+  if (docMismatches.length > 0) {
     results.push({
       ok: false,
       blocking: true,
       type: "cedular",
-      message: `El número de documento no coincide. Contrato: ${contract.documentNumber} vs ${mismatch}: ${mismatch === "ARL" ? arl.documentNumber : paymentSheet.documentNumber}. Corrige el documento adjunto.`,
+      message: `El número de documento no coincide. Contrato: ${contract.documentNumber} vs ${docMismatches.join(", ")}. Corrige el documento adjunto.`,
     })
   } else {
     results.push({
@@ -438,7 +443,7 @@ export function runValidations(
     }
   }
 
-  // ── 5. Declaración cedular ────────────────────────────────────────────────
+  // ── 7. Declaración cedular ────────────────────────────────────────────────
   const formalDeclaration = calcularDeclaracionCedular(
     manual.paymentNumber,
     manual.paymentRequestPeriod,

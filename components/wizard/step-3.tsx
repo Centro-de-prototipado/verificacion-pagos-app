@@ -96,9 +96,17 @@ function ValidationResults({
 }) {
   const [showPassed, setShowPassed] = useState(false)
 
-  const errors = results.filter((r) => !r.ok && r.blocking)
-  const warnings = results.filter((r) => !r.ok && !r.blocking)
-  const passed = results.filter((r) => r.ok)
+  const { errors, warnings, passed } = useMemo(() => {
+    const errors: ValidationResult[] = []
+    const warnings: ValidationResult[] = []
+    const passed: ValidationResult[] = []
+    for (const r of results) {
+      if (r.ok) passed.push(r)
+      else if (r.blocking) errors.push(r)
+      else warnings.push(r)
+    }
+    return { errors, warnings, passed }
+  }, [results])
 
   const isAnalyzing = isExtractingReport || isExtractingPS2
 

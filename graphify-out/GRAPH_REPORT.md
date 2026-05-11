@@ -1,133 +1,142 @@
-# Graph Report - .  (2026-05-07)
+# Graph Report - .  (2026-05-11)
 
 ## Corpus Check
-- 84 files · ~71,936 words
+- 28 files · ~50,000 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 403 nodes · 770 edges · 19 communities (14 shown, 5 thin omitted)
-- Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 4 edges (avg confidence: 0.8)
-- Token cost: 0 input · 0 output
+- 449 nodes · 858 edges · 21 communities (15 shown, 6 thin omitted)
+- Extraction: 96% EXTRACTED · 4% INFERRED · 0% AMBIGUOUS · INFERRED: 36 edges (avg confidence: 0.89)
+- Token cost: 98,400 input · 4,200 output
 
 ## Community Hubs (Navigation)
 - [[_COMMUNITY_AI Client & Provider Registry|AI Client & Provider Registry]]
-- [[_COMMUNITY_PDF Format Data & Months|PDF Format Data & Months]]
-- [[_COMMUNITY_AI Extraction Pipeline|AI Extraction Pipeline]]
-- [[_COMMUNITY_UI Layout & Components|UI Layout & Components]]
-- [[_COMMUNITY_Wizard Navigation & Manual Form|Wizard Navigation & Manual Form]]
-- [[_COMMUNITY_Document Profile & Upload|Document Profile & Upload]]
-- [[_COMMUNITY_Verification Steps UI|Verification Steps UI]]
-- [[_COMMUNITY_PDF API Routes|PDF API Routes]]
-- [[_COMMUNITY_Contract Extraction & Editing|Contract Extraction & Editing]]
-- [[_COMMUNITY_Business Date Calculations|Business Date Calculations]]
+- [[_COMMUNITY_Wizard UI & Upload Components|Wizard UI & Upload Components]]
+- [[_COMMUNITY_AI Extraction & Document Schemas|AI Extraction & Document Schemas]]
+- [[_COMMUNITY_App Shell & Landing Page|App Shell & Landing Page]]
+- [[_COMMUNITY_PDF Parsing & Type System|PDF Parsing & Type System]]
+- [[_COMMUNITY_PDF Format Data & Contributions|PDF Format Data & Contributions]]
+- [[_COMMUNITY_Step 2 & Document Profiles|Step 2 & Document Profiles]]
+- [[_COMMUNITY_API Routes & Contract Constants|API Routes & Contract Constants]]
+- [[_COMMUNITY_Business Rules & Validation|Business Rules & Validation]]
+- [[_COMMUNITY_Step 3 & UI Alerts|Step 3 & UI Alerts]]
+- [[_COMMUNITY_Colombian Date & Holiday Logic|Colombian Date & Holiday Logic]]
 - [[_COMMUNITY_Security & Integrity Tests|Security & Integrity Tests]]
 - [[_COMMUNITY_ESLint Config|ESLint Config]]
 - [[_COMMUNITY_Next.js Config|Next.js Config]]
 - [[_COMMUNITY_PostCSS Config|PostCSS Config]]
-- [[_COMMUNITY_Agent Behavioral Guidelines|Agent Behavioral Guidelines]]
-- [[_COMMUNITY_Sample Contract Data|Sample Contract Data]]
+- [[_COMMUNITY_Project Guidelines|Project Guidelines]]
+- [[_COMMUNITY_Contract Scratch|Contract Scratch]]
+- [[_COMMUNITY_App Page|App Page]]
 
 ## God Nodes (most connected - your core abstractions)
 1. `cn()` - 20 edges
-2. `POST()` - 18 edges
-3. `runValidations()` - 14 edges
-4. `calcularContribuciones()` - 11 edges
-5. `useWizardStore` - 9 edges
-6. `isRateLimited()` - 8 edges
-7. `API Route: /api/extract (AI structured extraction)` - 8 edges
-8. `WizardStep` - 7 edges
-9. `ExtractedData` - 7 edges
-10. `generateWithFallback()` - 7 edges
+2. `AI Extraction API Route` - 19 edges
+3. `POST()` - 18 edges
+4. `runValidations()` - 14 edges
+5. `calcularContribuciones()` - 12 edges
+6. `Core TypeScript Types` - 12 edges
+7. `useWizardStore` - 9 edges
+8. `Validation Orchestrator` - 9 edges
+9. `isRateLimited()` - 8 edges
+10. `combineContributions()` - 8 edges
 
 ## Surprising Connections (you probably didn't know these)
-- `POST()` --calls--> `runValidations()`  [EXTRACTED]
-  app/api/generar-pdf/route.ts → lib/validations/index.ts
-- `POST()` --calls--> `extractPILACandidates()`  [EXTRACTED]
-  app/api/generar-pdf/route.ts → lib/pdf/parsers/keyword-extractor.ts
-- `POST()` --calls--> `buildFormat053Data()`  [EXTRACTED]
-  app/api/generar-pdf/route.ts → lib/pdf/build-format-data.ts
-- `POST()` --calls--> `buildFormat069Data()`  [EXTRACTED]
-  app/api/generar-pdf/route.ts → lib/pdf/build-format-data.ts
-- `POST()` --calls--> `nombreArchivoFinal()`  [EXTRACTED]
-  app/api/generar-pdf/route.ts → lib/pdf/utils.ts
+- `PDF Text Extraction API Route` --semantically_similar_to--> `Keyword Extractor Pre-processing`  [INFERRED] [semantically similar]
+  app/api/extract-text/route.ts → ESPECIFICACIONES.md
+- `Date Validations: fechas.ts` --calls--> `Validation Orchestrator`  [EXTRACTED]
+  PLAN.md → lib/validations/index.ts
+- `Cedular Declaration Rule: cedular.ts` --calls--> `Validation Orchestrator`  [EXTRACTED]
+  PLAN.md → lib/validations/index.ts
+- `Validation Orchestrator` --references--> `Bug: Multi-Contract IBC Ignored`  [EXTRACTED]
+  lib/validations/index.ts → memory/2026-05-05.md
+- `AI Extraction API Route` --calls--> `Mistral AI Provider (devstral-latest, mistral-large-latest)`  [EXTRACTED]
+  app/api/extract/route.ts → ESPECIFICACIONES.md
 
 ## Hyperedges (group relationships)
-- **PDF Processing Pipeline** — api_extract_text, api_extract, lib_validations_index, api_generar_pdf [EXTRACTED 1.00]
-- **Three Mandatory Input Documents** — pdf_pila_planilla, pdf_arl_certificate, pdf_contract [EXTRACTED 1.00]
-- **AI Provider Fallback Chain** — ai_provider_mistral, ai_provider_openrouter, ai_provider_gemini [EXTRACTED 1.00]
+- **Wizard State Flow** —  [INFERRED 0.95]
+- **AI Extraction Pipeline** —  [INFERRED 0.93]
+- **PDF Generation Pipeline** —  [INFERRED 0.92]
+- **Colombian Social Security Validation** —  [INFERRED 0.91]
+- **Dual Contract Support** —  [INFERRED 0.88]
+- **Upload Security Chain** —  [INFERRED 0.87]
 
-## Communities (19 total, 5 thin omitted)
+## Communities (21 total, 6 thin omitted)
 
 ### Community 0 - "AI Client & Provider Registry"
 Cohesion: 0.06
-Nodes (40): buildRegistry(), GenerateTextParams, generateWithFallback(), getOrderedProviders(), getRegistry(), isRateLimitError(), isTransientError(), MISTRAL_MODELS (+32 more)
+Nodes (38): buildRegistry(), GenerateTextParams, generateWithFallback(), getOrderedProviders(), getRegistry(), isRateLimitError(), isTransientError(), MISTRAL_MODELS (+30 more)
 
-### Community 1 - "PDF Format Data & Months"
-Cohesion: 0.09
-Nodes (44): SPANISH_MONTHS, ActivityReportData, ActivityReportItem, ARLData, ContractData, ContributionCalculation, ExtractedData, Format053Data (+36 more)
-
-### Community 2 - "AI Extraction Pipeline"
-Cohesion: 0.05
-Nodes (47): Activity Report Format U.FT.12.011.020, Google Gemini (google/gemini-2.5-flash via OpenRouter), Mistral AI Provider (devstral-latest, mistral-large-latest), OpenRouter AI Provider (fallback chain), API Route: /api/extract (AI structured extraction), API Route: /api/extract-text, API Route: /api/generar-pdf, Web App: Verificación de Pagos UNAL (+39 more)
-
-### Community 3 - "UI Layout & Components"
-Cohesion: 0.08
-Nodes (13): ancizarFont, cn(), uniqueErrors, Label(), CentroLogoProps, { theme = "system" }, DocumentDropzoneProps, handleDrop() (+5 more)
-
-### Community 4 - "Wizard Navigation & Manual Form"
-Cohesion: 0.07
-Nodes (27): PROCESS_STEPS, REQUIRED_DOCUMENTS, INITIAL_STATE, useWizardStore, WizardState, RawPDFText, UploadedDocuments, ManualFormInput (+19 more)
-
-### Community 5 - "Document Profile & Upload"
+### Community 1 - "Wizard UI & Upload Components"
 Cohesion: 0.06
-Nodes (33): DocType, DocumentProfile, getAllProfiles(), getProfile(), key(), saveProfile(), abortRef, [activityReport, setActivityReport] (+25 more)
+Nodes (35): INITIAL_STATE, useWizardStore, WizardState, RawPDFText, UploadedDocuments, WizardStep, ManualFormInput, ManualFormSchema (+27 more)
 
-### Community 6 - "Verification Steps UI"
+### Community 2 - "AI Extraction & Document Schemas"
+Cohesion: 0.07
+Nodes (51): Activity Report Format U.FT.12.011.020, Google Gemini (google/gemini-2.5-flash via OpenRouter), Mistral AI Provider (devstral-latest, mistral-large-latest), OpenRouter AI Provider (fallback chain), AI Extraction API Route, PDF Text Extraction API Route, PDF Generation API Route, Root Layout (+43 more)
+
+### Community 3 - "App Shell & Landing Page"
+Cohesion: 0.07
+Nodes (17): ancizarFont, PROCESS_STEPS, REQUIRED_DOCUMENTS, cn(), buttonVariants, uniqueErrors, Label(), CentroLogoProps (+9 more)
+
+### Community 4 - "PDF Parsing & Type System"
 Cohesion: 0.08
-Nodes (20): WizardStep, nombreArchivoFinal(), Alert(), alertVariants, buttonVariants, handleBack, { step, setStep, reset }, {
-    extractedData,
-    manualData,
-    documents,
-    setDocuments,
-    setStep,
-    setExtractedData,
-  } (+12 more)
+Nodes (38): CONTRACT_TYPE_OPTIONS, ActivityReportData, ActivityReportItem, ARLData, ConfidenceLevel, ConfidenceMap, ContractData, ContractType (+30 more)
 
-### Community 7 - "PDF API Routes"
-Cohesion: 0.14
-Nodes (24): POST(), PDF_KEYS, PDFKey, POST(), ExtractedDataSchema, POST(), joinSplitDates(), extractTextFromPDF() (+16 more)
+### Community 5 - "PDF Format Data & Contributions"
+Cohesion: 0.11
+Nodes (33): SPANISH_MONTHS, ContributionCalculation, ExtractedData, ManualFormData, buildFormat053Data(), buildFormat069Data(), formatExpeditionDate(), laterPeriod() (+25 more)
 
-### Community 8 - "Contract Extraction & Editing"
+### Community 6 - "Step 2 & Document Profiles"
+Cohesion: 0.06
+Nodes (35): DocType, DocumentProfile, getAllProfiles(), getProfile(), key(), saveProfile(), abortRef, [activityReport, setActivityReport] (+27 more)
+
+### Community 7 - "API Routes & Contract Constants"
+Cohesion: 0.11
+Nodes (29): CONTRACT_LABELS, POST(), PDF_KEYS, PDFKey, POST(), ExtractedDataSchema, POST(), Format053Data (+21 more)
+
+### Community 8 - "Business Rules & Validation"
+Cohesion: 0.08
+Nodes (29): API Route: /api/generar-pdf, Web App: Verificación de Pagos UNAL, ARL Date 2-Day Tolerance, Cedular Declaration Rule (SI/NO for Formato 069), Centro de Prototipado UNAL Manizales, Sample Contract: OSE No. 14, Daniel Vick Gutierrez, Bug: Multi-Contract IBC Ignored, Bug: Scanned PDFs Crash Pipeline (+21 more)
+
+### Community 9 - "Step 3 & UI Alerts"
 Cohesion: 0.1
-Nodes (27): CONTRACT_LABELS, CONTRACT_TYPE_OPTIONS, ContractType, DocumentType, RiskClass, ARL_END_LABELS, ARL_RATE_LABELS, ARL_START_LABELS (+19 more)
+Nodes (14): Alert(), alertVariants, errors, {
+    extractedData,
+    manualData,
+    documents,
+    setDocuments,
+    setStep,
+    setExtractedData,
+  }, [isExtractingPS2, setIsExtractingPS2], [isExtractingReport, setIsExtractingReport], passed, [ps2Error, setPs2Error] (+6 more)
 
-### Community 9 - "Business Date Calculations"
+### Community 10 - "Colombian Date & Holiday Logic"
 Cohesion: 0.28
 Nodes (12): addDays(), calcularEaster(), calcularFechaLimite(), diasHabilAsignados(), diasLimite(), esDiaHabil(), getHolidaysForYear(), holidayCache (+4 more)
 
-### Community 10 - "Security & Integrity Tests"
+### Community 11 - "Security & Integrity Tests"
 Cohesion: 0.4
 Nodes (4): errors, extracted, manual, summary
 
 ## Knowledge Gaps
-- **127 isolated node(s):** `eslintConfig`, `nextConfig`, `config`, `ancizarFont`, `REQUIRED_DOCUMENTS` (+122 more)
+- **142 isolated node(s):** `eslintConfig`, `nextConfig`, `config`, `ancizarFont`, `REQUIRED_DOCUMENTS` (+137 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **5 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **6 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `pdf-lib (PDF filling and unification library)` connect `PDF API Routes` to `AI Extraction Pipeline`?**
-  _High betweenness centrality (0.196) - this node is a cross-community bridge._
-- **Why does `API Route: /api/generar-pdf` connect `AI Extraction Pipeline` to `PDF API Routes`?**
-  _High betweenness centrality (0.137) - this node is a cross-community bridge._
+- **Why does `pdf-lib (PDF filling and unification library)` connect `Business Rules & Validation` to `API Routes & Contract Constants`?**
+  _High betweenness centrality (0.276) - this node is a cross-community bridge._
+- **Why does `AI Extraction API Route` connect `AI Extraction & Document Schemas` to `Business Rules & Validation`?**
+  _High betweenness centrality (0.160) - this node is a cross-community bridge._
+- **Are the 3 inferred relationships involving `AI Extraction API Route` (e.g. with `NDJSON Streaming Pattern` and `Keyword Fingerprinting`) actually correct?**
+  _`AI Extraction API Route` has 3 INFERRED edges - model-reasoned connections that need verification._
 - **What connects `eslintConfig`, `nextConfig`, `config` to the rest of the system?**
-  _127 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _142 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `AI Client & Provider Registry` be split into smaller, more focused modules?**
   _Cohesion score 0.06 - nodes in this community are weakly interconnected._
-- **Should `PDF Format Data & Months` be split into smaller, more focused modules?**
-  _Cohesion score 0.09 - nodes in this community are weakly interconnected._
-- **Should `AI Extraction Pipeline` be split into smaller, more focused modules?**
-  _Cohesion score 0.05 - nodes in this community are weakly interconnected._
-- **Should `UI Layout & Components` be split into smaller, more focused modules?**
-  _Cohesion score 0.08 - nodes in this community are weakly interconnected._
+- **Should `Wizard UI & Upload Components` be split into smaller, more focused modules?**
+  _Cohesion score 0.06 - nodes in this community are weakly interconnected._
+- **Should `AI Extraction & Document Schemas` be split into smaller, more focused modules?**
+  _Cohesion score 0.07 - nodes in this community are weakly interconnected._

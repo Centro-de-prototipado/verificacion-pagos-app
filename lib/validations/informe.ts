@@ -176,7 +176,6 @@ export function validarInformeActividades(
 
     const reportActivities = data.items.map((item) => item.activityDescription)
 
-    // Función de similitud mejorada: más flexible con puntuación y longitud de palabras
     const getSimilarity = (s1: string, s2: string) => {
       const clean = (text: string) =>
         normalizeName(text)
@@ -210,7 +209,7 @@ export function validarInformeActividades(
         if (score > maxScore) maxScore = score
       }
 
-      // Bajamos el umbral a 0.3 (30%) para ser absurdamente permisivos y ver qué pasa
+      // Umbral permisivo: el informe a menudo resume la obligación del contrato
       if (maxScore < 0.3) {
         missingObligations.push({
           text: contractObligation,

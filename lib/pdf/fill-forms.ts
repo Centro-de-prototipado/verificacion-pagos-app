@@ -11,21 +11,22 @@ import { CONTRACT_LABELS } from "@/lib/constants/contracts"
 const TEMPLATES_DIR = path.join(process.cwd(), "lib", "templates")
 const FONTS_DIR = path.join(process.cwd(), "fonts")
 
-// Module-level cache: the font is read from disk once per process lifetime.
-let _ancizarFont: Buffer | null = null
+// Module-level cache: built once per process, returned by reference.
+let _fontOptions: Record<string, unknown> | null = null
 
 async function getFontOptions(): Promise<Record<string, unknown>> {
-  if (!_ancizarFont) {
-    try {
-      _ancizarFont = await readFile(
-        path.join(FONTS_DIR, "AncizarSans-VariableFont_wght.ttf")
-      )
-    } catch {
-      return {}
+  if (_fontOptions) return _fontOptions
+  try {
+    const data = await readFile(
+      path.join(FONTS_DIR, "AncizarSans-VariableFont_wght.ttf")
+    )
+    _fontOptions = {
+      font: { AncizarSans: { data, fallback: true, subset: false } },
     }
+    return _fontOptions
+  } catch {
+    return {}
   }
-  // Register as "NotoSansJP" — the name used in all pdfme templates of this project.
-  return { font: { AncizarSans: { data: _ancizarFont, fallback: true, subset: false } } }
 }
 
 function num(value: number): string {

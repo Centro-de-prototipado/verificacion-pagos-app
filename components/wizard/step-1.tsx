@@ -170,26 +170,12 @@ export function Step1() {
 
       {/* ② Documentos */}
       <div className="flex flex-col gap-4">
-        <div className="flex items-start justify-between gap-3">
-          <SectionHeader
-            number={2}
-            title="Sube los documentos requeridos"
-            subtitle={`${uploadedCount} de ${requiredCount} documentos listos`}
-            done={!!allDocumentsReady}
-          />
-          <div className="hidden flex-col gap-1.5 sm:flex">
-            <DocCheckItem
-              label="Planilla SS"
-              done={uploadStatus.paymentSheet}
-            />
-            <DocCheckItem label="Certificado ARL" done={uploadStatus.arl} />
-            <DocCheckItem label="Contrato" done={uploadStatus.contract} />
-            {contractCount === "2" && (
-              <DocCheckItem label="Contrato 2" done={uploadStatus.contract2} />
-            )}
-            <DocCheckItem label="Firma" done={uploadStatus.signature} />
-          </div>
-        </div>
+        <SectionHeader
+          number={2}
+          title="Sube los documentos requeridos"
+          subtitle={`${uploadedCount} de ${requiredCount} documentos listos`}
+          done={!!allDocumentsReady}
+        />
 
         <div className="grid gap-4 pl-9 sm:grid-cols-4">
           {REQUIRED_DOCUMENTS.map(

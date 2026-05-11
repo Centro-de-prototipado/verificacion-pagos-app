@@ -46,7 +46,7 @@ const PROCESS_STEPS = [
 
 export default function HomePage() {
   return (
-    <main className="mx-auto flex min-h-svh max-w-2xl flex-col items-center gap-14 px-6 py-16">
+    <main className="mx-auto flex max-w-2xl flex-col items-center gap-14 px-6 py-16">
       {/* ── Hero ── */}
       <section className="flex w-full flex-col items-center gap-5 text-center">
         <span className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">

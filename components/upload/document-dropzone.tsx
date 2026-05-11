@@ -159,11 +159,6 @@ export function DocumentDropzone({
             )}
           </span>
           <span className="text-xs font-medium text-foreground">{label}</span>
-          {uploaded && (
-            <span className="ml-auto text-[10px] font-medium text-green-600 dark:text-green-400">
-              {loading ? "Analizando..." : "✓ Listo"}
-            </span>
-          )}
         </div>
       )}
 
