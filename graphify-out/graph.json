@@ -110,7 +110,7 @@
       "source_file": "eslint.config.mjs",
       "source_location": "L1",
       "id": "eslint_config_mjs",
-      "community": 20,
+      "community": 21,
       "norm_label": "eslint.config.mjs"
     },
     {
@@ -119,7 +119,7 @@
       "source_file": "eslint.config.mjs",
       "source_location": "L10",
       "id": "verificacion_pagos_app_eslint_config_eslintconfig",
-      "community": 20,
+      "community": 21,
       "norm_label": "eslintconfig"
     },
     {
@@ -128,7 +128,7 @@
       "source_file": "next-env.d.ts",
       "source_location": "L1",
       "id": "next_env_d_ts",
-      "community": 26,
+      "community": 27,
       "norm_label": "next-env.d.ts"
     },
     {
@@ -137,7 +137,7 @@
       "source_file": "next.config.mjs",
       "source_location": "L1",
       "id": "next_config_mjs",
-      "community": 21,
+      "community": 22,
       "norm_label": "next.config.mjs"
     },
     {
@@ -146,7 +146,7 @@
       "source_file": "next.config.mjs",
       "source_location": "L2",
       "id": "verificacion_pagos_app_next_config_nextconfig",
-      "community": 21,
+      "community": 22,
       "norm_label": "nextconfig"
     },
     {
@@ -155,7 +155,7 @@
       "source_file": "postcss.config.mjs",
       "source_location": "L1",
       "id": "postcss_config_mjs",
-      "community": 22,
+      "community": 23,
       "norm_label": "postcss.config.mjs"
     },
     {
@@ -164,7 +164,7 @@
       "source_file": "postcss.config.mjs",
       "source_location": "L2",
       "id": "verificacion_pagos_app_postcss_config_config",
-      "community": 22,
+      "community": 23,
       "norm_label": "config"
     },
     {
@@ -416,7 +416,7 @@
       "source_file": "components/ui/button.tsx",
       "source_location": "L1",
       "id": "components_ui_button_tsx",
-      "community": 14,
+      "community": 20,
       "norm_label": "button.tsx"
     },
     {
@@ -425,7 +425,7 @@
       "source_file": "components/ui/button.tsx",
       "source_location": "L7",
       "id": "ui_button_buttonvariants",
-      "community": 14,
+      "community": 20,
       "norm_label": "buttonvariants"
     },
     {
@@ -434,7 +434,7 @@
       "source_file": "components/ui/button.tsx",
       "source_location": "L61",
       "id": "ui_button_cn",
-      "community": 14,
+      "community": 20,
       "norm_label": "cn()"
     },
     {
@@ -3332,7 +3332,7 @@
       "source_file": "scratch/debug_pdf.py",
       "source_location": "L1",
       "id": "scratch_debug_pdf_py",
-      "community": 23,
+      "community": 24,
       "norm_label": "debug_pdf.py"
     },
     {
@@ -3341,7 +3341,7 @@
       "source_file": "scratch/debug_pdf.py",
       "source_location": "L4",
       "id": "scratch_debug_pdf_extract_all",
-      "community": 23,
+      "community": 24,
       "norm_label": "extract_all()"
     },
     {
@@ -3350,7 +3350,7 @@
       "source_file": "scratch/debug_pdf_text.ts",
       "source_location": "L1",
       "id": "scratch_debug_pdf_text_ts",
-      "community": 24,
+      "community": 25,
       "norm_label": "debug_pdf_text.ts"
     },
     {
@@ -3359,7 +3359,7 @@
       "source_file": "scratch/debug_pdf_text.ts",
       "source_location": "L4",
       "id": "scratch_debug_pdf_text_debug",
-      "community": 24,
+      "community": 25,
       "norm_label": "debug()"
     },
     {
@@ -4100,7 +4100,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 25,
+      "community": 26,
       "norm_label": "agent behavioral guidelines",
       "id": "agents_md_behavioral_guidelines"
     },
@@ -4113,7 +4113,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 25,
+      "community": 26,
       "norm_label": "claude behavioral guidelines",
       "id": "claude_md_behavioral_guidelines"
     },
@@ -4139,7 +4139,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 27,
+      "community": 28,
       "norm_label": "sample unal contract text (ose no. 14, daniel vick gutierrez)",
       "id": "contract_text_scratch"
     },
@@ -4815,7 +4815,7 @@
         "wizard"
       ],
       "summary": "Landing page describing the 4-step wizard workflow",
-      "community": 28,
+      "community": 29,
       "norm_label": "landing page",
       "id": "app_page"
     },
@@ -9070,9 +9070,9 @@
       "source_file": "components/wizard/step-3.tsx",
       "source_location": "L15",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "components_wizard_step_3_tsx",
-      "target": "lib_utils_ts",
-      "confidence_score": 1.0
+      "target": "lib_utils_ts"
     },
     {
       "relation": "imports",
@@ -9081,9 +9081,9 @@
       "source_file": "components/wizard/step-3.tsx",
       "source_location": "L15",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "components_wizard_step_3_tsx",
-      "target": "lib_utils_cn",
-      "confidence_score": 1.0
+      "target": "lib_utils_cn"
     },
     {
       "relation": "imports_from",
@@ -9209,9 +9209,9 @@
       "source_file": "components/wizard/step-3.tsx",
       "source_location": "L99",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "components_wizard_step_3_tsx",
-      "target": "wizard_step_3_errors_warnings_passed",
-      "confidence_score": 1.0
+      "target": "wizard_step_3_errors_warnings_passed"
     },
     {
       "relation": "contains",
@@ -12242,9 +12242,9 @@
       "source_file": "lib/validations/aportes.ts",
       "source_location": "L79",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_validations_aportes_ts",
-      "target": "validations_aportes_aportesdesdebase",
-      "confidence_score": 1.0
+      "target": "validations_aportes_aportesdesdebase"
     },
     {
       "relation": "contains",
@@ -12348,9 +12348,9 @@
       "source_file": "lib/validations/aportes.ts",
       "source_location": "L84",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "validations_aportes_aportesdesdebase",
-      "target": "validations_aportes_calcularaportesalud",
-      "confidence_score": 1.0
+      "target": "validations_aportes_calcularaportesalud"
     },
     {
       "relation": "calls",
@@ -12381,9 +12381,9 @@
       "source_file": "lib/validations/aportes.ts",
       "source_location": "L85",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "validations_aportes_aportesdesdebase",
-      "target": "validations_aportes_calcularaportepension",
-      "confidence_score": 1.0
+      "target": "validations_aportes_calcularaportepension"
     },
     {
       "relation": "calls",
@@ -12414,9 +12414,9 @@
       "source_file": "lib/validations/aportes.ts",
       "source_location": "L87",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "validations_aportes_aportesdesdebase",
-      "target": "validations_aportes_calcularfsp",
-      "confidence_score": 1.0
+      "target": "validations_aportes_calcularfsp"
     },
     {
       "relation": "calls",
@@ -12447,9 +12447,9 @@
       "source_file": "lib/validations/aportes.ts",
       "source_location": "L86",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "validations_aportes_aportesdesdebase",
-      "target": "validations_aportes_calcularaportearl",
-      "confidence_score": 1.0
+      "target": "validations_aportes_calcularaportearl"
     },
     {
       "relation": "calls",
@@ -12480,9 +12480,9 @@
       "source_file": "lib/validations/aportes.ts",
       "source_location": "L115",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "validations_aportes_combinecontributions",
-      "target": "validations_aportes_aportesdesdebase",
-      "confidence_score": 1.0
+      "target": "validations_aportes_aportesdesdebase"
     },
     {
       "relation": "calls",
@@ -12491,9 +12491,9 @@
       "source_file": "lib/validations/aportes.ts",
       "source_location": "L175",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "validations_aportes_calcularcontribuciones",
-      "target": "validations_aportes_aportesdesdebase",
-      "confidence_score": 1.0
+      "target": "validations_aportes_aportesdesdebase"
     },
     {
       "relation": "imports",
@@ -13046,9 +13046,9 @@
       "source_file": "lib/validations/index.ts",
       "source_location": "L7",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_validations_index_ts",
-      "target": "validations_fechas_calcularmesescontrato",
-      "confidence_score": 1.0
+      "target": "validations_fechas_calcularmesescontrato"
     },
     {
       "relation": "calls",
@@ -13192,9 +13192,9 @@
       "source_file": "CLAUDE.md",
       "source_location": "L1",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "claude_md",
-      "target": "verificacion_pagos_app_claude_claude_md",
-      "confidence_score": 1.0
+      "target": "verificacion_pagos_app_claude_claude_md"
     },
     {
       "relation": "contains",
@@ -13202,9 +13202,9 @@
       "source_file": "CLAUDE.md",
       "source_location": "L2",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "verificacion_pagos_app_claude_claude_md",
-      "target": "verificacion_pagos_app_claude_graphify",
-      "confidence_score": 1.0
+      "target": "verificacion_pagos_app_claude_graphify"
     },
     {
       "relation": "contains",
@@ -13212,9 +13212,9 @@
       "source_file": "CLAUDE.md",
       "source_location": "L16",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "verificacion_pagos_app_claude_claude_md",
-      "target": "verificacion_pagos_app_claude_1_think_before_coding",
-      "confidence_score": 1.0
+      "target": "verificacion_pagos_app_claude_1_think_before_coding"
     },
     {
       "relation": "contains",
@@ -13222,9 +13222,9 @@
       "source_file": "CLAUDE.md",
       "source_location": "L26",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "verificacion_pagos_app_claude_claude_md",
-      "target": "verificacion_pagos_app_claude_2_simplicity_first",
-      "confidence_score": 1.0
+      "target": "verificacion_pagos_app_claude_2_simplicity_first"
     },
     {
       "relation": "contains",
@@ -13232,9 +13232,9 @@
       "source_file": "CLAUDE.md",
       "source_location": "L38",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "verificacion_pagos_app_claude_claude_md",
-      "target": "verificacion_pagos_app_claude_3_surgical_changes",
-      "confidence_score": 1.0
+      "target": "verificacion_pagos_app_claude_3_surgical_changes"
     },
     {
       "relation": "contains",
@@ -13242,9 +13242,9 @@
       "source_file": "CLAUDE.md",
       "source_location": "L54",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "verificacion_pagos_app_claude_claude_md",
-      "target": "verificacion_pagos_app_claude_4_goal_driven_execution",
-      "confidence_score": 1.0
+      "target": "verificacion_pagos_app_claude_4_goal_driven_execution"
     },
     {
       "relation": "contains",
@@ -13252,9 +13252,9 @@
       "source_file": "CLAUDE.md",
       "source_location": "L64",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "verificacion_pagos_app_claude_4_goal_driven_execution",
-      "target": "verificacion_pagos_app_claude_codeblock_1",
-      "confidence_score": 1.0
+      "target": "verificacion_pagos_app_claude_codeblock_1"
     },
     {
       "relation": "contains",
@@ -13262,9 +13262,9 @@
       "source_file": "ESPECIFICACIONES.md",
       "source_location": "L1",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "especificaciones_md",
-      "target": "verificacion_pagos_app_especificaciones_especificaciones_de_la_app_verificaci_n_de_pagos_unal",
-      "confidence_score": 1.0
+      "target": "verificacion_pagos_app_especificaciones_especificaciones_de_la_app_verificaci_n_de_pagos_unal"
     },
     {
       "relation": "references",
@@ -13282,9 +13282,9 @@
       "source_file": "ESPECIFICACIONES.md",
       "source_location": "L8",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "verificacion_pagos_app_especificaciones_especificaciones_de_la_app_verificaci_n_de_pagos_unal",
-      "target": "verificacion_pagos_app_especificaciones_1_qu_hace_la_aplicaci_n",
-      "confidence_score": 1.0
+      "target": "verificacion_pagos_app_especificaciones_1_qu_hace_la_aplicaci_n"
     },
     {
       "relation": "contains",
@@ -13292,9 +13292,9 @@
       "source_file": "ESPECIFICACIONES.md",
       "source_location": "L16",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "verificacion_pagos_app_especificaciones_especificaciones_de_la_app_verificaci_n_de_pagos_unal",
-      "target": "verificacion_pagos_app_especificaciones_2_flujo_de_4_pasos",
-      "confidence_score": 1.0
+      "target": "verificacion_pagos_app_especificaciones_2_flujo_de_4_pasos"
     },
     {
       "relation": "contains",
@@ -13302,9 +13302,9 @@
       "source_file": "ESPECIFICACIONES.md",
       "source_location": "L24",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "verificacion_pagos_app_especificaciones_especificaciones_de_la_app_verificaci_n_de_pagos_unal",
-      "target": "verificacion_pagos_app_especificaciones_3_paso_1_documentos_y_datos_manuales",
-      "confidence_score": 1.0
+      "target": "verificacion_pagos_app_especificaciones_3_paso_1_documentos_y_datos_manuales"
     },
     {
       "relation": "contains",
@@ -13312,9 +13312,9 @@
       "source_file": "ESPECIFICACIONES.md",
       "source_location": "L63",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "verificacion_pagos_app_especificaciones_especificaciones_de_la_app_verificaci_n_de_pagos_unal",
-      "target": "verificacion_pagos_app_especificaciones_4_paso_2_extracci_n_ia_y_revisi_n_de_datos",
-      "confidence_score": 1.0
+      "target": "verificacion_pagos_app_especificaciones_4_paso_2_extracci_n_ia_y_revisi_n_de_datos"
     },
     {
       "relation": "contains",
@@ -13322,9 +13322,9 @@
       "source_file": "ESPECIFICACIONES.md",
       "source_location": "L136",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "verificacion_pagos_app_especificaciones_especificaciones_de_la_app_verificaci_n_de_pagos_unal",
-      "target": "verificacion_pagos_app_especificaciones_5_paso_3_validaciones_y_aportes",
-      "confidence_score": 1.0
+      "target": "verificacion_pagos_app_especificaciones_5_paso_3_validaciones_y_aportes"
     },
     {
       "relation": "contains",
@@ -13332,9 +13332,9 @@
       "source_file": "ESPECIFICACIONES.md",
       "source_location": "L188",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "verificacion_pagos_app_especificaciones_especificaciones_de_la_app_verificaci_n_de_pagos_unal",
-      "target": "verificacion_pagos_app_especificaciones_6_paso_4_generaci_n_del_pdf_final",
-      "confidence_score": 1.0
+      "target": "verificacion_pagos_app_especificaciones_6_paso_4_generaci_n_del_pdf_final"
     },
     {
       "relation": "contains",
@@ -13342,9 +13342,9 @@
       "source_file": "ESPECIFICACIONES.md",
       "source_location": "L271",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "verificacion_pagos_app_especificaciones_especificaciones_de_la_app_verificaci_n_de_pagos_unal",
-      "target": "verificacion_pagos_app_especificaciones_7_constantes_normativas_2026",
-      "confidence_score": 1.0
+      "target": "verificacion_pagos_app_especificaciones_7_constantes_normativas_2026"
     },
     {
       "relation": "contains",
@@ -13352,9 +13352,9 @@
       "source_file": "ESPECIFICACIONES.md",
       "source_location": "L287",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "verificacion_pagos_app_especificaciones_especificaciones_de_la_app_verificaci_n_de_pagos_unal",
-      "target": "verificacion_pagos_app_especificaciones_8_dudas_pendientes_requieren_respuesta_del_stakeholder",
-      "confidence_score": 1.0
+      "target": "verificacion_pagos_app_especificaciones_8_dudas_pendientes_requieren_respuesta_del_stakeholder"
     },
     {
       "relation": "contains",
@@ -13362,9 +13362,9 @@
       "source_file": "ESPECIFICACIONES.md",
       "source_location": "L18",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "verificacion_pagos_app_especificaciones_2_flujo_de_4_pasos",
-      "target": "verificacion_pagos_app_especificaciones_codeblock_1",
-      "confidence_score": 1.0
+      "target": "verificacion_pagos_app_especificaciones_codeblock_1"
     },
     {
       "relation": "contains",
@@ -13372,9 +13372,9 @@
       "source_file": "ESPECIFICACIONES.md",
       "source_location": "L28",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "verificacion_pagos_app_especificaciones_3_paso_1_documentos_y_datos_manuales",
-      "target": "verificacion_pagos_app_especificaciones_3_1_configuraci_n_inicial",
-      "confidence_score": 1.0
+      "target": "verificacion_pagos_app_especificaciones_3_1_configuraci_n_inicial"
     },
     {
       "relation": "contains",
@@ -13382,9 +13382,9 @@
       "source_file": "ESPECIFICACIONES.md",
       "source_location": "L34",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "verificacion_pagos_app_especificaciones_3_paso_1_documentos_y_datos_manuales",
-      "target": "verificacion_pagos_app_especificaciones_3_2_documentos_obligatorios",
-      "confidence_score": 1.0
+      "target": "verificacion_pagos_app_especificaciones_3_2_documentos_obligatorios"
     },
     {
       "relation": "contains",
@@ -13392,9 +13392,9 @@
       "source_file": "ESPECIFICACIONES.md",
       "source_location": "L44",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "verificacion_pagos_app_especificaciones_3_paso_1_documentos_y_datos_manuales",
-      "target": "verificacion_pagos_app_especificaciones_3_3_datos_manuales_no_est_n_en_los_pdfs",
-      "confidence_score": 1.0
+      "target": "verificacion_pagos_app_especificaciones_3_3_datos_manuales_no_est_n_en_los_pdfs"
     },
     {
       "relation": "contains",
@@ -13402,9 +13402,9 @@
       "source_file": "ESPECIFICACIONES.md",
       "source_location": "L65",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "verificacion_pagos_app_especificaciones_4_paso_2_extracci_n_ia_y_revisi_n_de_datos",
-      "target": "verificacion_pagos_app_especificaciones_4_1_proceso_de_extracci_n",
-      "confidence_score": 1.0
+      "target": "verificacion_pagos_app_especificaciones_4_1_proceso_de_extracci_n"
     },
     {
       "relation": "contains",
@@ -13412,9 +13412,9 @@
       "source_file": "ESPECIFICACIONES.md",
       "source_location": "L74",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "verificacion_pagos_app_especificaciones_4_paso_2_extracci_n_ia_y_revisi_n_de_datos",
-      "target": "verificacion_pagos_app_especificaciones_4_2_pre_procesamiento_antes_del_prompt",
-      "confidence_score": 1.0
+      "target": "verificacion_pagos_app_especificaciones_4_2_pre_procesamiento_antes_del_prompt"
     },
     {
       "relation": "contains",
@@ -13422,9 +13422,9 @@
       "source_file": "ESPECIFICACIONES.md",
       "source_location": "L82",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "verificacion_pagos_app_especificaciones_4_paso_2_extracci_n_ia_y_revisi_n_de_datos",
-      "target": "verificacion_pagos_app_especificaciones_4_3_datos_extra_dos_por_documento",
-      "confidence_score": 1.0
+      "target": "verificacion_pagos_app_especificaciones_4_3_datos_extra_dos_por_documento"
     },
     {
       "relation": "contains",
@@ -13432,9 +13432,9 @@
       "source_file": "ESPECIFICACIONES.md",
       "source_location": "L123",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "verificacion_pagos_app_especificaciones_4_paso_2_extracci_n_ia_y_revisi_n_de_datos",
-      "target": "verificacion_pagos_app_especificaciones_4_4_revisi_n_y_correcci_n_de_datos_extra_dos",
-      "confidence_score": 1.0
+      "target": "verificacion_pagos_app_especificaciones_4_4_revisi_n_y_correcci_n_de_datos_extra_dos"
     },
     {
       "relation": "contains",
@@ -13442,9 +13442,9 @@
       "source_file": "ESPECIFICACIONES.md",
       "source_location": "L138",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "verificacion_pagos_app_especificaciones_5_paso_3_validaciones_y_aportes",
-      "target": "verificacion_pagos_app_especificaciones_5_1_c_lculo_de_aportes",
-      "confidence_score": 1.0
+      "target": "verificacion_pagos_app_especificaciones_5_1_c_lculo_de_aportes"
     },
     {
       "relation": "contains",
@@ -13452,9 +13452,9 @@
       "source_file": "ESPECIFICACIONES.md",
       "source_location": "L156",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "verificacion_pagos_app_especificaciones_5_paso_3_validaciones_y_aportes",
-      "target": "verificacion_pagos_app_especificaciones_5_2_reglas_de_validaci_n",
-      "confidence_score": 1.0
+      "target": "verificacion_pagos_app_especificaciones_5_2_reglas_de_validaci_n"
     },
     {
       "relation": "contains",
@@ -13462,9 +13462,9 @@
       "source_file": "ESPECIFICACIONES.md",
       "source_location": "L168",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "verificacion_pagos_app_especificaciones_5_paso_3_validaciones_y_aportes",
-      "target": "verificacion_pagos_app_especificaciones_5_3_informe_de_actividades_solo_si_aplica",
-      "confidence_score": 1.0
+      "target": "verificacion_pagos_app_especificaciones_5_3_informe_de_actividades_solo_si_aplica"
     },
     {
       "relation": "contains",
@@ -13472,9 +13472,9 @@
       "source_file": "ESPECIFICACIONES.md",
       "source_location": "L178",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "verificacion_pagos_app_especificaciones_5_paso_3_validaciones_y_aportes",
-      "target": "verificacion_pagos_app_especificaciones_5_4_regla_cedular_declaraci_n_formal_en_formato_069",
-      "confidence_score": 1.0
+      "target": "verificacion_pagos_app_especificaciones_5_4_regla_cedular_declaraci_n_formal_en_formato_069"
     },
     {
       "relation": "contains",
@@ -13482,9 +13482,9 @@
       "source_file": "ESPECIFICACIONES.md",
       "source_location": "L140",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "verificacion_pagos_app_especificaciones_5_1_c_lculo_de_aportes",
-      "target": "verificacion_pagos_app_especificaciones_codeblock_2",
-      "confidence_score": 1.0
+      "target": "verificacion_pagos_app_especificaciones_codeblock_2"
     },
     {
       "relation": "contains",
@@ -13492,9 +13492,9 @@
       "source_file": "ESPECIFICACIONES.md",
       "source_location": "L180",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "verificacion_pagos_app_especificaciones_5_4_regla_cedular_declaraci_n_formal_en_formato_069",
-      "target": "verificacion_pagos_app_especificaciones_codeblock_3",
-      "confidence_score": 1.0
+      "target": "verificacion_pagos_app_especificaciones_codeblock_3"
     },
     {
       "relation": "contains",
@@ -13502,9 +13502,9 @@
       "source_file": "ESPECIFICACIONES.md",
       "source_location": "L190",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "verificacion_pagos_app_especificaciones_6_paso_4_generaci_n_del_pdf_final",
-      "target": "verificacion_pagos_app_especificaciones_6_1_orden_de_p_ginas",
-      "confidence_score": 1.0
+      "target": "verificacion_pagos_app_especificaciones_6_1_orden_de_p_ginas"
     },
     {
       "relation": "contains",
@@ -13512,9 +13512,9 @@
       "source_file": "ESPECIFICACIONES.md",
       "source_location": "L202",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "verificacion_pagos_app_especificaciones_6_paso_4_generaci_n_del_pdf_final",
-      "target": "verificacion_pagos_app_especificaciones_6_2_nombre_del_archivo",
-      "confidence_score": 1.0
+      "target": "verificacion_pagos_app_especificaciones_6_2_nombre_del_archivo"
     },
     {
       "relation": "contains",
@@ -13522,9 +13522,9 @@
       "source_file": "ESPECIFICACIONES.md",
       "source_location": "L210",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "verificacion_pagos_app_especificaciones_6_paso_4_generaci_n_del_pdf_final",
-      "target": "verificacion_pagos_app_especificaciones_6_3_mapa_de_casillas_formato_053",
-      "confidence_score": 1.0
+      "target": "verificacion_pagos_app_especificaciones_6_3_mapa_de_casillas_formato_053"
     },
     {
       "relation": "contains",
@@ -13532,9 +13532,9 @@
       "source_file": "ESPECIFICACIONES.md",
       "source_location": "L233",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "verificacion_pagos_app_especificaciones_6_paso_4_generaci_n_del_pdf_final",
-      "target": "verificacion_pagos_app_especificaciones_6_4_mapa_de_casillas_formato_069",
-      "confidence_score": 1.0
+      "target": "verificacion_pagos_app_especificaciones_6_4_mapa_de_casillas_formato_069"
     },
     {
       "relation": "contains",
@@ -13542,9 +13542,9 @@
       "source_file": "ESPECIFICACIONES.md",
       "source_location": "L192",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "verificacion_pagos_app_especificaciones_6_1_orden_de_p_ginas",
-      "target": "verificacion_pagos_app_especificaciones_codeblock_4",
-      "confidence_score": 1.0
+      "target": "verificacion_pagos_app_especificaciones_codeblock_4"
     },
     {
       "relation": "contains",
@@ -13552,9 +13552,9 @@
       "source_file": "ESPECIFICACIONES.md",
       "source_location": "L204",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "verificacion_pagos_app_especificaciones_6_2_nombre_del_archivo",
-      "target": "verificacion_pagos_app_especificaciones_codeblock_5",
-      "confidence_score": 1.0
+      "target": "verificacion_pagos_app_especificaciones_codeblock_5"
     },
     {
       "relation": "contains",
@@ -13562,9 +13562,9 @@
       "source_file": "ESPECIFICACIONES.md",
       "source_location": "L259",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "verificacion_pagos_app_especificaciones_6_4_mapa_de_casillas_formato_069",
-      "target": "verificacion_pagos_app_especificaciones_tipo_de_pago_l_gica_autom_tica",
-      "confidence_score": 1.0
+      "target": "verificacion_pagos_app_especificaciones_tipo_de_pago_l_gica_autom_tica"
     },
     {
       "relation": "contains",
@@ -13572,9 +13572,9 @@
       "source_file": "ESPECIFICACIONES.md",
       "source_location": "L261",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "verificacion_pagos_app_especificaciones_tipo_de_pago_l_gica_autom_tica",
-      "target": "verificacion_pagos_app_especificaciones_codeblock_6",
-      "confidence_score": 1.0
+      "target": "verificacion_pagos_app_especificaciones_codeblock_6"
     },
     {
       "relation": "contains",
@@ -13582,9 +13582,9 @@
       "source_file": "PLAN.md",
       "source_location": "L1",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "plan_md",
-      "target": "verificacion_pagos_app_plan_plan_app_de_verificaci_n_de_pagos_universidad_nacional_de_colombia",
-      "confidence_score": 1.0
+      "target": "verificacion_pagos_app_plan_plan_app_de_verificaci_n_de_pagos_universidad_nacional_de_colombia"
     },
     {
       "relation": "references",
@@ -13602,9 +13602,9 @@
       "source_file": "PLAN.md",
       "source_location": "L6",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "verificacion_pagos_app_plan_plan_app_de_verificaci_n_de_pagos_universidad_nacional_de_colombia",
-      "target": "verificacion_pagos_app_plan_contexto",
-      "confidence_score": 1.0
+      "target": "verificacion_pagos_app_plan_contexto"
     },
     {
       "relation": "contains",
@@ -13612,9 +13612,9 @@
       "source_file": "PLAN.md",
       "source_location": "L20",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "verificacion_pagos_app_plan_plan_app_de_verificaci_n_de_pagos_universidad_nacional_de_colombia",
-      "target": "verificacion_pagos_app_plan_stack_t_cnico",
-      "confidence_score": 1.0
+      "target": "verificacion_pagos_app_plan_stack_t_cnico"
     },
     {
       "relation": "contains",
@@ -13622,9 +13622,9 @@
       "source_file": "PLAN.md",
       "source_location": "L44",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "verificacion_pagos_app_plan_plan_app_de_verificaci_n_de_pagos_universidad_nacional_de_colombia",
-      "target": "verificacion_pagos_app_plan_schema_zod_para_generateobject",
-      "confidence_score": 1.0
+      "target": "verificacion_pagos_app_plan_schema_zod_para_generateobject"
     },
     {
       "relation": "contains",
@@ -13632,9 +13632,9 @@
       "source_file": "PLAN.md",
       "source_location": "L103",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "verificacion_pagos_app_plan_plan_app_de_verificaci_n_de_pagos_universidad_nacional_de_colombia",
-      "target": "verificacion_pagos_app_plan_l_gica_de_validaci_n_matem_tica_typescript_puro_sin_ia",
-      "confidence_score": 1.0
+      "target": "verificacion_pagos_app_plan_l_gica_de_validaci_n_matem_tica_typescript_puro_sin_ia"
     },
     {
       "relation": "contains",
@@ -13642,9 +13642,9 @@
       "source_file": "PLAN.md",
       "source_location": "L134",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "verificacion_pagos_app_plan_plan_app_de_verificaci_n_de_pagos_universidad_nacional_de_colombia",
-      "target": "verificacion_pagos_app_plan_reglas_de_negocio_cr_ticas",
-      "confidence_score": 1.0
+      "target": "verificacion_pagos_app_plan_reglas_de_negocio_cr_ticas"
     },
     {
       "relation": "contains",
@@ -13652,9 +13652,9 @@
       "source_file": "PLAN.md",
       "source_location": "L176",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "verificacion_pagos_app_plan_plan_app_de_verificaci_n_de_pagos_universidad_nacional_de_colombia",
-      "target": "verificacion_pagos_app_plan_estructura_de_templates_pdf",
-      "confidence_score": 1.0
+      "target": "verificacion_pagos_app_plan_estructura_de_templates_pdf"
     },
     {
       "relation": "contains",
@@ -13662,9 +13662,9 @@
       "source_file": "PLAN.md",
       "source_location": "L200",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "verificacion_pagos_app_plan_plan_app_de_verificaci_n_de_pagos_universidad_nacional_de_colombia",
-      "target": "verificacion_pagos_app_plan_roadmap_de_desarrollo_5_fases",
-      "confidence_score": 1.0
+      "target": "verificacion_pagos_app_plan_roadmap_de_desarrollo_5_fases"
     },
     {
       "relation": "contains",
@@ -13672,9 +13672,9 @@
       "source_file": "PLAN.md",
       "source_location": "L300",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "verificacion_pagos_app_plan_plan_app_de_verificaci_n_de_pagos_universidad_nacional_de_colombia",
-      "target": "verificacion_pagos_app_plan_verificaci_n_end_to_end",
-      "confidence_score": 1.0
+      "target": "verificacion_pagos_app_plan_verificaci_n_end_to_end"
     },
     {
       "relation": "contains",
@@ -13682,9 +13682,9 @@
       "source_file": "PLAN.md",
       "source_location": "L318",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "verificacion_pagos_app_plan_plan_app_de_verificaci_n_de_pagos_universidad_nacional_de_colombia",
-      "target": "verificacion_pagos_app_plan_archivos_cr_ticos_resumen",
-      "confidence_score": 1.0
+      "target": "verificacion_pagos_app_plan_archivos_cr_ticos_resumen"
     },
     {
       "relation": "contains",
@@ -13692,9 +13692,9 @@
       "source_file": "PLAN.md",
       "source_location": "L345",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "verificacion_pagos_app_plan_plan_app_de_verificaci_n_de_pagos_universidad_nacional_de_colombia",
-      "target": "verificacion_pagos_app_plan_pendientes_bloqueantes_conocidos",
-      "confidence_score": 1.0
+      "target": "verificacion_pagos_app_plan_pendientes_bloqueantes_conocidos"
     },
     {
       "relation": "contains",
@@ -13702,9 +13702,9 @@
       "source_file": "PLAN.md",
       "source_location": "L48",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "verificacion_pagos_app_plan_schema_zod_para_generateobject",
-      "target": "verificacion_pagos_app_plan_codeblock_1",
-      "confidence_score": 1.0
+      "target": "verificacion_pagos_app_plan_codeblock_1"
     },
     {
       "relation": "contains",
@@ -13712,9 +13712,9 @@
       "source_file": "PLAN.md",
       "source_location": "L82",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "verificacion_pagos_app_plan_schema_zod_para_generateobject",
-      "target": "verificacion_pagos_app_plan_codeblock_2",
-      "confidence_score": 1.0
+      "target": "verificacion_pagos_app_plan_codeblock_2"
     },
     {
       "relation": "contains",
@@ -13722,9 +13722,9 @@
       "source_file": "PLAN.md",
       "source_location": "L108",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "verificacion_pagos_app_plan_l_gica_de_validaci_n_matem_tica_typescript_puro_sin_ia",
-      "target": "verificacion_pagos_app_plan_codeblock_3",
-      "confidence_score": 1.0
+      "target": "verificacion_pagos_app_plan_codeblock_3"
     },
     {
       "relation": "contains",
@@ -13732,9 +13732,9 @@
       "source_file": "PLAN.md",
       "source_location": "L136",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "verificacion_pagos_app_plan_reglas_de_negocio_cr_ticas",
-      "target": "verificacion_pagos_app_plan_regla_bloqueante_principal",
-      "confidence_score": 1.0
+      "target": "verificacion_pagos_app_plan_regla_bloqueante_principal"
     },
     {
       "relation": "contains",
@@ -13742,9 +13742,9 @@
       "source_file": "PLAN.md",
       "source_location": "L148",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "verificacion_pagos_app_plan_reglas_de_negocio_cr_ticas",
-      "target": "verificacion_pagos_app_plan_regla_cedular_formato_069",
-      "confidence_score": 1.0
+      "target": "verificacion_pagos_app_plan_regla_cedular_formato_069"
     },
     {
       "relation": "contains",
@@ -13752,9 +13752,9 @@
       "source_file": "PLAN.md",
       "source_location": "L164",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "verificacion_pagos_app_plan_reglas_de_negocio_cr_ticas",
-      "target": "verificacion_pagos_app_plan_orden_de_unificaci_n_pdf",
-      "confidence_score": 1.0
+      "target": "verificacion_pagos_app_plan_orden_de_unificaci_n_pdf"
     },
     {
       "relation": "contains",
@@ -13762,9 +13762,9 @@
       "source_file": "PLAN.md",
       "source_location": "L171",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "verificacion_pagos_app_plan_reglas_de_negocio_cr_ticas",
-      "target": "verificacion_pagos_app_plan_nomenclatura_del_archivo_final",
-      "confidence_score": 1.0
+      "target": "verificacion_pagos_app_plan_nomenclatura_del_archivo_final"
     },
     {
       "relation": "contains",
@@ -13772,9 +13772,9 @@
       "source_file": "PLAN.md",
       "source_location": "L137",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "verificacion_pagos_app_plan_regla_bloqueante_principal",
-      "target": "verificacion_pagos_app_plan_codeblock_4",
-      "confidence_score": 1.0
+      "target": "verificacion_pagos_app_plan_codeblock_4"
     },
     {
       "relation": "contains",
@@ -13782,9 +13782,9 @@
       "source_file": "PLAN.md",
       "source_location": "L149",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "verificacion_pagos_app_plan_regla_cedular_formato_069",
-      "target": "verificacion_pagos_app_plan_codeblock_5",
-      "confidence_score": 1.0
+      "target": "verificacion_pagos_app_plan_codeblock_5"
     },
     {
       "relation": "contains",
@@ -13792,9 +13792,9 @@
       "source_file": "PLAN.md",
       "source_location": "L180",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "verificacion_pagos_app_plan_estructura_de_templates_pdf",
-      "target": "verificacion_pagos_app_plan_codeblock_6",
-      "confidence_score": 1.0
+      "target": "verificacion_pagos_app_plan_codeblock_6"
     },
     {
       "relation": "contains",
@@ -13802,9 +13802,9 @@
       "source_file": "PLAN.md",
       "source_location": "L190",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "verificacion_pagos_app_plan_estructura_de_templates_pdf",
-      "target": "verificacion_pagos_app_plan_codeblock_7",
-      "confidence_score": 1.0
+      "target": "verificacion_pagos_app_plan_codeblock_7"
     },
     {
       "relation": "contains",
@@ -13812,9 +13812,9 @@
       "source_file": "PLAN.md",
       "source_location": "L202",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "verificacion_pagos_app_plan_roadmap_de_desarrollo_5_fases",
-      "target": "verificacion_pagos_app_plan_fase_1_ui_carga_de_documentos_parcialmente_implementada",
-      "confidence_score": 1.0
+      "target": "verificacion_pagos_app_plan_fase_1_ui_carga_de_documentos_parcialmente_implementada"
     },
     {
       "relation": "contains",
@@ -13822,9 +13822,9 @@
       "source_file": "PLAN.md",
       "source_location": "L230",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "verificacion_pagos_app_plan_roadmap_de_desarrollo_5_fases",
-      "target": "verificacion_pagos_app_plan_fase_2_extracci_n_de_texto_crudo_parcialmente_implementada",
-      "confidence_score": 1.0
+      "target": "verificacion_pagos_app_plan_fase_2_extracci_n_de_texto_crudo_parcialmente_implementada"
     },
     {
       "relation": "contains",
@@ -13832,9 +13832,9 @@
       "source_file": "PLAN.md",
       "source_location": "L247",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "verificacion_pagos_app_plan_roadmap_de_desarrollo_5_fases",
-      "target": "verificacion_pagos_app_plan_fase_3_extracci_n_estructurada_con_ia",
-      "confidence_score": 1.0
+      "target": "verificacion_pagos_app_plan_fase_3_extracci_n_estructurada_con_ia"
     },
     {
       "relation": "contains",
@@ -13842,9 +13842,9 @@
       "source_file": "PLAN.md",
       "source_location": "L263",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "verificacion_pagos_app_plan_roadmap_de_desarrollo_5_fases",
-      "target": "verificacion_pagos_app_plan_fase_4_validaciones_matem_ticas",
-      "confidence_score": 1.0
+      "target": "verificacion_pagos_app_plan_fase_4_validaciones_matem_ticas"
     },
     {
       "relation": "contains",
@@ -13852,9 +13852,9 @@
       "source_file": "PLAN.md",
       "source_location": "L278",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "verificacion_pagos_app_plan_roadmap_de_desarrollo_5_fases",
-      "target": "verificacion_pagos_app_plan_fase_5_generaci_n_del_pdf_final",
-      "confidence_score": 1.0
+      "target": "verificacion_pagos_app_plan_fase_5_generaci_n_del_pdf_final"
     },
     {
       "relation": "contains",
@@ -13862,9 +13862,9 @@
       "source_file": "PLAN.md",
       "source_location": "L311",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "verificacion_pagos_app_plan_verificaci_n_end_to_end",
-      "target": "verificacion_pagos_app_plan_codeblock_8",
-      "confidence_score": 1.0
+      "target": "verificacion_pagos_app_plan_codeblock_8"
     },
     {
       "relation": "contains",
@@ -13872,9 +13872,9 @@
       "source_file": "README.md",
       "source_location": "L1",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "readme_md",
-      "target": "verificacion_pagos_app_readme_next_js_template",
-      "confidence_score": 1.0
+      "target": "verificacion_pagos_app_readme_next_js_template"
     },
     {
       "relation": "contains",
@@ -13882,9 +13882,9 @@
       "source_file": "README.md",
       "source_location": "L5",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "verificacion_pagos_app_readme_next_js_template",
-      "target": "verificacion_pagos_app_readme_adding_components",
-      "confidence_score": 1.0
+      "target": "verificacion_pagos_app_readme_adding_components"
     },
     {
       "relation": "contains",
@@ -13892,9 +13892,9 @@
       "source_file": "README.md",
       "source_location": "L15",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "verificacion_pagos_app_readme_next_js_template",
-      "target": "verificacion_pagos_app_readme_using_components",
-      "confidence_score": 1.0
+      "target": "verificacion_pagos_app_readme_using_components"
     },
     {
       "relation": "contains",
@@ -13902,9 +13902,9 @@
       "source_file": "README.md",
       "source_location": "L9",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "verificacion_pagos_app_readme_adding_components",
-      "target": "verificacion_pagos_app_readme_codeblock_1",
-      "confidence_score": 1.0
+      "target": "verificacion_pagos_app_readme_codeblock_1"
     },
     {
       "relation": "contains",
@@ -13912,9 +13912,9 @@
       "source_file": "README.md",
       "source_location": "L19",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "verificacion_pagos_app_readme_using_components",
-      "target": "verificacion_pagos_app_readme_codeblock_2",
-      "confidence_score": 1.0
+      "target": "verificacion_pagos_app_readme_codeblock_2"
     },
     {
       "relation": "contains",
@@ -13922,9 +13922,9 @@
       "source_file": "memory/2026-05-05.md",
       "source_location": "L1",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "memory_2026_05_05_md",
-      "target": "memory_2026_05_05_memory_log_2026_05_05",
-      "confidence_score": 1.0
+      "target": "memory_2026_05_05_memory_log_2026_05_05"
     },
     {
       "relation": "contains",
@@ -13932,9 +13932,9 @@
       "source_file": "memory/2026-05-05.md",
       "source_location": "L3",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "memory_2026_05_05_memory_log_2026_05_05",
-      "target": "memory_2026_05_05_critical_errors_detected",
-      "confidence_score": 1.0
+      "target": "memory_2026_05_05_critical_errors_detected"
     },
     {
       "relation": "contains",
@@ -13942,9 +13942,9 @@
       "source_file": "memory/2026-05-05.md",
       "source_location": "L10",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "memory_2026_05_05_memory_log_2026_05_05",
-      "target": "memory_2026_05_05_system_state",
-      "confidence_score": 1.0
+      "target": "memory_2026_05_05_system_state"
     },
     {
       "relation": "conceptually_related_to",
@@ -15181,5 +15181,5 @@
       "summary": "Layered PDF security: client-side magic byte + /JS scan -> server-side keyword fingerprint validation -> AI extraction"
     }
   ],
-  "built_at_commit": "96cc0b9820c6d2391f315c7ab455d5bdb0735ccd"
+  "built_at_commit": "a7682db1f53cd2f56ce02c68b7ee4a387035db1c"
 }
