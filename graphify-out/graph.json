@@ -15181,5 +15181,5 @@
       "summary": "Layered PDF security: client-side magic byte + /JS scan -> server-side keyword fingerprint validation -> AI extraction"
     }
   ],
-  "built_at_commit": "a7682db1f53cd2f56ce02c68b7ee4a387035db1c"
+  "built_at_commit": "d3f1b3e00d5f42b41729112e1a6da4953d3cd91a"
 }
