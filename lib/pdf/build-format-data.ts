@@ -41,13 +41,16 @@ function periodToSpanish(mmyyyy: string): string {
   return `${SPANISH_MONTHS[mm] ?? mm}/${yyyy}`
 }
 
-/** Returns today as DD/MM/YYYY */
+/** Returns today as DD/MM/YYYY in Colombia time (UTC-5, no DST) */
 function todayDDMMYYYY(): string {
-  const d = new Date()
-  const dd = String(d.getDate()).padStart(2, "0")
-  const mm = String(d.getMonth() + 1).padStart(2, "0")
-  const yyyy = d.getFullYear()
-  return `${dd}/${mm}/${yyyy}`
+  const parts = new Intl.DateTimeFormat("es-CO", {
+    timeZone: "America/Bogota",
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  }).formatToParts(new Date())
+  const get = (type: string) => parts.find((p) => p.type === type)?.value ?? ""
+  return `${get("day")}/${get("month")}/${get("year")}`
 }
 
 export function buildFormat053Data(

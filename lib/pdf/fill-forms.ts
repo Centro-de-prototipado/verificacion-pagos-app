@@ -277,6 +277,7 @@ export async function generateValidationCertificate(datos: {
         contratista: datos.contractorName,
         num_orden: datos.orderNumber,
         fecha_generacion: datos.expeditionDate,
+        fecha_validacion: datos.expeditionDate,
       },
     ],
   })
