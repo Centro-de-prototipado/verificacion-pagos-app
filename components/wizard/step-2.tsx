@@ -23,6 +23,7 @@ import {
   calcularFechaLimite,
   diasHabilAsignados,
 } from "@/lib/validations/fecha-limite"
+import { checkNextPeriodDeadline } from "@/lib/validations/fechas"
 import type {
   ActivityReportData,
   ARLData,
@@ -59,7 +60,8 @@ function validateExtractedData(
   arl: ARLData | null,
   contract: ContractData | null,
   contract2: ContractData | null,
-  contractCount: "1" | "2"
+  contractCount: "1" | "2",
+  selectedContract: "1" | "2" | "Ambos" | null
 ): string[] {
   const errors: string[] = []
   const isDMY = (s: string) => /^\d{2}\/\d{2}\/\d{4}$/.test(s)
@@ -125,6 +127,12 @@ function validateExtractedData(
   }
 
   if (contractCount === "2") {
+    // The user must explicitly select which contract they are billing in this period
+    if (!selectedContract) {
+      errors.push(
+        "Dos contratos detectados: debes seleccionar cuál contrato vas a cobrar en este período antes de continuar."
+      )
+    }
     if (!contract2) {
       errors.push("Contrato 2: no se encontraron datos.")
     } else {
@@ -157,6 +165,7 @@ export function Step2() {
     setExtractedData,
     setRawText,
     manualData,
+    setManualData,
     setStep,
   } = useWizardStore()
 
@@ -186,7 +195,22 @@ export function Step2() {
   const [confidence, setConfidence] = useState<Record<string, ConfidenceMap>>(
     {}
   )
+  // Which contract is being billed this period (only relevant when contractCount === "2")
+  const [selectedContract, setSelectedContract] = useState<
+    "1" | "2" | "Ambos" | null
+  >(manualData?.involvedContracts ?? null)
   const abortRef = useRef<AbortController | null>(null)
+
+  // Check if today is at/past the payment deadline for the next period.
+  // Used to show a preventive alert BEFORE step-3 so signers can act fast.
+  const nextPeriodCheck = useMemo(() => {
+    if (!planilla?.period || !contract?.documentNumber) return null
+    try {
+      return checkNextPeriodDeadline(planilla.period, contract.documentNumber)
+    } catch {
+      return null
+    }
+  }, [planilla?.period, contract?.documentNumber])
 
   const deadlineCalcNote = useMemo(() => {
     const period = planilla?.period
@@ -327,13 +351,48 @@ export function Step2() {
       const rawData = (await textRes.json()) as RawPDFText
       setRawText(rawData)
 
+      // Block scanned / image-only PDFs before calling the AI.
+      // A PDF with < 150 chars almost certainly has no embedded text layer.
+      const SCAN_THRESHOLD = 150
+      const scannedDocs: string[] = []
+      if (
+        documents.paymentSheet &&
+        (rawData.paymentSheet?.trim().length ?? 0) < SCAN_THRESHOLD
+      )
+        scannedDocs.push("Planilla de Seguridad Social")
+      if (documents.arl && (rawData.arl?.trim().length ?? 0) < SCAN_THRESHOLD)
+        scannedDocs.push("Certificado ARL")
+      if (
+        documents.contract &&
+        (rawData.contract?.trim().length ?? 0) < SCAN_THRESHOLD
+      )
+        scannedDocs.push("Contrato")
+      if (
+        documents.contract2 &&
+        (rawData.contract2?.trim().length ?? 0) < SCAN_THRESHOLD
+      )
+        scannedDocs.push("Contrato 2")
+
+      if (scannedDocs.length > 0) {
+        throw new Error(
+          `Los siguientes documentos no tienen texto extraíble (PDF escaneado o imagen): ${scannedDocs.join(", ")}. ` +
+            "Descarga la versión digital desde el portal de tu operadora o entidad y vuelve a intentarlo."
+        )
+      }
+
       // Step 2: AI structured extraction
       setStatus("loading-ai")
       const savedProfiles = getAllProfiles()
       const aiRes = await fetch("/api/extract", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ rawText: rawData, profiles: savedProfiles }),
+        body: JSON.stringify({
+          rawText: rawData,
+          profiles: savedProfiles,
+          paymentRequestPeriod: manualData?.paymentRequestPeriod,
+          contractCount: manualData?.contractCount,
+          involvedContracts: manualData?.involvedContracts,
+        }),
         signal: controller.signal,
       })
 
@@ -455,13 +514,24 @@ export function Step2() {
       arl,
       contract,
       contract2,
-      manualData?.contractCount ?? "1"
+      manualData?.contractCount ?? "1",
+      selectedContract
     )
     if (errors.length > 0) {
       setConfirmErrors(errors)
       return
     }
     setConfirmErrors([])
+
+    // Persist the selected contract to manualData so downstream steps can use it
+    if (
+      manualData &&
+      manualData.contractCount === "2" &&
+      selectedContract &&
+      selectedContract !== manualData.involvedContracts
+    ) {
+      setManualData({ ...manualData, involvedContracts: selectedContract })
+    }
 
     if (issuerKeys.paymentSheet && planilla)
       saveProfile(
@@ -716,18 +786,17 @@ export function Step2() {
           <div className="flex flex-col gap-4">
             <SectionHeader
               number={2}
-              title="Revisa y completa los datos"
-              subtitle="Todos los campos son editables. Haz clic sobre cualquier valor para corregirlo."
+              title="Revisa los datos extraídos"
+              subtitle="Verifica que la información extraída sea correcta. Solo el campo de nombre es editable."
             />
 
             {allFailed && (
               <Alert className="border-amber-300 bg-amber-50/60 dark:border-amber-700 dark:bg-amber-950/30">
                 <AlertCircleIcon className="size-4 text-amber-600" />
                 <AlertDescription className="text-amber-800 dark:text-amber-300">
-                  <strong>La IA no encontró datos en los documentos.</strong> No
-                  te preocupes — puedes completar todos los campos a mano en los
-                  formularios de abajo. Los campos están marcados en naranja
-                  para que sepas cuáles necesitan tu atención.
+                  <strong>La IA no encontró datos en los documentos.</strong>{" "}
+                  Revisa que los archivos subidos sean los correctos y vuelve a
+                  intentarlo. Si el problema persiste, contacta soporte.
                 </AlertDescription>
               </Alert>
             )}
@@ -757,13 +826,49 @@ export function Step2() {
                 confidenceMap={contractConfidence}
               />
               {manualData?.contractCount === "2" && (
-                <ContractEditor
-                  data={contract2}
-                  title="Contrato 2"
-                  onChange={setContract2}
-                  warnings={warnings.filter((w) => w.startsWith("Contrato 2"))}
-                  confidenceMap={contract2Confidence}
-                />
+                <>
+                  <ContractEditor
+                    data={contract2}
+                    title="Contrato 2"
+                    onChange={setContract2}
+                    warnings={warnings.filter((w) =>
+                      w.startsWith("Contrato 2")
+                    )}
+                    confidenceMap={contract2Confidence}
+                  />
+                  {/* Contract selection required when billing period has 2 contracts */}
+                  <div className="flex flex-col gap-2 rounded-xl border px-4 py-4 bg-muted/20">
+                    <p className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
+                      ¿Cuál contrato vas a cobrar este período?
+                    </p>
+                    <div className="flex flex-wrap gap-2">
+                      {(["1", "2", "Ambos"] as const).map((opt) => (
+                        <button
+                          key={opt}
+                          type="button"
+                          onClick={() => setSelectedContract(opt)}
+                          className={cn(
+                            "rounded-lg border px-4 py-2 text-sm font-medium transition-colors",
+                            selectedContract === opt
+                              ? "border-primary bg-primary text-primary-foreground"
+                              : "border-border bg-background hover:bg-muted"
+                          )}
+                        >
+                          {opt === "1"
+                            ? "Contrato 1"
+                            : opt === "2"
+                              ? "Contrato 2"
+                              : "Ambos contratos"}
+                        </button>
+                      ))}
+                    </div>
+                    {!selectedContract && (
+                      <p className="text-[11px] text-amber-600 dark:text-amber-400">
+                        Debes seleccionar una opción para continuar.
+                      </p>
+                    )}
+                  </div>
+                </>
               )}
             </div>
           </div>
@@ -774,11 +879,66 @@ export function Step2() {
                 <AlertCircleIcon className="size-4 text-amber-600" />
                 <AlertDescription className="text-amber-800 dark:text-amber-300">
                   Algunos documentos no se pudieron leer automáticamente
-                  (aparecen en naranja). Completa los campos vacíos manualmente
-                  — son todos editables.
+                  (aparecen en naranja). Verifica que subiste los archivos
+                  correctos y vuelve a intentar la extracción.
                 </AlertDescription>
               </Alert>
             )}
+            {/* Preventive deadline alert — shown when approaching or past next-period deadline */}
+            {nextPeriodCheck &&
+              nextPeriodCheck.alertLevel !== "none" &&
+              (() => {
+                const { nextPeriod, nextDeadline, daysUntilDeadline, alertLevel } =
+                  nextPeriodCheck
+                if (alertLevel === "overdue") {
+                  return (
+                    <Alert className="border-red-300 bg-red-50/60 dark:border-red-700 dark:bg-red-950/30">
+                      <AlertCircleIcon className="size-4 text-red-600" />
+                      <AlertDescription className="text-red-800 dark:text-red-300">
+                        <strong>Se requiere planilla adicional.</strong> La fecha
+                        límite para pagar la planilla de{" "}
+                        <strong>{nextPeriod}</strong> venció el{" "}
+                        <strong>{nextDeadline}</strong> (hace{" "}
+                        {Math.abs(daysUntilDeadline)} días). En el siguiente
+                        paso deberás adjuntarla obligatoriamente.
+                      </AlertDescription>
+                    </Alert>
+                  )
+                }
+                const isUrgent = alertLevel === "urgent"
+                return (
+                  <Alert
+                    className={
+                      isUrgent
+                        ? "border-red-300 bg-red-50/60 dark:border-red-700 dark:bg-red-950/30"
+                        : "border-amber-300 bg-amber-50/60 dark:border-amber-700 dark:bg-amber-950/30"
+                    }
+                  >
+                    <AlertCircleIcon
+                      className={`size-4 ${isUrgent ? "text-red-600" : "text-amber-600"}`}
+                    />
+                    <AlertDescription
+                      className={
+                        isUrgent
+                          ? "text-red-800 dark:text-red-300"
+                          : "text-amber-800 dark:text-amber-300"
+                      }
+                    >
+                      <strong>
+                        {isUrgent ? "¡Atención urgente!" : "Aviso preventivo."}
+                      </strong>{" "}
+                      La fecha límite para pagar la planilla de{" "}
+                      <strong>{nextPeriod}</strong> vence el{" "}
+                      <strong>{nextDeadline}</strong> (en{" "}
+                      {daysUntilDeadline} día
+                      {daysUntilDeadline !== 1 ? "s" : ""}). Si el proceso de
+                      firmas no concluye antes de esa fecha, deberás adjuntar
+                      esa planilla también y el trámite será devuelto.{" "}
+                      <strong>Agiliza las firmas con tu supervisor.</strong>
+                    </AlertDescription>
+                  </Alert>
+                )
+              })()}
             {confirmErrors.length > 0 && (
               <Alert variant="destructive">
                 <AlertCircleIcon className="size-4" />

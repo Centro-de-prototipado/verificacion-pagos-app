@@ -1,5 +1,6 @@
 import { differenceInCalendarDays, parse, parseISO } from "date-fns"
 import { GAVELA_DIAS_ARL } from "./constantes"
+import { calcularFechaLimite } from "./fecha-limite"
 import type { ARLData, PaymentSheetData, ValidationResult } from "@/lib/types"
 
 /** Parsea DD/MM/YYYY → Date (formato que devuelve la planilla PILA). */
@@ -89,6 +90,68 @@ export function validarGavelaARL(
     type: "date",
     message: msgs.join(" "),
   }
+}
+
+/** Returns Colombia "today" at midnight, independent of server timezone. */
+function todayColombia(): Date {
+  const bogota = new Date(
+    new Date().toLocaleString("en-US", { timeZone: "America/Bogota" })
+  )
+  bogota.setHours(0, 0, 0, 0)
+  return bogota
+}
+
+/**
+ * Advances a MM/YYYY period by one month.
+ */
+function nextMonthPeriod(period: string): string {
+  const [mm, yyyy] = period.split("/").map(Number)
+  const nextMM = mm === 12 ? 1 : mm + 1
+  const nextYYYY = mm === 12 ? yyyy + 1 : yyyy
+  return `${String(nextMM).padStart(2, "0")}/${nextYYYY}`
+}
+
+export interface NextPeriodDeadlineCheck {
+  nextPeriod: string      // MM/YYYY — the period that follows the submitted one
+  nextDeadline: string    // DD/MM/YYYY — payment deadline for nextPeriod
+  daysUntilDeadline: number  // negative = already past
+  /** Today is past the next period's deadline → second planilla is mandatory */
+  requiresSecondSheet: boolean
+  /** "none" | "warning" (≤10 days) | "urgent" (≤3 days) | "overdue" (past deadline) */
+  alertLevel: "none" | "warning" | "urgent" | "overdue"
+}
+
+/**
+ * Checks whether the contractor's paperwork submission timing requires a
+ * second (next month's) payment sheet.
+ *
+ * Rule: if today has already passed the payment deadline for the period
+ * AFTER the submitted planilla's period, that next period must have been
+ * paid already → attach it.  If the deadline is approaching, warn the user.
+ *
+ * @param period         Period of the submitted planilla (MM/YYYY)
+ * @param documentNumber Contractor's document number (for the deadline formula)
+ * @param today          Override for testing; defaults to Colombia today
+ */
+export function checkNextPeriodDeadline(
+  period: string,
+  documentNumber: string,
+  today?: Date
+): NextPeriodDeadlineCheck {
+  const reference = today ?? todayColombia()
+  const nextPeriod = nextMonthPeriod(period)
+  const nextDeadline = calcularFechaLimite(nextPeriod, documentNumber)
+  const deadlineDate = parseDDMMYYYY(nextDeadline)
+  deadlineDate.setHours(23, 59, 59, 999) // inclusive end of deadline day
+  const daysUntilDeadline = differenceInCalendarDays(deadlineDate, reference)
+  const requiresSecondSheet = daysUntilDeadline < 0
+
+  let alertLevel: NextPeriodDeadlineCheck["alertLevel"] = "none"
+  if (requiresSecondSheet) alertLevel = "overdue"
+  else if (daysUntilDeadline <= 3) alertLevel = "urgent"
+  else if (daysUntilDeadline <= 10) alertLevel = "warning"
+
+  return { nextPeriod, nextDeadline, daysUntilDeadline, requiresSecondSheet, alertLevel }
 }
 
 /**

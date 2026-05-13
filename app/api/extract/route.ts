@@ -14,6 +14,7 @@ import type { PaymentSheetExtracted } from "@/lib/schemas/payment-sheet"
 import type { ActivityReportExtracted } from "@/lib/schemas/activity-report"
 import {
   extractARLCandidates,
+  extractARLExpeditionDate,
   extractPILACandidates,
   extractContractCandidates,
   extractActivityReportCandidates,
@@ -26,7 +27,17 @@ import {
   fillFromCandidates,
   computeConfidence,
 } from "@/lib/pdf/extract-helpers"
+import {
+  checkPaymentSheet,
+  checkARL,
+  checkContract,
+  downgradeConfidence,
+} from "@/lib/pdf/sanity-checks"
 import { CONTRACT_TYPES_PROMPT } from "@/lib/constants/contracts"
+import {
+  PILA_ISSUER_INSTRUCTIONS,
+  ARL_ISSUER_INSTRUCTIONS,
+} from "@/lib/constants/issuer-instructions"
 import type { ExtractedData, RawPDFText, ConfidenceMap } from "@/lib/types"
 import {
   exceedsContentLength,
@@ -130,12 +141,29 @@ export async function POST(request: NextRequest) {
   let rawText: RawPDFText
   let profiles: ProfileHint[]
   let obligationsHint: string[] = []
+  let paymentRequestPeriod: string | undefined
+  let contractCount: "1" | "2" | undefined
+  let involvedContracts: "1" | "2" | "Ambos" | undefined
 
   try {
     const body = await request.json()
     rawText = body.rawText
     profiles = body.profiles || []
     obligationsHint = body.obligationsHint || []
+    paymentRequestPeriod =
+      typeof body.paymentRequestPeriod === "string"
+        ? body.paymentRequestPeriod
+        : undefined
+    contractCount =
+      body.contractCount === "1" || body.contractCount === "2"
+        ? body.contractCount
+        : undefined
+    involvedContracts =
+      body.involvedContracts === "1" ||
+      body.involvedContracts === "2" ||
+      body.involvedContracts === "Ambos"
+        ? body.involvedContracts
+        : undefined
   } catch (error) {
     const message =
       error instanceof Error ? error.message : "No se pudo leer la solicitud."
@@ -225,6 +253,32 @@ export async function POST(request: NextRequest) {
           send({ type, doc, model } as ExtractionStreamEvent)
         }
 
+      const pilaIssuerHint =
+        PILA_ISSUER_INSTRUCTIONS[issuerKeys.paymentSheet] ?? ""
+      const arlIssuerHint = ARL_ISSUER_INSTRUCTIONS[issuerKeys.arl] ?? ""
+
+      // If the user told us which period they're billing, tell the AI to prefer
+      // that period when the planilla contains multiple (case "Varias Planillas").
+      const periodHint = paymentRequestPeriod
+        ? `\n\nContexto: el contratista solicita el pago del período ${paymentRequestPeriod}. ` +
+          `Si la planilla contiene MÚLTIPLES períodos cotizados, elige el que coincide con ${paymentRequestPeriod} ` +
+          `(o el más cercano si no existe exacto). NUNCA tomes el primero por defecto cuando hay varios.`
+        : ""
+
+      // When the contractor has two contracts and the ARL shows coverage for
+      // BOTH (case "ARL Doble"), tell the AI which row to use for dates.
+      const arlDoubleHint =
+        contractCount === "2" && involvedContracts && involvedContracts !== "Ambos"
+          ? `\n\nContexto: el contratista tiene DOS contratos y este pago corresponde al Contrato ${involvedContracts}. ` +
+            `Si el certificado ARL muestra COBERTURAS para múltiples contratos (varias filas con fechas distintas), ` +
+            `extrae las fechas de inicio/fin de la fila correspondiente al contrato ${involvedContracts} ` +
+            `(usualmente identificable por el número de OPS/OSE o las fechas que coinciden con ese contrato).`
+          : contractCount === "2" && involvedContracts === "Ambos"
+            ? `\n\nContexto: el contratista tiene DOS contratos activos y se cobran AMBOS en este período. ` +
+              `Si el ARL muestra dos coberturas, usa la fecha de inicio MÁS TEMPRANA y la fecha de fin MÁS TARDÍA ` +
+              `para cubrir todo el rango.`
+            : ""
+
       const [r0, r1, r2, r3, r4, r5] = await Promise.allSettled([
         docChecks.paymentSheet.valid
           ? extractWithValidation<PaymentSheetExtracted>({
@@ -239,14 +293,18 @@ export async function POST(request: NextRequest) {
               ),
               snapshot,
               extraInstructions:
-                "Reglas:\n" +
+                "IMPORTANTE — contractorName es el nombre de la PERSONA NATURAL que cotiza (nunca el nombre del operador de planilla, nunca una empresa, nunca 'Universidad Nacional de Colombia').\n\n" +
+                "Reglas generales:\n" +
                 "1. sheetNumber: si el candidato tiene varios números separados por ' / ' (tablas SOI/Aportes en Línea con múltiples filas), " +
                 "elige el que corresponda al contratista (cruza con su CC/NIT). Si no puedes determinarlo, usa el último. " +
-                "En SOI, el número de planilla tiene 10 dígitos y va DESPUÉS de la Clave Pago (8-9 dígitos) — no confundas los dos.\n" +
-                "2. period: extrae el mes cotizado exactamente del texto en formato MM/YYYY. No lo deduzcas de paymentDate.\n" +
-                "3. paymentDate: fecha en que se realizó el pago (DD/MM/YYYY).\n" +
-                "4. paymentDeadline: fecha límite de pago; si parece invertida con paymentDate, corrígela (paymentDeadline ≥ paymentDate).\n" +
-                "5. contractorName y documentNumber: búscalos en la sección de 'Datos del Cotizante' o 'Información General'.",
+                "En SOI, el número de planilla tiene 10 dígitos y va DESPUÉS de la Clave Pago (8-9 dígitos) — no confundas los dos. " +
+                "Para Simple S.A., el número de planilla es la 'Referencia de Pago' que aparece en la sección 'Información de la Planilla Pagada'.\n" +
+                "2. period: extrae el mes cotizado en formato MM/YYYY. Puede aparecer como 'marzo de 2026' (→ 03/2026), 'YYYY-MM' (→ MM/YYYY), o MM/YYYY directamente. No lo deduzcas de paymentDate.\n" +
+                "3. paymentDate: fecha en que se realizó el pago (DD/MM/YYYY). Puede aparecer como 'PAGADO DD/MM/YYYY' o 'Fecha de pago: YYYY-MM-DD'. Convierte siempre a DD/MM/YYYY.\n" +
+                "4. paymentDeadline: fecha límite de pago (DD/MM/YYYY); si parece invertida con paymentDate, corrígela (paymentDeadline ≥ paymentDate).\n" +
+                "5. contractorName y documentNumber: búscalos en la sección de 'Datos del Cotizante', 'Información General', o en la primera línea con CC/NIT." +
+                (pilaIssuerHint ? `\n\nInstrucciones específicas del formato:\n${pilaIssuerHint}` : "") +
+                periodHint,
               onProgress: makeOnProgress("paymentSheet"),
             })
           : Promise.resolve(null),
@@ -259,6 +317,8 @@ export async function POST(request: NextRequest) {
               profileExample: findProfile(profiles, "arl", issuerKeys.arl),
               snapshot,
               extraInstructions:
+                "IMPORTANTE — contractorName es el nombre de la PERSONA NATURAL afiliada (el trabajador independiente). " +
+                "NUNCA uses el nombre de la ARL (Sura, Positiva, Colmena, etc.), NUNCA 'Universidad Nacional de Colombia', NUNCA el nombre del tomador o empresa.\n\n" +
                 "Reglas para fechas:\n" +
                 "1. Si el documento tiene las etiquetas 'Fecha inicio contrato' y/o 'Fecha fin contrato' " +
                 "(o variantes como 'Fecha de inicio contrato', 'Fecha de fin contrato'), " +
@@ -266,8 +326,9 @@ export async function POST(request: NextRequest) {
                 "NO uses la 'Fecha de inicio de cobertura' ni la 'Fecha de inicio de afiliación' en ese caso.\n" +
                 "2. Solo si el documento NO tiene etiquetas de 'contrato', usa la fecha de inicio/fin de cobertura o afiliación.\n" +
                 "3. El candidato startDate ya fue calculado priorizando las fechas de contrato — confía en él si es no nulo.\n" +
-                "4. riskClass: clase de riesgo (I, II, III, IV, V). Cruza con la tasa: 0.522%=I, 1.044%=II, 2.436%=III, 4.350%=IV, 6.960%=V.\n" +
-                "5. contractorName y documentNumber: extrae el nombre y documento del AFILIADO/TRABAJADOR independiente, NO el de la empresa.",
+                "4. riskClass: clase de riesgo (I, II, III, IV, V). Cruza con la tasa: 0.522%=I, 1.044%=II, 2.436%=III, 4.350%=IV, 6.960%=V." +
+                (arlIssuerHint ? `\n\nInstrucciones específicas del formato:\n${arlIssuerHint}` : "") +
+                arlDoubleHint,
               onProgress: makeOnProgress("arl"),
             })
           : Promise.resolve(null),
@@ -335,7 +396,10 @@ export async function POST(request: NextRequest) {
               ),
               snapshot,
               extraInstructions:
-                "Extrae los datos de la planilla del mes siguiente.",
+                "Extrae los datos de la planilla del MES SIGUIENTE al de la primera planilla. " +
+                "Esta planilla debe ser cronológicamente posterior. " +
+                "Aplica las mismas reglas de extracción que en la primera planilla " +
+                "(contractorName es persona natural, sheetNumber 6-16 dígitos, period MM/YYYY, paymentDate DD/MM/YYYY).",
               onProgress: makeOnProgress("paymentSheet2"),
             })
           : Promise.resolve(null),
@@ -469,6 +533,39 @@ export async function POST(request: NextRequest) {
           arlRaw
         )
 
+      // ── ARL additional validations ────────────────────────────────────────
+      if (cleanText.arl.trim().length > 0) {
+        // 1. Verify UNAL is the employer
+        if (
+          !cleanText.arl
+            .toLowerCase()
+            .includes("universidad nacional de colombia")
+        ) {
+          warnings.push(
+            "ARL — no se encontró 'Universidad Nacional de Colombia' como entidad contratante. Verifica que el certificado corresponda al contrato UNAL."
+          )
+        }
+
+        // 2. Certificate must be issued within the last 30 days
+        const expedDate = extractARLExpeditionDate(cleanText.arl)
+        if (expedDate) {
+          const [d, m, y] = expedDate.split("/").map(Number)
+          const issued = new Date(y, m - 1, d)
+          const today = new Date(
+            new Date().toLocaleString("en-US", { timeZone: "America/Bogota" })
+          )
+          today.setHours(0, 0, 0, 0)
+          const diffDays = Math.floor(
+            (today.getTime() - issued.getTime()) / 86_400_000
+          )
+          if (diffDays > 30) {
+            warnings.push(
+              `ARL — el certificado fue expedido hace ${diffDays} días (${expedDate}). Debe tener menos de 30 días de antigüedad.`
+            )
+          }
+        }
+      }
+
       const c1Raw = fillFromCandidates(
         aiC1,
         contractCand as Record<string, unknown>
@@ -524,6 +621,65 @@ export async function POST(request: NextRequest) {
           reportCandidates,
           reportRaw
         )
+
+      // ── Per-field sanity checks ──────────────────────────────────────────────
+      // Validate each extracted value makes sense for its field. Mismatches
+      // (e.g. insurer name in contractorName) produce specific warnings and
+      // downgrade that field's confidence so the UI flags it for manual review.
+      const sanityResults = [
+        checkPaymentSheet(paymentSheet),
+        checkARL(arl),
+        checkContract(contract, "Contrato"),
+        ...(contract2 ? [checkContract(contract2, "Contrato 2")] : []),
+        ...(paymentSheet2 ? [checkPaymentSheet(paymentSheet2)] : []),
+      ]
+      for (const result of sanityResults) {
+        warnings.push(...result.warnings)
+        downgradeConfidence(confidence, result.lowConfidenceFields)
+      }
+
+      // ── Cross-document name consistency check ────────────────────────────────
+      // Compares contractorName across documents. A significant mismatch usually
+      // means the extractor picked up the wrong person's name (e.g., insurer name
+      // instead of contractor name, or a different person's data).
+      const normalize = (s: string) =>
+        s
+          .toLowerCase()
+          .normalize("NFD")
+          .replace(/[̀-ͯ]/g, "")
+          .replace(/[^a-z\s]/g, "")
+          .trim()
+
+      const names = {
+        planilla: normalize(paymentSheet?.contractorName ?? ""),
+        arl: normalize(arl?.contractorName ?? ""),
+        contract: normalize(contract?.contractorName ?? ""),
+      }
+
+      // Only validate when all three names are non-empty
+      if (names.planilla && names.arl && names.contract) {
+        // Tokenize and count shared words (ignoring short words like "de", "la")
+        const tokens = (s: string) =>
+          s.split(/\s+/).filter((w) => w.length > 2)
+        const overlap = (a: string, b: string) => {
+          const ta = new Set(tokens(a))
+          const tb = tokens(b)
+          return tb.filter((w) => ta.has(w)).length
+        }
+        const pilaArlMatch = overlap(names.planilla, names.arl)
+        const pilaContractMatch = overlap(names.planilla, names.contract)
+
+        if (pilaArlMatch === 0) {
+          warnings.push(
+            `Posible error de extracción: el nombre en la planilla ("${paymentSheet?.contractorName}") no coincide con el nombre en la ARL ("${arl?.contractorName}"). Verifica que ambos correspondan al mismo contratista.`
+          )
+        }
+        if (pilaContractMatch === 0) {
+          warnings.push(
+            `Posible error de extracción: el nombre en la planilla ("${paymentSheet?.contractorName}") no coincide con el nombre en el contrato ("${contract?.contractorName}"). Verifica que ambos correspondan al mismo contratista.`
+          )
+        }
+      }
 
       const extractedData: ExtractedData = {
         paymentSheet,

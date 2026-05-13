@@ -1,6 +1,6 @@
 "use client"
 
-import React from "react"
+import React, { useEffect, useState } from "react"
 import { AlertCircleIcon } from "lucide-react"
 
 import { CONTRACT_TYPE_OPTIONS } from "@/lib/constants/contracts"
@@ -63,7 +63,7 @@ export function ConfidenceLegend() {
   )
 }
 
-// ─── Field primitives ─────────────────────────────────────────────────────────
+// ─── Format helpers ───────────────────────────────────────────────────────────
 
 const COP = new Intl.NumberFormat("es-CO", {
   style: "currency",
@@ -72,91 +72,182 @@ const COP = new Intl.NumberFormat("es-CO", {
   maximumFractionDigits: 0,
 })
 
-/** Read-only display of an extracted field. Used for every field except contractor names. */
-function ReadField({
-  label,
-  value,
-  confidence,
-}: {
+/** Normalize a date string to DD/MM/YYYY. Accepts DD/MM/YYYY, D/M/YYYY, YYYY-MM-DD, DD-MM-YYYY. */
+function formatDate(input: string): string {
+  const t = input.trim()
+  if (!t) return ""
+  const iso = t.match(/^(\d{4})[/\-](\d{1,2})[/\-](\d{1,2})$/)
+  if (iso)
+    return `${iso[3].padStart(2, "0")}/${iso[2].padStart(2, "0")}/${iso[1]}`
+  const dmy = t.match(/^(\d{1,2})[/\-](\d{1,2})[/\-](\d{4})$/)
+  if (dmy)
+    return `${dmy[1].padStart(2, "0")}/${dmy[2].padStart(2, "0")}/${dmy[3]}`
+  return t
+}
+
+/** Normalize a period to MM/YYYY. Accepts MM/YYYY, M/YYYY, YYYY-MM, YYYY/MM. */
+function formatPeriod(input: string): string {
+  const t = input.trim()
+  if (!t) return ""
+  const my = t.match(/^(\d{1,2})[/\-](\d{4})$/)
+  if (my) return `${my[1].padStart(2, "0")}/${my[2]}`
+  const ym = t.match(/^(\d{4})[/\-](\d{1,2})$/)
+  if (ym) return `${ym[2].padStart(2, "0")}/${ym[1]}`
+  return t
+}
+
+function formatUppercase(input: string): string {
+  return input.trim().toUpperCase()
+}
+
+function digitsOnly(input: string): string {
+  return input.replace(/\D/g, "")
+}
+
+function parseAmount(input: string): number {
+  const cleaned = input
+    .replace(/[^\d,.-]/g, "")
+    .replace(/\./g, "")
+    .replace(",", ".")
+  const n = parseFloat(cleaned)
+  return isNaN(n) ? 0 : Math.round(n)
+}
+
+// ─── Editable field primitives ────────────────────────────────────────────────
+
+type FieldFormat =
+  | "text"
+  | "date"
+  | "period"
+  | "uppercase"
+  | "digits"
+  | "money"
+  | "rate"
+
+interface EditFieldProps {
   label: string
   value: string | number | null | undefined
+  onChange: (v: string | number) => void
   confidence?: ConfidenceLevel
-}) {
-  const display =
-    value === null || value === undefined || value === ""
-      ? "—"
-      : typeof value === "number"
-        ? String(value)
-        : value
-  return (
-    <div className="flex flex-col gap-0.5 rounded-lg border bg-muted/30 px-3 py-2">
-      <div className="flex items-center gap-1.5">
-        <span className="text-xs text-muted-foreground">{label}</span>
-        <ConfidenceDot level={confidence} />
-      </div>
-      <span className="w-full text-sm font-medium text-foreground/90">
-        {display}
-      </span>
-    </div>
-  )
+  format?: FieldFormat
+  placeholder?: string
 }
 
-function ReadMoney({
-  label,
-  value,
-  confidence,
-}: {
-  label: string
-  value: number
-  confidence?: ConfidenceLevel
-}) {
-  return (
-    <ReadField
-      label={label}
-      value={value ? COP.format(value) : ""}
-      confidence={confidence}
-    />
-  )
-}
-
-/** Editable text input — only used for contractor names. */
+/** Universal editable field with optional auto-format on blur. */
 export function EditField({
   label,
   value,
   onChange,
-  highlight,
-  placeholder,
   confidence,
-}: {
-  label: string
-  value: string
-  onChange: (v: string) => void
-  highlight?: "green" | "red"
-  placeholder?: string
-  confidence?: ConfidenceLevel
-}) {
-  const color =
-    highlight === "green"
-      ? "text-green-600"
-      : highlight === "red"
-        ? "text-destructive"
-        : ""
+  format = "text",
+  placeholder,
+}: EditFieldProps) {
+  const initial =
+    value === null || value === undefined
+      ? ""
+      : format === "money"
+        ? value
+          ? COP.format(value as number)
+          : ""
+        : String(value)
+  const [text, setText] = useState(initial)
+
+  useEffect(() => {
+    setText(initial)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [value])
+
+  const handleChange = (v: string) => {
+    if (format === "digits") setText(digitsOnly(v))
+    else if (format === "money")
+      setText(v) // allow free typing, format on blur
+    else setText(v)
+  }
+
+  const handleBlur = () => {
+    let next = text
+    if (format === "date") next = formatDate(text)
+    else if (format === "period") next = formatPeriod(text)
+    else if (format === "uppercase") next = formatUppercase(text)
+    else if (format === "digits") next = digitsOnly(text)
+    else if (format === "money") {
+      const n = parseAmount(text)
+      next = n ? COP.format(n) : ""
+      setText(next)
+      onChange(n)
+      return
+    } else if (format === "rate") {
+      const n = parseFloat(text.replace(",", "."))
+      next = isNaN(n) ? "" : String(n)
+      setText(next)
+      onChange(isNaN(n) ? 0 : n)
+      return
+    } else next = text.trim()
+
+    setText(next)
+    onChange(next)
+  }
 
   return (
-    <div className="flex flex-col gap-0.5 rounded-lg border px-3 py-2">
+    <div className="flex flex-col gap-0.5 rounded-lg border px-3 py-2 focus-within:border-primary/60">
       <div className="flex items-center gap-1.5">
         <span className="text-xs text-muted-foreground">{label}</span>
         <ConfidenceDot level={confidence} />
       </div>
       <input
         type="text"
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
+        value={text}
+        onChange={(e) => handleChange(e.target.value)}
+        onBlur={handleBlur}
         placeholder={placeholder}
-        className={`w-full bg-transparent text-sm font-medium outline-none placeholder:text-muted-foreground/50 ${color}`}
-        spellCheck={true}
+        className="w-full bg-transparent text-sm font-medium outline-none placeholder:text-muted-foreground/50"
+        spellCheck={format === "text" || format === "uppercase"}
         lang="es"
+        inputMode={
+          format === "digits" || format === "money"
+            ? "numeric"
+            : format === "rate"
+              ? "decimal"
+              : undefined
+        }
       />
+    </div>
+  )
+}
+
+interface SelectFieldProps<T extends string> {
+  label: string
+  value: T
+  onChange: (v: T) => void
+  options: { value: T; label: string }[]
+  confidence?: ConfidenceLevel
+}
+
+/** Editable dropdown for enum values. */
+export function SelectField<T extends string>({
+  label,
+  value,
+  onChange,
+  options,
+  confidence,
+}: SelectFieldProps<T>) {
+  return (
+    <div className="flex flex-col gap-0.5 rounded-lg border px-3 py-2 focus-within:border-primary/60">
+      <div className="flex items-center gap-1.5">
+        <span className="text-xs text-muted-foreground">{label}</span>
+        <ConfidenceDot level={confidence} />
+      </div>
+      <select
+        value={value}
+        onChange={(e) => onChange(e.target.value as T)}
+        className="w-full bg-transparent text-sm font-medium outline-none"
+      >
+        {options.map((o) => (
+          <option key={o.value} value={o.value}>
+            {o.label}
+          </option>
+        ))}
+      </select>
     </div>
   )
 }
@@ -220,34 +311,28 @@ export function DocSection({
   )
 }
 
-// ─── Display helpers for select-like values ───────────────────────────────────
+// ─── Enum option lists ────────────────────────────────────────────────────────
 
-const COVERAGE_LABEL: Record<ARLData["coverageStatus"], string> = {
-  ACTIVA: "ACTIVA",
-  INACTIVA: "INACTIVA",
-  SUSPENDIDA: "SUSPENDIDA",
-}
+const COVERAGE_OPTIONS: { value: ARLData["coverageStatus"]; label: string }[] =
+  [
+    { value: "ACTIVA", label: "ACTIVA" },
+    { value: "INACTIVA", label: "INACTIVA" },
+    { value: "SUSPENDIDA", label: "SUSPENDIDA" },
+  ]
 
-const RISK_LABEL: Record<RiskClass, string> = {
-  I: "Riesgo 1",
-  II: "Riesgo 2",
-  III: "Riesgo 3",
-  IV: "Riesgo 4",
-  V: "Riesgo 5",
-}
+const RISK_OPTIONS: { value: RiskClass; label: string }[] = [
+  { value: "I", label: "I — Riesgo 1" },
+  { value: "II", label: "II — Riesgo 2" },
+  { value: "III", label: "III — Riesgo 3" },
+  { value: "IV", label: "IV — Riesgo 4" },
+  { value: "V", label: "V — Riesgo 5" },
+]
 
-const DOC_TYPE_LABEL: Record<DocumentType, string> = {
-  CC: "CC — Cédula de ciudadanía",
-  NIT: "NIT",
-  CE: "CE — Cédula extranjería",
-}
-
-function labelOf<T extends string>(
-  options: { value: T; label: string }[],
-  value: T
-): string {
-  return options.find((o) => o.value === value)?.label ?? value
-}
+const DOC_TYPE_OPTIONS: { value: DocumentType; label: string }[] = [
+  { value: "CC", label: "CC — Cédula de ciudadanía" },
+  { value: "NIT", label: "NIT" },
+  { value: "CE", label: "CE — Cédula extranjería" },
+]
 
 // ─── Document editors ─────────────────────────────────────────────────────────
 
@@ -279,48 +364,59 @@ export function PlanillaEditor({
 
   return (
     <DocSection title="Planilla PILA" failed={!data} warnings={warnings}>
-      <ReadField
+      <EditField
         label="Número de planilla"
         value={d.sheetNumber}
+        onChange={(v) => set({ sheetNumber: String(v) })}
         confidence={c?.sheetNumber}
+        format="digits"
       />
-      <ReadField
+      <EditField
         label="Fecha de pago"
         value={d.paymentDate}
+        onChange={(v) => set({ paymentDate: String(v) })}
         confidence={c?.paymentDate}
+        format="date"
+        placeholder="DD/MM/YYYY"
       />
       <div className="flex flex-col gap-0.5">
-        <ReadField
+        <EditField
           label="Fecha límite de pago"
           value={d.paymentDeadline ?? ""}
+          onChange={(v) => set({ paymentDeadline: String(v) || null })}
           confidence={c?.paymentDeadline}
+          format="date"
+          placeholder="DD/MM/YYYY"
         />
-        {deadlineCalcNote && (
-          <p className="pl-1 text-[11px] text-muted-foreground">
-            {deadlineCalcNote}
-          </p>
-        )}
       </div>
-      <ReadField
+      <EditField
         label="Período (MM/YYYY)"
         value={d.period}
+        onChange={(v) => set({ period: String(v) })}
         confidence={c?.period}
+        format="period"
+        placeholder="MM/YYYY"
       />
-      <ReadMoney
+      <EditField
         label="Valor total pagado"
         value={d.totalAmountPaid}
+        onChange={(v) => set({ totalAmountPaid: Number(v) })}
         confidence={c?.totalAmountPaid}
+        format="money"
       />
       <EditField
         label="Nombre cotizante (Planilla)"
         value={d.contractorName}
-        onChange={(v) => set({ contractorName: v })}
+        onChange={(v) => set({ contractorName: String(v) })}
         confidence={c?.contractorName}
+        format="uppercase"
       />
-      <ReadField
+      <EditField
         label="Documento (Planilla)"
         value={d.documentNumber}
+        onChange={(v) => set({ documentNumber: String(v) })}
         confidence={c?.documentNumber}
+        format="digits"
       />
     </DocSection>
   )
@@ -352,41 +448,56 @@ export function ARLEditor({
 
   return (
     <DocSection title="Certificado ARL" failed={!data} warnings={warnings}>
-      <ReadField
+      <EditField
         label="Inicio cobertura"
         value={d.startDate}
+        onChange={(v) => set({ startDate: String(v) })}
         confidence={c?.startDate}
+        format="date"
+        placeholder="DD/MM/YYYY"
       />
-      <ReadField
+      <EditField
         label="Fin cobertura"
         value={d.endDate}
+        onChange={(v) => set({ endDate: String(v) })}
         confidence={c?.endDate}
+        format="date"
+        placeholder="DD/MM/YYYY"
       />
-      <ReadField
+      <SelectField
         label="Estado cobertura"
-        value={COVERAGE_LABEL[d.coverageStatus]}
+        value={d.coverageStatus}
+        onChange={(v) => set({ coverageStatus: v })}
+        options={COVERAGE_OPTIONS}
         confidence={c?.coverageStatus}
       />
-      <ReadField
+      <SelectField
         label="Clase de riesgo"
-        value={RISK_LABEL[d.riskClass]}
+        value={d.riskClass}
+        onChange={(v) => set({ riskClass: v })}
+        options={RISK_OPTIONS}
         confidence={c?.riskClass}
       />
-      <ReadField
+      <EditField
         label="Tasa cotización (%)"
         value={d.cotizationRate}
+        onChange={(v) => set({ cotizationRate: Number(v) })}
         confidence={c?.cotizationRate}
+        format="rate"
       />
       <EditField
         label="Nombre afiliado (ARL)"
         value={d.contractorName}
-        onChange={(v) => set({ contractorName: v })}
+        onChange={(v) => set({ contractorName: String(v) })}
         confidence={c?.contractorName}
+        format="uppercase"
       />
-      <ReadField
+      <EditField
         label="Documento (ARL)"
         value={d.documentNumber}
+        onChange={(v) => set({ documentNumber: String(v) })}
         confidence={c?.documentNumber}
+        format="digits"
       />
     </DocSection>
   )
@@ -423,55 +534,74 @@ export function ContractEditor({
 
   return (
     <DocSection title={title} failed={!data} warnings={warnings}>
-      <ReadField
+      <SelectField
         label="Tipo de contrato"
-        value={labelOf(CONTRACT_TYPE_OPTIONS, d.contractType)}
+        value={d.contractType}
+        onChange={(v) => set({ contractType: v })}
+        options={CONTRACT_TYPE_OPTIONS}
         confidence={c?.contractType}
       />
-      <ReadField
+      <EditField
         label="Número de orden"
         value={d.orderNumber}
+        onChange={(v) => set({ orderNumber: String(v) })}
         confidence={c?.orderNumber}
+        format="digits"
       />
       <EditField
         label="Nombre contratista"
         value={d.contractorName}
-        onChange={(v) => set({ contractorName: v })}
+        onChange={(v) => set({ contractorName: String(v) })}
         confidence={c?.contractorName}
+        format="uppercase"
       />
-      <ReadField
+      <SelectField
         label="Tipo documento"
-        value={DOC_TYPE_LABEL[d.documentType]}
+        value={d.documentType}
+        onChange={(v) => set({ documentType: v })}
+        options={DOC_TYPE_OPTIONS}
         confidence={c?.documentType}
       />
-      <ReadField
+      <EditField
         label="Número documento"
         value={d.documentNumber}
+        onChange={(v) => set({ documentNumber: String(v) })}
         confidence={c?.documentNumber}
+        format="digits"
       />
-      <ReadMoney
+      <EditField
         label="Valor total sin impuestos"
         value={d.totalValueBeforeTax}
+        onChange={(v) => set({ totalValueBeforeTax: Number(v) })}
         confidence={c?.totalValueBeforeTax}
+        format="money"
       />
-      <ReadField
+      <EditField
         label="Fecha inicio"
         value={d.startDate}
+        onChange={(v) => set({ startDate: String(v) })}
         confidence={c?.startDate}
+        format="date"
+        placeholder="DD/MM/YYYY"
       />
-      <ReadField
+      <EditField
         label="Fecha fin"
         value={d.endDate}
+        onChange={(v) => set({ endDate: String(v) })}
         confidence={c?.endDate}
+        format="date"
+        placeholder="DD/MM/YYYY"
       />
-      <ReadField
-        label="Informe de actividades"
-        value={
-          d.activityReport.required
+      <div className="flex flex-col gap-0.5 rounded-lg border bg-muted/30 px-3 py-2">
+        <span className="text-xs text-muted-foreground">
+          Informe de actividades
+        </span>
+        <span className="text-sm font-medium">
+          {d.activityReport.required
             ? `Sí — cada ${d.activityReport.frequencyMonths ?? "—"} mes(es)`
-            : "No requerido"
-        }
-      />
+            : "No requerido"}
+        </span>
+      </div>
     </DocSection>
   )
 }
@@ -509,13 +639,45 @@ export function ActivityReportEditor({
       <EditField
         label="Nombre contratista"
         value={d.contractorName}
-        onChange={(v) => set({ contractorName: v })}
+        onChange={(v) => set({ contractorName: String(v) })}
+        format="uppercase"
       />
-      <ReadField label="C.C. No." value={d.documentNumber} />
-      <ReadField label="Fecha de firma" value={d.signatureDate} />
-      <ReadField label="Periodo Desde" value={d.periodFrom} />
-      <ReadField label="Periodo Hasta" value={d.periodTo} />
-      <ReadField label="¿Está firmado?" value={d.isSigned ? "Sí" : "No"} />
+      <EditField
+        label="C.C. No."
+        value={d.documentNumber}
+        onChange={(v) => set({ documentNumber: String(v) })}
+        format="digits"
+      />
+      <EditField
+        label="Fecha de firma"
+        value={d.signatureDate}
+        onChange={(v) => set({ signatureDate: String(v) })}
+        format="date"
+        placeholder="DD/MM/YYYY"
+      />
+      <EditField
+        label="Periodo Desde"
+        value={d.periodFrom}
+        onChange={(v) => set({ periodFrom: String(v) })}
+        format="date"
+        placeholder="DD/MM/YYYY"
+      />
+      <EditField
+        label="Periodo Hasta"
+        value={d.periodTo}
+        onChange={(v) => set({ periodTo: String(v) })}
+        format="date"
+        placeholder="DD/MM/YYYY"
+      />
+      <SelectField
+        label="¿Está firmado?"
+        value={d.isSigned ? "Sí" : "No"}
+        onChange={(v) => set({ isSigned: v === "Sí" })}
+        options={[
+          { value: "Sí", label: "Sí" },
+          { value: "No", label: "No" },
+        ]}
+      />
 
       <div className="col-span-2 mt-2 flex flex-col gap-2 sm:col-span-3">
         <p className="text-[11px] font-semibold tracking-wide text-muted-foreground uppercase">

@@ -4,7 +4,12 @@ import type {
   ValidationResult,
   ContributionCalculation,
 } from "@/lib/types"
-import { validarFechaPago, validarGavelaARL, calcularMesesContrato } from "./fechas"
+import {
+  validarFechaPago,
+  validarGavelaARL,
+  calcularMesesContrato,
+  checkNextPeriodDeadline,
+} from "./fechas"
 import { calcularFechaLimite } from "./fecha-limite"
 import { calcularDeclaracionCedular } from "./cedular"
 import {
@@ -217,7 +222,20 @@ export function runValidations(
     ? calcularFechaLimite(paymentSheet.period, contract.documentNumber)
     : undefined
   const fechaPagoResult = validarFechaPago(paymentSheet, deadlineCalc)
-  let isLatePayment = !fechaPagoResult.ok
+
+  // Second reason to require a second planilla: today has already passed the
+  // payment deadline for the NEXT period (regardless of whether the current
+  // planilla was paid on time). This happens when the contractor submits
+  // paperwork many weeks after the payment period.
+  const nextPeriodCheck =
+    paymentSheet.period && contract.documentNumber
+      ? checkNextPeriodDeadline(paymentSheet.period, contract.documentNumber)
+      : null
+
+  // isLatePayment is true when EITHER:
+  //  (a) the planilla itself was paid after its own deadline, OR
+  //  (b) today is past the payment deadline for the following period
+  let isLatePayment = !fechaPagoResult.ok || (nextPeriodCheck?.requiresSecondSheet ?? false)
 
   if (isLatePayment && extracted.paymentSheet2) {
     const ps2 = extracted.paymentSheet2
@@ -255,14 +273,22 @@ export function runValidations(
       }
     }
   } else {
-    // If late payment and no second sheet yet, make it blocking
-    if (isLatePayment) {
-      results.push({
-        ...fechaPagoResult,
-        blocking: true,
-      })
+    // Report original planilla payment status
+    if (!fechaPagoResult.ok) {
+      results.push({ ...fechaPagoResult, blocking: true })
     } else {
       results.push(fechaPagoResult)
+    }
+
+    // If second planilla is required due to next-period deadline passing,
+    // add a separate blocking result
+    if (nextPeriodCheck?.requiresSecondSheet && fechaPagoResult.ok) {
+      results.push({
+        ok: false,
+        blocking: true,
+        type: "date",
+        message: `La fecha límite para pagar la planilla de ${nextPeriodCheck.nextPeriod} venció el ${nextPeriodCheck.nextDeadline} (hace ${Math.abs(nextPeriodCheck.daysUntilDeadline)} días). Adjunta esa planilla para continuar.`,
+      })
     }
   }
 

@@ -258,14 +258,32 @@ export function extractARLCandidates(text: string): Partial<ARLData> {
     endDate ??= rawEnd !== startDate ? rawEnd : null
   }
 
-  // ── Rest of fields ─────────────────────────────────────────────────────────
-  const statusRaw = /\bactiva\b/i.test(flatText)
-    ? "ACTIVA"
-    : /\bsuspendida\b/i.test(flatText)
-      ? "SUSPENDIDA"
-      : /\binactiva\b/i.test(flatText)
-        ? "INACTIVA"
+  // Strategy 4: scan all DMY dates as last resort (handles Sura Tipo 2 where
+  // dates appear concatenated: "01/02/2026 31/12/2026Fecha fin cobertura:")
+  if (!startDate || !endDate) {
+    const dmyMatches = [...flatText.matchAll(/\b(\d{2}\/\d{2}\/\d{4})\b/g)].map(
+      (m) => m[1]
+    )
+    startDate ??= dmyMatches[0] ?? null
+    endDate ??=
+      dmyMatches[1] && dmyMatches[1] !== dmyMatches[0]
+        ? dmyMatches[1]
         : null
+  }
+
+  // ── Rest of fields ─────────────────────────────────────────────────────────
+  // Sura uses "EN COBERTURA" (active) and "MORA" (late payment, treated as inactive).
+  const statusRaw = /\ben\s+cobertura\b/i.test(flatText)
+    ? "ACTIVA"
+    : /\bactiva\b/i.test(flatText)
+      ? "ACTIVA"
+      : /\bsuspendida\b/i.test(flatText)
+        ? "SUSPENDIDA"
+        : /\binactiva\b/i.test(flatText)
+          ? "INACTIVA"
+          : /\ben\s+mora\b/i.test(flatText) || /\bmora\b/i.test(flatText)
+            ? "INACTIVA"
+            : null
 
   const rateRaw = findNear(flatText, rateLabels, /([\d]+[.,][\d]+)(?:\s*%)?/)
 
@@ -282,19 +300,101 @@ export function extractARLCandidates(text: string): Partial<ARLData> {
     /\b([IVX]{1,3}|[1-5])\b/
   )
 
+  // Normalize arabic numerals → roman (some ARL formats print "2" instead of "II")
+  const ARABIC_TO_ROMAN: Record<string, RiskClass> = {
+    "1": "I",
+    "2": "II",
+    "3": "III",
+    "4": "IV",
+    "5": "V",
+  }
+  const riskNormalized = riskRaw
+    ? (ARABIC_TO_ROMAN[riskRaw] ?? (riskRaw as RiskClass))
+    : undefined
+
   return {
     startDate: startDate ?? undefined,
     endDate: endDate ?? undefined,
     coverageStatus: (statusRaw as ARLData["coverageStatus"]) ?? undefined,
-    riskClass: (riskRaw as RiskClass) ?? undefined,
+    riskClass: riskNormalized,
     cotizationRate: rateRaw ? parseFloat(rateRaw.replace(",", ".")) : undefined,
   }
+}
+
+/**
+ * Extracts the ARL document generation/expedition date from raw text.
+ * Used separately to validate that the certificate is < 30 days old.
+ * Returns DD/MM/YYYY or null.
+ */
+export function extractARLExpeditionDate(text: string): string | null {
+  const flat = text.replace(/\s+/g, " ")
+
+  // "Este certificado fue generado...el: DD/MM/YYYY" (Sura, Colmena)
+  const generatedMatch = flat.match(
+    /(?:generado[^.]{0,80}el|emitido\s+el|expedido\s+el|fecha\s+de\s+expedici[oó]n[^.]{0,40}el)\s*:?\s*(\d{2}\/\d{2}\/\d{4})/i
+  )
+  if (generatedMatch) return generatedMatch[1]
+
+  // Explicit "Fecha de expedición" label
+  const expeditionLabel = flat.match(
+    /fecha\s+de\s+expedi(?:ci[oó]n|do)\s*:?\s*(\d{2}\/\d{2}\/\d{4})/i
+  )
+  if (expeditionLabel) return expeditionLabel[1]
+
+  // "Fecha creación reporte:" (Enlace, some Asopagos)
+  const creacionMatch = flat.match(
+    /fecha\s+creaci[oó]n\s+reporte\s*:\s*(\d{4}-\d{2}-\d{2})/i
+  )
+  if (creacionMatch) return normalizeDate(creacionMatch[1])
+
+  // Standalone date at the bottom of the certificate (heuristic: last DMY date)
+  const allDates = [...flat.matchAll(/\b(\d{2}\/\d{2}\/\d{4})\b/g)].map(
+    (m) => m[1]
+  )
+  if (allDates.length > 0) return allDates[allDates.length - 1]
+
+  return null
 }
 
 // ─── PILA ─────────────────────────────────────────────────────────────────────
 
 // Narrow window for PILA date fields — labels are often printed close together.
 const PILA_DATE_WINDOW = 60
+
+const MONTH_ES: Record<string, string> = {
+  enero: "01",
+  febrero: "02",
+  marzo: "03",
+  abril: "04",
+  mayo: "05",
+  junio: "06",
+  julio: "07",
+  agosto: "08",
+  septiembre: "09",
+  octubre: "10",
+  noviembre: "11",
+  diciembre: "12",
+}
+
+/** Extracts a period as MM/YYYY from month-name formats like "marzo de 2026" or "abril 2026". */
+function extractMonthNamePeriod(text: string): string | null {
+  const lower = text.toLowerCase()
+  for (const [name, num] of Object.entries(MONTH_ES)) {
+    const re = new RegExp(`\\b${name}\\s+(?:de\\s+)?(\\d{4})\\b`)
+    const m = lower.match(re)
+    if (m) return `${num}/${m[1]}`
+  }
+  return null
+}
+
+/** Extracts a period from ISO-month format "YYYY-MM" → "MM/YYYY".
+ *  Does NOT match YYYY-MM-DD full dates. */
+function extractISOMonthPeriod(text: string): string | null {
+  // Negative lookahead so "2026-03-04" doesn't match as "2026-03"
+  const m = text.match(/\b(\d{4})-(0[1-9]|1[0-2])\b(?!-\d{2})/)
+  if (!m) return null
+  return `${m[2]}/${m[1]}`
+}
 
 export function extractPILACandidates(text: string): Partial<PaymentSheetData> {
   // Caller must pass already-normalized text (joinSplitDates applied).
@@ -329,6 +429,25 @@ export function extractPILACandidates(text: string): Partial<PaymentSheetData> {
     soiPeriod = `${mo}/${yr}`
   }
 
+  // ── Simple S.A. specific: planilla number appears BEFORE the section header ──
+  // In Simple's PDF, the table layout puts the planilla number above the labels.
+  // Text extraction yields:
+  //   <planilla_number>\n<contractor_name>\nInformación de la Planilla Pagada\n
+  //   ...labels including "Referencia de Pago/Número Planilla"...\n<transaction_id>
+  // Generic forward-search picks up the transaction id by mistake. Search backwards
+  // from the section header to get the right number.
+  let simpleSheet: string | undefined
+  const simpleHeaderIdx = text.search(/Información de la Planilla Pagada/i)
+  if (simpleHeaderIdx > 0) {
+    const before = text.slice(Math.max(0, simpleHeaderIdx - 500), simpleHeaderIdx)
+    // Find all standalone 8-12 digit numbers (planilla numbers are typically 10 digits)
+    const numbers = [...before.matchAll(/\b(\d{8,12})\b/g)].map((m) => m[1])
+    if (numbers.length > 0) {
+      // Closest to the header (last one before it)
+      simpleSheet = numbers[numbers.length - 1]
+    }
+  }
+
   // ── Label-based search (other platforms) ─────────────────────────────────
   const SHEET_LABELS_EXACT = [
     "número de planilla:",
@@ -339,6 +458,7 @@ export function extractPILACandidates(text: string): Partial<PaymentSheetData> {
     "nupla:",
     "planilla no.:",
     "planilla n°:",
+    "planilla nro.:",   // Asopagos Tipo 2
     "no. planilla:",
     "número de radicado:",
     "radicado:",
@@ -355,7 +475,11 @@ export function extractPILACandidates(text: string): Partial<PaymentSheetData> {
     "nro. de planilla",
     "planilla no",
     "planilla n°",
+    "planilla nro",
     "número planilla",
+    "numéro planilla",      // Enlace typo (é not ú)
+    "número de planilla",
+    "numéro de planilla",   // Enlace typo variant
     "número de radicado",
     "radicado",
     "referencia de pago",
@@ -366,10 +490,11 @@ export function extractPILACandidates(text: string): Partial<PaymentSheetData> {
   const labelSheet =
     findNear(text, SHEET_LABELS_EXACT, SHEET_RE_NUM, 60) ??
     findNear(text, SHEET_LABELS_EXACT, SHEET_RE_ALNUM, 80) ??
-    findNear(text, SHEET_LABELS_BROAD, SHEET_RE_NUM, 80) ??
-    findNear(text, SHEET_LABELS_BROAD, SHEET_RE_ALNUM, 100)
+    findNear(text, SHEET_LABELS_BROAD, SHEET_RE_NUM, 120) ??
+    findNear(text, SHEET_LABELS_BROAD, SHEET_RE_ALNUM, 150)
 
   const sheetRaw =
+    simpleSheet ??
     labelSheet ??
     soiSheet ??
     (() => {
@@ -393,29 +518,87 @@ export function extractPILACandidates(text: string): Partial<PaymentSheetData> {
     /\$?\s*([\d.,]{4,})/
   )
 
-  return {
-    sheetNumber: sheetRaw ?? undefined,
-    paymentDate:
-      normalizeDate(
+  // Payment date: label search first, then fallback to first ISO date in text
+  const labelPaymentDate =
+    normalizeDate(
+      findNear(
+        text,
+        [
+          "fecha de pago:",
+          "fecha pago:",
+          "pagado el",
+          "fecha de transacción:",
+          "fecha transacción:",
+          "fecha transaccion:",
+        ],
+        DATE_RE,
+        PILA_DATE_WINDOW
+      ) ??
         findNear(
           text,
           [
-            "fecha de pago:",
-            "fecha pago:",
-            "pagado el",
-            "fecha de transacción:",
-            "fecha transacción:",
+            "fecha de pago",
+            "fecha pago",
+            "fecha transacción",
+            "pagado",   // Enlace: "PAGADO 16/04/2026"
           ],
           DATE_RE,
           PILA_DATE_WINDOW
-        ) ??
-          findNear(
-            text,
-            ["fecha de pago", "fecha pago", "fecha transacción"],
-            DATE_RE,
-            PILA_DATE_WINDOW
-          )
-      ) ?? soiPaymentDate,
+        )
+    ) ?? soiPaymentDate
+
+  // Fallback: first ISO date (YYYY-MM-DD) in document when labels are absent
+  const isoDateFallback = (() => {
+    if (labelPaymentDate) return undefined
+    const isoMatch = text.match(/\b(\d{4}-\d{2}-\d{2})\b/)
+    return isoMatch ? normalizeDate(isoMatch[1]) ?? undefined : undefined
+  })()
+
+  // Period: try MM/YYYY label search, then ISO-month format, then month name
+  const labelPeriod =
+    findNear(
+      text,
+      [
+        "período",
+        "periodo de cotización",
+        "mes de cotización",
+        "período cotizado",
+        "mes cotizado",
+        "período pensión",
+        "periodo pensión",
+        "período salud",
+        "periodo salud",
+      ],
+      /(\d{2}\/\d{4})/
+    ) ?? soiPeriod
+
+  // For ISO-month: look for "YYYY-MM" (not YYYY-MM-DD) near period labels
+  const isoMonthCandidate = !labelPeriod
+    ? findNear(
+        text,
+        [
+          "período pensión",
+          "periodo pensión",
+          "período salud",
+          "periodo salud",
+          "período",
+          "periodo de cotización",
+        ],
+        /(\d{4}-(?:0[1-9]|1[0-2]))\b(?!-\d{2})/,
+        80
+      )
+    : null
+  const isoMonthPeriod =
+    isoMonthCandidate ? extractISOMonthPeriod(isoMonthCandidate) : null
+
+  const monthNamePeriod =
+    !labelPeriod && !isoMonthPeriod
+      ? extractMonthNamePeriod(text)
+      : null
+
+  return {
+    sheetNumber: sheetRaw ?? undefined,
+    paymentDate: labelPaymentDate ?? isoDateFallback,
     paymentDeadline:
       normalizeDate(
         findNear(
@@ -434,9 +617,12 @@ export function extractPILACandidates(text: string): Partial<PaymentSheetData> {
             text,
             [
               "fecha límite",
+              "fecha limite",
               "limite de pago",
               "fecha vencimiento",
               "fecha máxima",
+              "fecha limite pago",
+              "fecha límite pago",
             ],
             DATE_RE,
             PILA_DATE_WINDOW
@@ -444,18 +630,7 @@ export function extractPILACandidates(text: string): Partial<PaymentSheetData> {
       ) ??
       soiDeadline ??
       null,
-    period:
-      findNear(
-        text,
-        [
-          "período",
-          "periodo de cotización",
-          "mes de cotización",
-          "período cotizado",
-          "mes cotizado",
-        ],
-        /(\d{2}\/\d{4})/
-      ) ?? soiPeriod,
+    period: labelPeriod ?? isoMonthPeriod ?? monthNamePeriod ?? undefined,
     totalAmountPaid: parseAmount(totalRaw) ?? undefined,
   }
 }
@@ -617,9 +792,11 @@ export function detectIssuer(
     if (lower.includes("aportes en línea") || lower.includes("aportesenlinea"))
       return "aportesenlinea"
     if (lower.includes("mi planilla")) return "miplanilla"
-    if (lower.includes("soi ")) return "soi"
-    if (lower.includes("simple")) return "simple"
+    if (lower.includes("soi ") || lower.includes("\nsoi\n")) return "soi"
+    if (lower.includes("simple s.a") || lower.includes("simple s.a."))
+      return "simple"
     if (lower.includes("asopagos")) return "asopagos"
+    if (lower.includes("enlace operativo")) return "enlace"
   }
 
   return "unknown"

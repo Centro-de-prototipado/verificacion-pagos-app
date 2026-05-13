@@ -483,13 +483,13 @@ export function Step3() {
         </div>
       )}
 
-      {/* ── Planilla vencida ── */}
+      {/* ── Planilla mes siguiente (pago extemporáneo o atraso en el trámite) ── */}
       {summary?.isLatePayment && (
         <div className="flex flex-col gap-3">
           <SectionHeader
             number={nextN()}
             title="Planilla del mes siguiente"
-            subtitle="El pago fue extemporáneo. Adjunta la planilla del mes siguiente para incluirla en el PDF."
+            subtitle="El plazo de la próxima planilla ya venció. Adjunta la del mes siguiente para validar el trámite."
           />
           <div className="flex flex-col gap-2 pl-9">
             <DocumentDropzone
