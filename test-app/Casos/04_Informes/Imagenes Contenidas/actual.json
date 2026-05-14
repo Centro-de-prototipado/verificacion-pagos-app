@@ -1,0 +1,78 @@
+{
+  "planilla": {
+    "sheetNumber": "36704753",
+    "paymentDate": "17/04/2026",
+    "paymentDeadline": null,
+    "period": "04/2026",
+    "totalAmountPaid": 508300,
+    "contractorName": null,
+    "documentNumber": "1053851425"
+  },
+  "arl": {
+    "startDate": "26/11/2025",
+    "endDate": "30/08/2026",
+    "coverageStatus": "ACTIVA",
+    "riskClass": "I",
+    "cotizationRate": 0.522,
+    "contractorName": "DANIELA SALCEDO ESCOBAR",
+    "documentNumber": "1053851425"
+  },
+  "contract": {
+    "contractType": "OEF",
+    "orderNumber": "9",
+    "contractorName": "DANIELA SALCEDO ESCOBAR",
+    "documentType": "CC",
+    "documentNumber": "1053851425",
+    "totalValueBeforeTax": 30000000,
+    "startDate": "14/11/2025",
+    "endDate": null,
+    "activityReport": {
+      "required": true,
+      "frequencyMonths": 1
+    },
+    "specificObligations": [
+      "REALIZAR EL TESTEO DE DISPOSITIVOS IOT DESTINADOS A LA RECOLECCIÓN DE DATOS EN ENTORNOS DOMÉSTICOS",
+      "CONTRIBUIR CON LAS PRUEBAS DEL SOFTWARE PARA EL MONITOREO, PROCESAMIENTO DE DATOS Y SU POSTERIOR VISUALIZACIÓN.",
+      "BRINDAR SOPORTE EN LA INTEGRACIÓN DE HARDWARE Y SOFTWARE, ASÍ COMO EN LA VALIDACIÓN DE SISTEMAS EN ENTORNOS DE LABORATORIO.",
+      "PARTICIPAR EN LA REDACCIÓN Y ELABORACIÓN DE DOCUMENTOS CIENTÍFICOS RELACIONADOS CON EL PROYECTO.",
+      "PRESENTAR EL INFORME MENSUAL Y FINAL DE ACTIVIDADES"
+    ]
+  },
+  "activityReport": {
+    "items": [
+      {
+        "activityDescription": "REALIZAR EL TESTEO DE DISPOSITIVOS IOT DESTINADOS A LA RECOLECCIÓN DE DATOS EN ENTORNOS DOMÉSTICOS",
+        "periodPercentage": 0,
+        "accumulatedPercentage": 20
+      },
+      {
+        "activityDescription": "CONTRIBUIR CON LAS PRUEBAS DEL SOFTWARE PARA EL MONITOREO, PROCESAMIENTO DE DATOS Y SU POSTERIOR VISUALIZACIÓN.",
+        "periodPercentage": 10,
+        "accumulatedPercentage": 60
+      },
+      {
+        "activityDescription": "BRINDAR SOPORTE EN LA INTEGRACIÓN DE HARDWARE Y SOFTWARE, ASÍ COMO EN LA VALIDACIÓN DE SISTEMAS EN ENTORNOS DE LABORATORIO.",
+        "periodPercentage": 0,
+        "accumulatedPercentage": 10
+      },
+      {
+        "activityDescription": "PARTICIPAR EN LA REDACCIÓN Y ELABORACIÓN DE DOCUMENTOS CIENTÍFICOS RELACIONADOS CON EL PROYECTO.",
+        "periodPercentage": 10,
+        "accumulatedPercentage": 45
+      },
+      {
+        "activityDescription": "PRESENTAR EL INFORME MENSUAL Y FINAL DE ACTIVIDADES",
+        "periodPercentage": 10,
+        "accumulatedPercentage": 50
+      }
+    ],
+    "signatureDate": "30/04/2026",
+    "periodFrom": "01/04/2026",
+    "periodTo": "30/04/2026",
+    "opsStartDate": "26/11/2025",
+    "opsEndDate": "30/08/2026",
+    "contractorName": "DANIELA SALCEDO ESCOBAR",
+    "documentNumber": "1053851425",
+    "isSigned": true
+  }
+}

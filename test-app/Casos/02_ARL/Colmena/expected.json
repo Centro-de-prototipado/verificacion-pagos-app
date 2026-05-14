@@ -1,0 +1,48 @@
+{
+  "planilla": {
+    "sheetNumber": "83332397",
+    "paymentDate": "01/02/2026",
+    "paymentDeadline": null,
+    "period": "01/2026",
+    "totalAmountPaid": 623200,
+    "contractorName": "MARIA JOSE GIRALDO GUTIERREZ",
+    "documentNumber": "1002817769"
+  },
+  "arl": {
+    "startDate": "26/11/2025",
+    "endDate": "31/01/2026",
+    "coverageStatus": "INACTIVA",
+    "riskClass": "I",
+    "cotizationRate": null,
+    "contractorName": "GIRALDO GUTIERREZ MARIA JOSE",
+    "documentNumber": "1002817769"
+  },
+  "contract": {
+    "contractType": "OEF",
+    "orderNumber": "6",
+    "contractorName": "GIRALDO GUTIERREZ MARIA JOSE",
+    "documentType": "CC",
+    "documentNumber": "1002817769",
+    "totalValueBeforeTax": 8032000,
+    "startDate": "10/11/2025",
+    "endDate": null,
+    "activityReport": {
+      "required": true,
+      "frequencyMonths": null
+    },
+    "specificObligations": [
+      "REALIZAR LA GESTIÓN Y ORGANIZACIÓN DE DOCUMENTACIÓN TÉCNICA DE LOS PROYECTOS WEB.",
+      "REALIZAR REGISTRO Y ACTUALIZACIÓN DE BASES DE DATOS INTERNAS DE LAS APLICACIONES WEB.",
+      "BRINDAR APOYO EN LA PLANIFICACIÓN Y SEGUIMIENTO DE CRONOGRAMAS DE DESARROLLO.",
+      "REALIZAR MAQUETACIÓN BÁSICA DE INTERFACES WEB CON HTML Y CSS.",
+      "BRINDAR APOYO EN LA INTEGRACIÓN DE ELEMENTOS DINÁMICOS USANDO JAVASCRIPT.",
+      "REALIZAR LA REVISIÓN Y CORRECCIÓN DE ERRORES EN EL CÓDIGO DEL SISTEMAS DE CONSULTAS.",
+      "REALIZAR PRUEBAS FUNCIONALES Y REPORTE DE ERRORES (TESTING MANUAL).",
+      "DOCUMENTAR PROCESOS TÉCNICOS DE LOS APLICATIVOS WEB.",
+      "BRINDAR APOYO EN LA IMPLEMENTACIÓN DE MEJORAS VISUALES O DE USABILIDAD EN EL SITIO.",
+      "ENTREGAR EL INVENTARIO DE LOS DOCUMENTOS O CÓDIGOS FUENTE A SU CARGO, TANTO LOS ANÁLOGOS COMO LOS ELECTRÓNICOS QUE SE ENCUENTREN EN EQUIPOS DE CÓMPUTO, SISTEMAS DE INFORMACIÓN, MEDIOS PORTÁTILES DE ALMACENAMIENTOS Y, EN GENERAL, EN CUALQUIER DISPOSITIVO O MEDIO ELECTRÓNICO.",
+      "PRESENTAR INFORME PARCIAL Y FINAL DE ACTIVIDADES"
+    ]
+  },
+  "activityReport": null
+}

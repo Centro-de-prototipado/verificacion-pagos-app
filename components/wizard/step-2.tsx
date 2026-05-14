@@ -294,16 +294,12 @@ export function Step2() {
     setPlanilla(ps ? { ...ps, paymentDate, paymentDeadline: deadline } : null)
 
     const arlData = extractedData.arl
-    const arlToDMY = (iso: string) => {
-      const [y, m, d] = iso.split("-")
-      return `${d}/${m}/${y}`
-    }
     const applyARLDates = (c: typeof ct) => {
       if (!c) return null
       return {
         ...c,
-        startDate: arlData ? arlToDMY(arlData.startDate) : c.startDate,
-        endDate: arlData ? arlToDMY(arlData.endDate) : c.endDate,
+        startDate: arlData?.startDate ?? c.startDate,
+        endDate: arlData?.endDate ?? c.endDate,
       }
     }
 
@@ -351,33 +347,39 @@ export function Step2() {
       const rawData = (await textRes.json()) as RawPDFText
       setRawText(rawData)
 
-      // Block scanned / image-only PDFs before calling the AI.
-      // A PDF with < 150 chars almost certainly has no embedded text layer.
-      const SCAN_THRESHOLD = 150
-      const scannedDocs: string[] = []
-      if (
-        documents.paymentSheet &&
-        (rawData.paymentSheet?.trim().length ?? 0) < SCAN_THRESHOLD
-      )
-        scannedDocs.push("Planilla de Seguridad Social")
-      if (documents.arl && (rawData.arl?.trim().length ?? 0) < SCAN_THRESHOLD)
-        scannedDocs.push("Certificado ARL")
-      if (
-        documents.contract &&
-        (rawData.contract?.trim().length ?? 0) < SCAN_THRESHOLD
-      )
-        scannedDocs.push("Contrato")
-      if (
-        documents.contract2 &&
-        (rawData.contract2?.trim().length ?? 0) < SCAN_THRESHOLD
-      )
-        scannedDocs.push("Contrato 2")
+      // Detect scanned / image-only PDFs. For each one, base64-encode its
+      // bytes so the backend can run Mistral OCR fallback. Threshold must
+      // match `SCAN_MIN_CHARS` in lib/extraction/preprocess.ts.
+      const SCAN_THRESHOLD = 300
+      const isScanned = (txt: string | undefined) =>
+        (txt?.trim().length ?? 0) < SCAN_THRESHOLD
 
-      if (scannedDocs.length > 0) {
-        throw new Error(
-          `Los siguientes documentos no tienen texto extraíble (PDF escaneado o imagen): ${scannedDocs.join(", ")}. ` +
-            "Descarga la versión digital desde el portal de tu operadora o entidad y vuelve a intentarlo."
-        )
+      const fileToBase64 = async (file: File): Promise<string> => {
+        const buf = await file.arrayBuffer()
+        let binary = ""
+        const bytes = new Uint8Array(buf)
+        const chunk = 0x8000
+        for (let i = 0; i < bytes.length; i += chunk) {
+          binary += String.fromCharCode(
+            ...bytes.subarray(i, Math.min(i + chunk, bytes.length))
+          )
+        }
+        return btoa(binary)
+      }
+
+      const rawPdf: Record<string, string> = {}
+      const docMap: Array<[keyof RawPDFText, File | null | undefined]> = [
+        ["paymentSheet", documents.paymentSheet],
+        ["arl", documents.arl],
+        ["contract", documents.contract],
+        ["contract2", documents.contract2],
+        ["paymentSheet2", documents.paymentSheet2],
+        ["activityReport", documents.activityReport],
+      ]
+      for (const [key, file] of docMap) {
+        if (file && isScanned(rawData[key])) {
+          rawPdf[key] = await fileToBase64(file)
+        }
       }
 
       // Step 2: AI structured extraction
@@ -388,6 +390,7 @@ export function Step2() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           rawText: rawData,
+          rawPdf,
           profiles: savedProfiles,
           paymentRequestPeriod: manualData?.paymentRequestPeriod,
           contractCount: manualData?.contractCount,

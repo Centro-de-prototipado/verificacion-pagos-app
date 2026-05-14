@@ -1,42 +1,36 @@
 /**
- * Regression harness for the keyword extractors.
+ * Regression harness for the LLM-based extractor.
  *
- * Walks `test-app/Casos/**`, identifies the PDF documents per case by filename
- * convention, extracts text and runs the keyword extractors. Reports a summary
- * grid so we can see at a glance which fields are extracted per case.
+ * Walks `test-app/Casos/**` and identifies the PDFs in each case folder by
+ * filename convention. For each case:
  *
- * Usage: npx tsx scripts/test-extractors.ts [filter]
- *   filter: optional substring; only cases whose path contains it are run.
+ *   - With `--with-llm` (default OFF): runs the full `/api/extract` pipeline
+ *     against the real models and compares the result to `expected.json`.
+ *   - Without `--with-llm` (default ON): only checks that text extraction
+ *     succeeds and that a present `expected.json` parses against the schema.
+ *
+ * Usage:
+ *   npx tsx scripts/test-extractors.ts [filter] [--with-llm]
  */
 
 import { readdir, readFile, writeFile } from "node:fs/promises"
 import { join, relative } from "node:path"
 import { extractText } from "unpdf"
 
-import {
-  extractPILACandidates,
-  extractARLCandidates,
-  extractARLExpeditionDate,
-  extractContractCandidates,
-  extractActivityReportCandidates,
-  detectIssuer,
-  joinSplitDates,
-} from "../lib/pdf/parsers/keyword-extractor"
-import {
-  checkPaymentSheet,
-  checkARL,
-  checkContract,
-} from "../lib/pdf/sanity-checks"
-import type {
-  ARLData,
-  ContractData,
-  PaymentSheetData,
-} from "../lib/types"
+import { extract } from "../lib/extraction/extract"
+import { joinSplitDates, isLikelyScanned } from "../lib/extraction/preprocess"
+import { ARLSchema } from "../lib/schemas/arl"
+import { ContractSchema } from "../lib/schemas/contract"
+import { PaymentSheetSchema } from "../lib/schemas/payment-sheet"
+import { ActivityReportSchema } from "../lib/schemas/activity-report"
 
 const ROOT = join(process.cwd(), "test-app", "Casos")
-const SCAN_THRESHOLD = 150
 
-// ─── Filesystem helpers ───────────────────────────────────────────────────────
+const args = process.argv.slice(2)
+const WITH_LLM = args.includes("--with-llm")
+const filter = args.find((a) => !a.startsWith("--"))?.toLowerCase()
+
+// ─── Filesystem walk ─────────────────────────────────────────────────────────
 
 async function* walk(dir: string): AsyncGenerator<string> {
   const entries = await readdir(dir, { withFileTypes: true })
@@ -47,8 +41,6 @@ async function* walk(dir: string): AsyncGenerator<string> {
   }
 }
 
-// ─── Case detection ──────────────────────────────────────────────────────────
-
 interface CaseFiles {
   caseDir: string
   planilla?: string
@@ -57,7 +49,6 @@ interface CaseFiles {
   activityReport?: string
 }
 
-/** Identify PDFs in a case folder by filename pattern. */
 async function findCaseFiles(caseDir: string): Promise<CaseFiles | null> {
   const entries = await readdir(caseDir, { withFileTypes: true })
   const pdfs = entries
@@ -72,14 +63,13 @@ async function findCaseFiles(caseDir: string): Promise<CaseFiles | null> {
     else if (lower.startsWith("arl") || lower.includes("_arl"))
       out.arl = join(caseDir, name)
     else if (lower.startsWith("informe")) out.activityReport = join(caseDir, name)
-    // OPS/OSE/OEF/etc orders are contract files
     else if (/^[0-9]+[_-](ops|ose|oef|csi|cps|cse|cca|cco|ocs)/i.test(name))
       out.contract = join(caseDir, name)
   }
   return out
 }
 
-// ─── Extraction ──────────────────────────────────────────────────────────────
+// ─── Text extraction ─────────────────────────────────────────────────────────
 
 async function extractPdfText(path: string): Promise<string> {
   const bytes = await readFile(path)
@@ -89,203 +79,159 @@ async function extractPdfText(path: string): Promise<string> {
   return joinSplitDates(text.join("\n\n"))
 }
 
+// ─── Expected.json comparison ────────────────────────────────────────────────
+
+interface ExpectedValues {
+  planilla?: Record<string, unknown>
+  arl?: Record<string, unknown>
+  contract?: Record<string, unknown>
+  activityReport?: Record<string, unknown>
+}
+
+function compareSection(
+  label: string,
+  actual: Record<string, unknown> | null | undefined,
+  expected: Record<string, unknown> | undefined
+): string[] {
+  if (!expected) return []
+  const mismatches: string[] = []
+  for (const key of Object.keys(expected)) {
+    const exp = expected[key]
+    const act = actual?.[key]
+    if (String(exp) !== String(act)) {
+      mismatches.push(`${label}.${key}: expected "${exp}" got "${act ?? ""}"`)
+    }
+  }
+  return mismatches
+}
+
+async function readExpected(
+  caseDir: string
+): Promise<ExpectedValues | null> {
+  try {
+    const raw = await readFile(join(caseDir, "expected.json"), "utf-8")
+    return JSON.parse(raw) as ExpectedValues
+  } catch {
+    return null
+  }
+}
+
+// ─── Per-case execution ──────────────────────────────────────────────────────
+
 interface CaseResult {
   case: string
-  planilla?: {
-    file: string
-    chars: number
-    issuer: string
-    extracted: Partial<PaymentSheetData>
-    sanity: string[]
-    blocked: boolean
-  }
-  arl?: {
-    file: string
-    chars: number
-    issuer: string
-    extracted: Partial<ARLData>
-    expeditionDate: string | null
-    sanity: string[]
-    blocked: boolean
-  }
-  contract?: {
-    file: string
-    chars: number
-    extracted: Partial<ContractData>
-    sanity: string[]
-    blocked: boolean
-  }
-  activityReport?: {
-    file: string
-    chars: number
-    blocked: boolean
-  }
+  status: "PASS" | "WARN" | "FAIL" | "BLOCK" | "SKIP"
+  mismatches: string[]
+  notes: string[]
 }
 
 async function runCase(files: CaseFiles): Promise<CaseResult> {
-  const result: CaseResult = {
-    case: relative(ROOT, files.caseDir).replace(/\\/g, "/"),
-  }
-
-  if (files.planilla) {
-    const text = await extractPdfText(files.planilla)
-    const chars = text.trim().length
-    const blocked = chars < SCAN_THRESHOLD
-    const cand = blocked ? {} : extractPILACandidates(text)
-    const sanity = blocked
-      ? ["PDF escaneado / sin texto"]
-      : checkPaymentSheet(cand as PaymentSheetData).warnings
-    result.planilla = {
-      file: files.planilla.split(/[/\\]/).pop()!,
-      chars,
-      issuer: blocked ? "n/a" : detectIssuer(text, "pila"),
-      extracted: cand as Partial<PaymentSheetData>,
-      sanity,
-      blocked,
-    }
-  }
-
-  if (files.arl) {
-    const text = await extractPdfText(files.arl)
-    const chars = text.trim().length
-    const blocked = chars < SCAN_THRESHOLD
-    const cand = blocked ? {} : extractARLCandidates(text)
-    const sanity = blocked
-      ? ["PDF escaneado / sin texto"]
-      : checkARL(cand as ARLData).warnings
-    result.arl = {
-      file: files.arl.split(/[/\\]/).pop()!,
-      chars,
-      issuer: blocked ? "n/a" : detectIssuer(text, "arl"),
-      extracted: cand as Partial<ARLData>,
-      expeditionDate: blocked ? null : extractARLExpeditionDate(text),
-      sanity,
-      blocked,
-    }
-  }
-
-  if (files.contract) {
-    const text = await extractPdfText(files.contract)
-    const chars = text.trim().length
-    const blocked = chars < SCAN_THRESHOLD
-    const cand = blocked ? {} : extractContractCandidates(text)
-    const sanity = blocked
-      ? ["PDF escaneado / sin texto"]
-      : checkContract(cand as ContractData).warnings
-    result.contract = {
-      file: files.contract.split(/[/\\]/).pop()!,
-      chars,
-      extracted: cand as Partial<ContractData>,
-      sanity,
-      blocked,
-    }
-  }
-
-  if (files.activityReport) {
-    const text = await extractPdfText(files.activityReport)
-    const chars = text.trim().length
-    const blocked = chars < SCAN_THRESHOLD
-    if (!blocked) extractActivityReportCandidates(text) // just exercise it
-    result.activityReport = {
-      file: files.activityReport.split(/[/\\]/).pop()!,
-      chars,
-      blocked,
-    }
-  }
-  return result
-}
-
-// ─── Reporting ───────────────────────────────────────────────────────────────
-
-function summarize(r: CaseResult): {
-  ok: number
-  warn: number
-  blocked: boolean
-  notes: string[]
-} {
-  let ok = 0
-  let warn = 0
-  let blocked = false
+  const caseLabel = relative(ROOT, files.caseDir).replace(/\\/g, "/")
   const notes: string[] = []
-  const docs = [
-    ["planilla", r.planilla],
-    ["arl", r.arl],
-    ["contract", r.contract],
-  ] as const
-  for (const [label, doc] of docs) {
-    if (!doc) continue
-    if (doc.blocked) {
-      blocked = true
-      notes.push(`${label}: bloqueado (${doc.chars} chars)`)
-      continue
-    }
-    if (doc.sanity.length === 0) ok++
-    else {
-      warn++
-      notes.push(`${label}: ${doc.sanity.length} warning(s)`)
-    }
-  }
-  return { ok, warn, blocked, notes }
-}
-
-// ─── Expected value comparison ───────────────────────────────────────────────
-
-interface ExpectedValues {
-  planilla?: Partial<PaymentSheetData>
-  arl?: Partial<ARLData>
-  contract?: Partial<ContractData>
-}
-
-/**
- * Compare actual extraction against expected.json (if present in case dir).
- * Returns list of mismatches per field. Only checks fields that the expected
- * file actually defines — missing fields are not validated.
- */
-async function compareWithExpected(
-  caseDir: string,
-  result: CaseResult
-): Promise<string[]> {
-  const expectedPath = join(caseDir, "expected.json")
-  let expected: ExpectedValues
-  try {
-    const raw = await readFile(expectedPath, "utf-8")
-    expected = JSON.parse(raw)
-  } catch {
-    return []
-  }
-
   const mismatches: string[] = []
-  const checkSection = <T extends Record<string, unknown>>(
-    label: string,
-    actual: Partial<T> | undefined,
-    exp: Partial<T> | undefined
-  ) => {
-    if (!exp) return
-    for (const key of Object.keys(exp)) {
-      const expVal = exp[key as keyof T]
-      const actVal = actual?.[key as keyof T]
-      if (String(expVal) !== String(actVal)) {
-        mismatches.push(
-          `${label}.${key}: expected "${expVal}" got "${actVal ?? ""}"`
-        )
+  const expected = await readExpected(files.caseDir)
+
+  if (!WITH_LLM) {
+    // Dry mode: only check that text is extractable.
+    for (const [label, path] of [
+      ["planilla", files.planilla],
+      ["arl", files.arl],
+      ["contract", files.contract],
+      ["activityReport", files.activityReport],
+    ] as const) {
+      if (!path) continue
+      const text = await extractPdfText(path)
+      if (isLikelyScanned(text)) {
+        notes.push(`${label}: PDF escaneado (${text.trim().length} chars)`)
       }
     }
+    return {
+      case: caseLabel,
+      status: notes.some((n) => n.includes("escaneado")) ? "BLOCK" : "PASS",
+      mismatches,
+      notes,
+    }
   }
-  checkSection("planilla", result.planilla?.extracted, expected.planilla)
-  checkSection("arl", result.arl?.extracted, expected.arl)
-  checkSection("contract", result.contract?.extracted, expected.contract)
-  return mismatches
+
+  // LLM mode: actually call the extractor.
+  const tasks: Array<Promise<void>> = []
+  const actual: Record<string, unknown> = {}
+
+  const runOne = async (
+    key: string,
+    path: string | undefined,
+    schema: Parameters<typeof extract>[0]["schema"],
+    docLabel: string
+  ) => {
+    if (!path) return
+    try {
+      const text = await extractPdfText(path)
+      const { data, scanned, validationError } = await extract({
+        text,
+        schema,
+        docLabel,
+      })
+      if (scanned) {
+        notes.push(`${key}: bloqueado (PDF escaneado)`)
+      } else if (!data) {
+        notes.push(`${key}: extracción inválida (${validationError ?? "?"})`)
+      } else {
+        actual[key] = data
+      }
+    } catch (err) {
+      notes.push(`${key}: error — ${err instanceof Error ? err.message : err}`)
+    }
+  }
+
+  tasks.push(runOne("planilla", files.planilla, PaymentSheetSchema, "Planilla PILA"))
+  tasks.push(runOne("arl", files.arl, ARLSchema, "Certificado ARL"))
+  tasks.push(runOne("contract", files.contract, ContractSchema, "Contrato"))
+  tasks.push(
+    runOne(
+      "activityReport",
+      files.activityReport,
+      ActivityReportSchema,
+      "Informe de actividades"
+    )
+  )
+  await Promise.all(tasks)
+
+  if (expected) {
+    mismatches.push(
+      ...compareSection("planilla", actual.planilla as Record<string, unknown>, expected.planilla),
+      ...compareSection("arl", actual.arl as Record<string, unknown>, expected.arl),
+      ...compareSection("contract", actual.contract as Record<string, unknown>, expected.contract),
+      ...compareSection(
+        "activityReport",
+        actual.activityReport as Record<string, unknown>,
+        expected.activityReport
+      )
+    )
+  }
+
+  let status: CaseResult["status"] = "PASS"
+  if (mismatches.length > 0) status = "FAIL"
+  else if (notes.some((n) => n.includes("inválida") || n.includes("error"))) status = "WARN"
+  else if (notes.some((n) => n.includes("escaneado"))) status = "BLOCK"
+
+  return { case: caseLabel, status, mismatches, notes }
 }
 
 // ─── Main ────────────────────────────────────────────────────────────────────
 
-async function main() {
-  const filter = process.argv[2]?.toLowerCase()
-  const cases: CaseFiles[] = []
+const COLORS: Record<CaseResult["status"], string> = {
+  PASS: "\x1b[32m",
+  WARN: "\x1b[33m",
+  FAIL: "\x1b[31;1m",
+  BLOCK: "\x1b[31m",
+  SKIP: "\x1b[90m",
+}
+const RESET = "\x1b[0m"
 
+async function main() {
+  const cases: CaseFiles[] = []
   for await (const path of walk(ROOT)) {
     if (!/\.pdf$/i.test(path)) continue
-    // Use parent dir of the PDF as case dir
     const caseDir = path.replace(/[/\\][^/\\]+$/, "")
     if (filter && !caseDir.toLowerCase().includes(filter)) continue
     if (!cases.some((c) => c.caseDir === caseDir)) {
@@ -294,43 +240,28 @@ async function main() {
     }
   }
 
-  console.log(`\nFound ${cases.length} case folder(s)\n`)
+  console.log(
+    `\nFound ${cases.length} case folder(s)  ${WITH_LLM ? "(LLM mode)" : "(dry mode — pass --with-llm to call models)"}\n`
+  )
 
-  const allResults: CaseResult[] = []
-  let totalBlocked = 0
-  let totalWarn = 0
-  let totalOk = 0
-  let totalMismatch = 0
+  const results: CaseResult[] = []
+  const counts: Record<CaseResult["status"], number> = {
+    PASS: 0,
+    WARN: 0,
+    FAIL: 0,
+    BLOCK: 0,
+    SKIP: 0,
+  }
 
   for (const c of cases) {
     try {
       const r = await runCase(c)
-      allResults.push(r)
-      const s = summarize(r)
-      const mismatches = await compareWithExpected(c.caseDir, r)
-      const tag = mismatches.length > 0
-        ? "FAIL "
-        : s.blocked
-          ? "BLOCK"
-          : s.warn > 0
-            ? "WARN "
-            : "PASS "
-      const colors: Record<string, string> = {
-        "FAIL ": "\x1b[31;1m",
-        "BLOCK": "\x1b[31m",
-        "WARN ": "\x1b[33m",
-        "PASS ": "\x1b[32m",
-      }
-      const reset = "\x1b[0m"
-      console.log(`${colors[tag]}${tag}${reset} ${r.case}`)
-      for (const m of mismatches) console.log(`        ✗ ${m}`)
-      if (s.notes.length) {
-        for (const note of s.notes) console.log(`        · ${note}`)
-      }
-      if (mismatches.length > 0) totalMismatch++
-      else if (s.blocked) totalBlocked++
-      else if (s.warn > 0) totalWarn++
-      else totalOk++
+      results.push(r)
+      counts[r.status]++
+      const color = COLORS[r.status]
+      console.log(`${color}${r.status.padEnd(5)}${RESET} ${r.case}`)
+      for (const m of r.mismatches) console.log(`        ✗ ${m}`)
+      for (const n of r.notes) console.log(`        · ${n}`)
     } catch (err) {
       console.error(`ERROR ${c.caseDir}:`, err)
     }
@@ -338,17 +269,16 @@ async function main() {
 
   console.log(
     `\n──────────────────────────────────────────────\n` +
-      `PASS:    ${totalOk}\n` +
-      `WARN:    ${totalWarn}\n` +
-      `BLOCKED: ${totalBlocked}\n` +
-      `FAIL:    ${totalMismatch}  (mismatch vs expected.json)\n` +
-      `TOTAL:   ${cases.length}\n`
+      `PASS:  ${counts.PASS}\n` +
+      `WARN:  ${counts.WARN}\n` +
+      `BLOCK: ${counts.BLOCK}\n` +
+      `FAIL:  ${counts.FAIL}\n` +
+      `TOTAL: ${cases.length}\n`
   )
 
-  // Persist full results for diffing across runs
   const outPath = join(process.cwd(), "test-app", "_actual.json")
-  await writeFile(outPath, JSON.stringify(allResults, null, 2), "utf-8")
-  console.log(`Full results written to ${relative(process.cwd(), outPath)}\n`)
+  await writeFile(outPath, JSON.stringify(results, null, 2), "utf-8")
+  console.log(`Results written to ${relative(process.cwd(), outPath)}\n`)
 }
 
 main().catch((err) => {

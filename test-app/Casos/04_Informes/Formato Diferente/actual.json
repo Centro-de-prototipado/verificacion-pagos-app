@@ -1,0 +1,88 @@
+{
+  "planilla": {
+    "sheetNumber": "36834658",
+    "paymentDate": "20/04/2026",
+    "paymentDeadline": "14/05/2026",
+    "period": "04/2026",
+    "totalAmountPaid": 508300,
+    "contractorName": "GAVIRIA SALAZAR ISABEL CRISTINA",
+    "documentNumber": "1130641851"
+  },
+  "arl": {
+    "startDate": null,
+    "endDate": null,
+    "coverageStatus": null,
+    "riskClass": null,
+    "cotizationRate": null,
+    "contractorName": null,
+    "documentNumber": null
+  },
+  "contract": {
+    "contractType": "OPS",
+    "orderNumber": "4",
+    "contractorName": "ISABEL CRISTINA GAVIRIA SALAZAR",
+    "documentType": "CC",
+    "documentNumber": "1130641851",
+    "totalValueBeforeTax": 49253600,
+    "startDate": "13/01/2026",
+    "endDate": "31/12/2026",
+    "activityReport": {
+      "required": true,
+      "frequencyMonths": 1
+    },
+    "specificObligations": [
+      "REALIZAR LA DEPURACIÓN DE DEUDA CON ENTIDADES PRIVADAS DE SEGURIDAD SOCIAL, SALUD, PENSIÓN, ARL Y PARAFISCALES DESDE EL AÑO 1995.",
+      "REALIZAR LA DEPURACIÓN DE DEUDA PRESUNTA CON COLPENSIONES DESDE EL AÑO 1995.",
+      "REALIZAR INFORME UGPP MENSUAL.",
+      "REALIZAR LA REVISIÓN HISTORIAS LABORALES DE PRE-PENSIONADOS.",
+      "REALIZAR INDICADOR DE DEUDA PRESUNTA, INDICADOR DE RECUPERACIÓN DE INCAPACIDADES, INDICADOR REVISIÓN HISTORIAS LABORALES, EN FORMA MENSUAL.",
+      "REALIZAR LA REVISIÓN DE AFILIACIONES Y TRASLADOS EN SEGURIDAD SOCIAL.",
+      "REALIZAR LA REVISIÓN DE CERTIFICACIÓN CONDUCENTE A BONO PENSIONAL.",
+      "REALIZAR LA REVISIÓN DE CERTIFICACIÓN DE IBC SECCIÓN SALARIAL Y PRESTACIONAL.",
+      "CONSOLIDAR EL PROCESO DE ORGANIZACIÓN Y FOLIACIÓN ARCHIVO CORRESPONDIENTE A CADA VIGENCIA.",
+      "COLABORAR EN EL PROCESO DE REVISIÓN DE INFORMACIÓN PARA DAR RESPUESTA A ENTIDADES INTERNAS Y EXTERNAS.",
+      "REVISIÓN DE RESOLUCIÓN DE LIQUIDACIÓN DEFINITIVA DE PRESTACIONES SOCIALES POR RETIRO DE DOCENTES OCASIONALES.",
+      "IMPRESIÓN Y ENVÍO A DIRECCIÓN DE PERSONAL DE RESOLUCIONES DE LIQUIDACIÓN DEFINITIVA TANTO DE PERSONAL DE PLANTA COMO DE DOCENTES OCASIONALES.",
+      "REALIZAR REVISIÓN DEL PROCESO DE ENTIDADES DE SEGURIDAD DE FUNCIONARIOS DE PLANTA Y DE DOCENTES OCASIONALES.",
+      "REALIZAR PERMANENTEMENTE BACKUP EN DISCO ALTERNO DE LOS DOCUMENTOS DE LA SECCIÓN Y LOS CUALES REPOSAN EN EL DRIVE DE LA DEPENDENCIA.",
+      "ENTREGAR INFORME FINAL DE ACTIVIDADES."
+    ]
+  },
+  "activityReport": {
+    "items": [
+      {
+        "activityDescription": "Informe ugpp mensual mes de marzo de 2026, sucursales 004-026-104-87-094 (hojas de trabajo - validacion ralas)",
+        "periodPercentage": 0,
+        "accumulatedPercentage": 0
+      },
+      {
+        "activityDescription": "Solicitud y descarga de estados de cuenta entidades seguridad social",
+        "periodPercentage": 0,
+        "accumulatedPercentage": 0
+      },
+      {
+        "activityDescription": "Colaboración en el proceso de informacion para dar respuesta a entidades externas: *Informe de Vigilancia vigencia 2025",
+        "periodPercentage": 0,
+        "accumulatedPercentage": 0
+      },
+      {
+        "activityDescription": "Apoyo a los procesos de la sección salarial y prestacional.",
+        "periodPercentage": 0,
+        "accumulatedPercentage": 0
+      },
+      {
+        "activityDescription": "Backup permanente en disco alterno de documentos de la sección salarial.",
+        "periodPercentage": 0,
+        "accumulatedPercentage": 0
+      }
+    ],
+    "signatureDate": "20/04/2026",
+    "periodFrom": null,
+    "periodTo": null,
+    "opsStartDate": "13/01/2026",
+    "opsEndDate": "31/12/2026",
+    "contractorName": "ISABEL CRISTINA GAVIRIA SALAZAR",
+    "documentNumber": "1130641851",
+    "isSigned": true
+  }
+}

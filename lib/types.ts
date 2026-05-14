@@ -122,7 +122,7 @@ export interface PaymentSheetData {
 export interface ARLData {
   startDate: string
   endDate: string
-  coverageStatus: "ACTIVA" | "INACTIVA" | "SUSPENDIDA"
+  coverageStatus: "ACTIVA" | "INACTIVA" | "SUSPENDIDA" | "MORA"
   riskClass: RiskClass
   /** ARL cotization rate as percentage, e.g. 1.044 means 1.044% */
   cotizationRate: number

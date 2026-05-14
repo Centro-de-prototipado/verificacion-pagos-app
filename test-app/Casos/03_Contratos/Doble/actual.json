@@ -1,0 +1,42 @@
+{
+  "planilla": {
+    "sheetNumber": "72854914",
+    "paymentDate": "06/04/2026",
+    "paymentDeadline": null,
+    "period": "03/2026",
+    "totalAmountPaid": 712200,
+    "contractorName": "CRISTIAN CAMILO RODRIGUEZ HERNANDEZ",
+    "documentNumber": "1053853390"
+  },
+  "arl": {
+    "startDate": "02/03/2026",
+    "endDate": "30/05/2026",
+    "coverageStatus": "ACTIVA",
+    "riskClass": "I",
+    "cotizationRate": 0.522,
+    "contractorName": "CRISTIAN CAMILO RODRIGUEZ HERNANDEZ",
+    "documentNumber": "1053853390"
+  },
+  "contract": {
+    "contractType": "OSE",
+    "orderNumber": "8",
+    "contractorName": "RODRIGUEZ HERNANDEZ CRISTIAN CAMILO",
+    "documentType": "CC",
+    "documentNumber": "1053853390",
+    "totalValueBeforeTax": 6000000,
+    "startDate": "02/03/2026",
+    "endDate": "30/05/2026",
+    "activityReport": {
+      "required": true,
+      "frequencyMonths": null
+    },
+    "specificObligations": [
+      "REALIZAR LA ESTRATEGIA DE COMUNICACIÓN Y DIVULGACIÓN DEL PROYECTO.",
+      "DISEÑAR LAS PIEZAS GRÁFICAS PARA LA SOCIALIZACIÓN DEL PROYECTO EN SU ETAPA INICIAL.",
+      "COORDINAR LA DIFUSIÓN DE ACTIVIDADES DEL PROYECTO EN MEDIOS INTERNOS DE LA UNIVERSIDAD Y LA GESTIÓN DE REDES SOCIALES.",
+      "REALIZAR EL ACOMPAÑAMIENTO Y CUBRIMIENTO EN SALIDAS EXTERNAS PARA GENERAR REGISTROS AUDIOVISUALES Y FOTOGRÁFICOS.",
+      "ENTREGAR INFORME FINAL DE ACTIVIDADES"
+    ]
+  },
+  "activityReport": null
+}

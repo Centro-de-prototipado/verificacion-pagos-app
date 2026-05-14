@@ -53,8 +53,8 @@ export function validarGavelaARL(
   contractStart: string,
   contractEnd: string
 ): ValidationResult {
-  const arlStart = parseISO(arl.startDate)
-  const arlEnd = parseISO(arl.endDate)
+  const arlStart = parseDDMMYYYY(arl.startDate)
+  const arlEnd = parseDDMMYYYY(arl.endDate)
   const contStart = parseISO(contractStart)
   const contEnd = parseISO(contractEnd)
 

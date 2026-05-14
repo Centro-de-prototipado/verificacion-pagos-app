@@ -10,7 +10,8 @@
     "lint": "eslint",
     "format": "prettier --write \"**/*.{ts,tsx}\"",
     "typecheck": "tsc --noEmit",
-    "test:extractors": "tsx scripts/test-extractors.ts"
+    "test:extractors": "npx tsx --env-file=.env.local scripts/test-extractors.ts",
+    "test:case": "npx tsx --env-file=.env.local scripts/run-case.ts"
   },
   "dependencies": {
     "@ai-sdk/mistral": "^3.0.30",

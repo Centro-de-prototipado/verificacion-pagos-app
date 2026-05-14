@@ -110,7 +110,7 @@
       "source_file": "eslint.config.mjs",
       "source_location": "L1",
       "id": "eslint_config_mjs",
-      "community": 21,
+      "community": 24,
       "norm_label": "eslint.config.mjs"
     },
     {
@@ -119,7 +119,7 @@
       "source_file": "eslint.config.mjs",
       "source_location": "L10",
       "id": "verificacion_pagos_app_eslint_config_eslintconfig",
-      "community": 21,
+      "community": 24,
       "norm_label": "eslintconfig"
     },
     {
@@ -128,7 +128,7 @@
       "source_file": "next-env.d.ts",
       "source_location": "L1",
       "id": "next_env_d_ts",
-      "community": 27,
+      "community": 30,
       "norm_label": "next-env.d.ts"
     },
     {
@@ -137,7 +137,7 @@
       "source_file": "next.config.mjs",
       "source_location": "L1",
       "id": "next_config_mjs",
-      "community": 22,
+      "community": 25,
       "norm_label": "next.config.mjs"
     },
     {
@@ -146,7 +146,7 @@
       "source_file": "next.config.mjs",
       "source_location": "L2",
       "id": "verificacion_pagos_app_next_config_nextconfig",
-      "community": 22,
+      "community": 25,
       "norm_label": "nextconfig"
     },
     {
@@ -155,7 +155,7 @@
       "source_file": "postcss.config.mjs",
       "source_location": "L1",
       "id": "postcss_config_mjs",
-      "community": 23,
+      "community": 26,
       "norm_label": "postcss.config.mjs"
     },
     {
@@ -164,7 +164,7 @@
       "source_file": "postcss.config.mjs",
       "source_location": "L2",
       "id": "verificacion_pagos_app_postcss_config_config",
-      "community": 23,
+      "community": 26,
       "norm_label": "config"
     },
     {
@@ -173,7 +173,7 @@
       "source_file": "app/layout.tsx",
       "source_location": "L1",
       "id": "app_layout_tsx",
-      "community": 16,
+      "community": 10,
       "norm_label": "layout.tsx"
     },
     {
@@ -182,7 +182,7 @@
       "source_file": "app/layout.tsx",
       "source_location": "L8",
       "id": "app_layout_ancizarfont",
-      "community": 16,
+      "community": 10,
       "norm_label": "ancizarfont"
     },
     {
@@ -191,7 +191,7 @@
       "source_file": "app/layout.tsx",
       "source_location": "L19",
       "id": "app_layout_rootlayout",
-      "community": 16,
+      "community": 10,
       "norm_label": "rootlayout()"
     },
     {
@@ -200,7 +200,7 @@
       "source_file": "app/page.tsx",
       "source_location": "L1",
       "id": "app_page_tsx",
-      "community": 14,
+      "community": 17,
       "norm_label": "page.tsx"
     },
     {
@@ -209,7 +209,7 @@
       "source_file": "app/page.tsx",
       "source_location": "L18",
       "id": "app_page_process_steps",
-      "community": 14,
+      "community": 17,
       "norm_label": "process_steps"
     },
     {
@@ -225,7 +225,7 @@
       "label": "ExtractionStreamEvent",
       "file_type": "code",
       "source_file": "app/api/extract/route.ts",
-      "source_location": "L41",
+      "source_location": "L52",
       "id": "extract_route_extractionstreamevent",
       "community": 1,
       "norm_label": "extractionstreamevent"
@@ -234,7 +234,7 @@
       "label": "ProfileHint",
       "file_type": "code",
       "source_file": "app/api/extract/route.ts",
-      "source_location": "L56",
+      "source_location": "L67",
       "id": "extract_route_profilehint",
       "community": 1,
       "norm_label": "profilehint"
@@ -243,7 +243,7 @@
       "label": "ProfileHintSchema",
       "file_type": "code",
       "source_file": "app/api/extract/route.ts",
-      "source_location": "L62",
+      "source_location": "L73",
       "id": "extract_route_profilehintschema",
       "community": 1,
       "norm_label": "profilehintschema"
@@ -252,7 +252,7 @@
       "label": "ExtractRequestSchema",
       "file_type": "code",
       "source_file": "app/api/extract/route.ts",
-      "source_location": "L68",
+      "source_location": "L79",
       "id": "extract_route_extractrequestschema",
       "community": 1,
       "norm_label": "extractrequestschema"
@@ -261,7 +261,7 @@
       "label": "parseRequest()",
       "file_type": "code",
       "source_file": "app/api/extract/route.ts",
-      "source_location": "L86",
+      "source_location": "L97",
       "id": "extract_route_parserequest",
       "community": 1,
       "norm_label": "parserequest()"
@@ -270,7 +270,7 @@
       "label": "findProfile()",
       "file_type": "code",
       "source_file": "app/api/extract/route.ts",
-      "source_location": "L97",
+      "source_location": "L108",
       "id": "extract_route_findprofile",
       "community": 1,
       "norm_label": "findprofile()"
@@ -279,9 +279,9 @@
       "label": "POST()",
       "file_type": "code",
       "source_file": "app/api/extract/route.ts",
-      "source_location": "L108",
+      "source_location": "L119",
       "id": "extract_route_post",
-      "community": 5,
+      "community": 6,
       "norm_label": "post()"
     },
     {
@@ -290,7 +290,7 @@
       "source_file": "app/api/extract-text/route.ts",
       "source_location": "L1",
       "id": "app_api_extract_text_route_ts",
-      "community": 5,
+      "community": 6,
       "norm_label": "route.ts"
     },
     {
@@ -299,7 +299,7 @@
       "source_file": "app/api/extract-text/route.ts",
       "source_location": "L15",
       "id": "extract_text_route_pdf_keys",
-      "community": 5,
+      "community": 6,
       "norm_label": "pdf_keys"
     },
     {
@@ -308,7 +308,7 @@
       "source_file": "app/api/extract-text/route.ts",
       "source_location": "L22",
       "id": "extract_text_route_pdfkey",
-      "community": 5,
+      "community": 6,
       "norm_label": "pdfkey"
     },
     {
@@ -317,7 +317,7 @@
       "source_file": "app/api/extract-text/route.ts",
       "source_location": "L29",
       "id": "extract_text_route_post",
-      "community": 5,
+      "community": 6,
       "norm_label": "post()"
     },
     {
@@ -326,7 +326,7 @@
       "source_file": "app/api/generar-pdf/route.ts",
       "source_location": "L1",
       "id": "app_api_generar_pdf_route_ts",
-      "community": 5,
+      "community": 0,
       "norm_label": "route.ts"
     },
     {
@@ -335,7 +335,7 @@
       "source_file": "app/api/generar-pdf/route.ts",
       "source_location": "L38",
       "id": "generar_pdf_route_extracteddataschema",
-      "community": 5,
+      "community": 0,
       "norm_label": "extracteddataschema"
     },
     {
@@ -344,7 +344,7 @@
       "source_file": "app/api/generar-pdf/route.ts",
       "source_location": "L51",
       "id": "generar_pdf_route_post",
-      "community": 5,
+      "community": 6,
       "norm_label": "post()"
     },
     {
@@ -353,7 +353,7 @@
       "source_file": "app/verificar/page.tsx",
       "source_location": "L1",
       "id": "app_verificar_page_tsx",
-      "community": 0,
+      "community": 18,
       "norm_label": "page.tsx"
     },
     {
@@ -362,7 +362,7 @@
       "source_file": "app/verificar/page.tsx",
       "source_location": "L22",
       "id": "verificar_page_step_setstep_reset",
-      "community": 0,
+      "community": 18,
       "norm_label": "{ step, setstep, reset }"
     },
     {
@@ -371,7 +371,7 @@
       "source_file": "app/verificar/page.tsx",
       "source_location": "L24",
       "id": "verificar_page_handleback",
-      "community": 0,
+      "community": 18,
       "norm_label": "handleback"
     },
     {
@@ -380,7 +380,7 @@
       "source_file": "components/ui/alert.tsx",
       "source_location": "L1",
       "id": "components_ui_alert_tsx",
-      "community": 13,
+      "community": 14,
       "norm_label": "alert.tsx"
     },
     {
@@ -389,7 +389,7 @@
       "source_file": "components/ui/alert.tsx",
       "source_location": "L6",
       "id": "ui_alert_alertvariants",
-      "community": 13,
+      "community": 14,
       "norm_label": "alertvariants"
     },
     {
@@ -398,7 +398,7 @@
       "source_file": "components/ui/alert.tsx",
       "source_location": "L22",
       "id": "ui_alert_alert",
-      "community": 13,
+      "community": 14,
       "norm_label": "alert()"
     },
     {
@@ -407,7 +407,7 @@
       "source_file": "components/ui/alert.tsx",
       "source_location": "L41",
       "id": "ui_alert_cn",
-      "community": 13,
+      "community": 14,
       "norm_label": "cn()"
     },
     {
@@ -416,7 +416,7 @@
       "source_file": "components/ui/button.tsx",
       "source_location": "L1",
       "id": "components_ui_button_tsx",
-      "community": 20,
+      "community": 16,
       "norm_label": "button.tsx"
     },
     {
@@ -425,7 +425,7 @@
       "source_file": "components/ui/button.tsx",
       "source_location": "L7",
       "id": "ui_button_buttonvariants",
-      "community": 20,
+      "community": 16,
       "norm_label": "buttonvariants"
     },
     {
@@ -434,7 +434,7 @@
       "source_file": "components/ui/button.tsx",
       "source_location": "L61",
       "id": "ui_button_cn",
-      "community": 20,
+      "community": 16,
       "norm_label": "cn()"
     },
     {
@@ -470,7 +470,7 @@
       "source_file": "components/ui/field.tsx",
       "source_location": "L1",
       "id": "components_ui_field_tsx",
-      "community": 14,
+      "community": 17,
       "norm_label": "field.tsx"
     },
     {
@@ -479,7 +479,7 @@
       "source_file": "components/ui/field.tsx",
       "source_location": "L14",
       "id": "ui_field_cn",
-      "community": 14,
+      "community": 17,
       "norm_label": "cn()"
     },
     {
@@ -488,7 +488,7 @@
       "source_file": "components/ui/field.tsx",
       "source_location": "L193",
       "id": "ui_field_uniqueerrors",
-      "community": 14,
+      "community": 17,
       "norm_label": "uniqueerrors"
     },
     {
@@ -506,7 +506,7 @@
       "source_file": "components/ui/label.tsx",
       "source_location": "L1",
       "id": "components_ui_label_tsx",
-      "community": 14,
+      "community": 17,
       "norm_label": "label.tsx"
     },
     {
@@ -515,7 +515,7 @@
       "source_file": "components/ui/label.tsx",
       "source_location": "L8",
       "id": "ui_label_label",
-      "community": 14,
+      "community": 17,
       "norm_label": "label()"
     },
     {
@@ -524,7 +524,7 @@
       "source_file": "components/ui/logo.tsx",
       "source_location": "L1",
       "id": "components_ui_logo_tsx",
-      "community": 16,
+      "community": 10,
       "norm_label": "logo.tsx"
     },
     {
@@ -533,7 +533,7 @@
       "source_file": "components/ui/logo.tsx",
       "source_location": "L3",
       "id": "ui_logo_centrologoprops",
-      "community": 16,
+      "community": 10,
       "norm_label": "centrologoprops"
     },
     {
@@ -605,7 +605,7 @@
       "source_file": "components/ui/separator.tsx",
       "source_location": "L1",
       "id": "components_ui_separator_tsx",
-      "community": 14,
+      "community": 17,
       "norm_label": "separator.tsx"
     },
     {
@@ -614,7 +614,7 @@
       "source_file": "components/ui/separator.tsx",
       "source_location": "L8",
       "id": "ui_separator_separator",
-      "community": 14,
+      "community": 17,
       "norm_label": "separator()"
     },
     {
@@ -623,7 +623,7 @@
       "source_file": "components/ui/sonner.tsx",
       "source_location": "L1",
       "id": "components_ui_sonner_tsx",
-      "community": 16,
+      "community": 10,
       "norm_label": "sonner.tsx"
     },
     {
@@ -632,7 +632,7 @@
       "source_file": "components/ui/sonner.tsx",
       "source_location": "L14",
       "id": "ui_sonner_theme_system",
-      "community": 16,
+      "community": 10,
       "norm_label": "{ theme = \"system\" }"
     },
     {
@@ -677,7 +677,7 @@
       "source_file": "components/upload/document-dropzone.tsx",
       "source_location": "L1",
       "id": "components_upload_document_dropzone_tsx",
-      "community": 0,
+      "community": 16,
       "norm_label": "document-dropzone.tsx"
     },
     {
@@ -686,7 +686,7 @@
       "source_file": "components/upload/document-dropzone.tsx",
       "source_location": "L13",
       "id": "upload_document_dropzone_documentdropzoneprops",
-      "community": 0,
+      "community": 16,
       "norm_label": "documentdropzoneprops"
     },
     {
@@ -695,7 +695,7 @@
       "source_file": "components/upload/document-dropzone.tsx",
       "source_location": "L38",
       "id": "upload_document_dropzone_inputref",
-      "community": 0,
+      "community": 16,
       "norm_label": "inputref"
     },
     {
@@ -704,7 +704,7 @@
       "source_file": "components/upload/document-dropzone.tsx",
       "source_location": "L39",
       "id": "upload_document_dropzone_isdragging_setisdragging",
-      "community": 0,
+      "community": 16,
       "norm_label": "[isdragging, setisdragging]"
     },
     {
@@ -713,7 +713,7 @@
       "source_file": "components/upload/document-dropzone.tsx",
       "source_location": "L41",
       "id": "upload_document_dropzone_processfile",
-      "community": 0,
+      "community": 16,
       "norm_label": "processfile()"
     },
     {
@@ -722,7 +722,7 @@
       "source_file": "components/upload/document-dropzone.tsx",
       "source_location": "L115",
       "id": "upload_document_dropzone_handledrop",
-      "community": 0,
+      "community": 16,
       "norm_label": "handledrop()"
     },
     {
@@ -731,7 +731,7 @@
       "source_file": "components/upload/document-dropzone.tsx",
       "source_location": "L122",
       "id": "upload_document_dropzone_handleinputchange",
-      "community": 0,
+      "community": 16,
       "norm_label": "handleinputchange()"
     },
     {
@@ -740,7 +740,7 @@
       "source_file": "components/upload/document-dropzone.tsx",
       "source_location": "L128",
       "id": "upload_document_dropzone_handlekeydown",
-      "community": 0,
+      "community": 16,
       "norm_label": "handlekeydown()"
     },
     {
@@ -749,7 +749,7 @@
       "source_file": "components/upload/manual-form.tsx",
       "source_location": "L1",
       "id": "components_upload_manual_form_tsx",
-      "community": 0,
+      "community": 5,
       "norm_label": "manual-form.tsx"
     },
     {
@@ -758,7 +758,7 @@
       "source_file": "components/upload/manual-form.tsx",
       "source_location": "L26",
       "id": "upload_manual_form_cop",
-      "community": 0,
+      "community": 5,
       "norm_label": "cop"
     },
     {
@@ -767,7 +767,7 @@
       "source_file": "components/upload/manual-form.tsx",
       "source_location": "L29",
       "id": "upload_manual_form_currencyinput",
-      "community": 0,
+      "community": 5,
       "norm_label": "currencyinput()"
     },
     {
@@ -776,7 +776,7 @@
       "source_file": "components/upload/manual-form.tsx",
       "source_location": "L59",
       "id": "upload_manual_form_raw",
-      "community": 0,
+      "community": 5,
       "norm_label": "raw"
     },
     {
@@ -785,7 +785,7 @@
       "source_file": "components/upload/manual-form.tsx",
       "source_location": "L77",
       "id": "upload_manual_form_val",
-      "community": 0,
+      "community": 5,
       "norm_label": "val"
     },
     {
@@ -794,7 +794,7 @@
       "source_file": "components/upload/manual-form.tsx",
       "source_location": "L84",
       "id": "upload_manual_form_yesnotoggle",
-      "community": 0,
+      "community": 5,
       "norm_label": "yesnotoggle()"
     },
     {
@@ -803,7 +803,7 @@
       "source_file": "components/upload/manual-form.tsx",
       "source_location": "L123",
       "id": "upload_manual_form_manualformprops",
-      "community": 0,
+      "community": 5,
       "norm_label": "manualformprops"
     },
     {
@@ -812,7 +812,7 @@
       "source_file": "components/upload/manual-form.tsx",
       "source_location": "L135",
       "id": "upload_manual_form_form",
-      "community": 0,
+      "community": 5,
       "norm_label": "form"
     },
     {
@@ -821,7 +821,7 @@
       "source_file": "components/upload/manual-form.tsx",
       "source_location": "L165",
       "id": "upload_manual_form_contractcount",
-      "community": 0,
+      "community": 5,
       "norm_label": "contractcount"
     },
     {
@@ -830,7 +830,7 @@
       "source_file": "components/upload/manual-form.tsx",
       "source_location": "L166",
       "id": "upload_manual_form_setdocuments_documents_extracteddata",
-      "community": 0,
+      "community": 5,
       "norm_label": "{ setdocuments, documents, extracteddata }"
     },
     {
@@ -839,7 +839,7 @@
       "source_file": "components/upload/manual-form.tsx",
       "source_location": "L169",
       "id": "upload_manual_form_canselectfinal",
-      "community": 0,
+      "community": 5,
       "norm_label": "canselectfinal"
     },
     {
@@ -848,7 +848,7 @@
       "source_file": "components/upload/manual-form.tsx",
       "source_location": "L686",
       "id": "upload_manual_form_bytes",
-      "community": 0,
+      "community": 5,
       "norm_label": "bytes"
     },
     {
@@ -857,7 +857,7 @@
       "source_file": "components/upload/manual-form.tsx",
       "source_location": "L697",
       "id": "upload_manual_form_content",
-      "community": 0,
+      "community": 5,
       "norm_label": "content"
     },
     {
@@ -866,7 +866,7 @@
       "source_file": "components/upload/second-contract.tsx",
       "source_location": "L1",
       "id": "components_upload_second_contract_tsx",
-      "community": 0,
+      "community": 5,
       "norm_label": "second-contract.tsx"
     },
     {
@@ -875,7 +875,7 @@
       "source_file": "components/upload/second-contract.tsx",
       "source_location": "L6",
       "id": "upload_second_contract_secondcontract",
-      "community": 0,
+      "community": 5,
       "norm_label": "secondcontract()"
     },
     {
@@ -884,7 +884,7 @@
       "source_file": "components/wizard/doc-check-item.tsx",
       "source_location": "L1",
       "id": "components_wizard_doc_check_item_tsx",
-      "community": 0,
+      "community": 5,
       "norm_label": "doc-check-item.tsx"
     },
     {
@@ -893,7 +893,7 @@
       "source_file": "components/wizard/doc-check-item.tsx",
       "source_location": "L3",
       "id": "wizard_doc_check_item_doccheckitemprops",
-      "community": 0,
+      "community": 5,
       "norm_label": "doccheckitemprops"
     },
     {
@@ -902,62 +902,71 @@
       "source_file": "components/wizard/extraction-editors.tsx",
       "source_location": "L1",
       "id": "components_wizard_extraction_editors_tsx",
-      "community": 6,
+      "community": 13,
       "norm_label": "extraction-editors.tsx"
     },
     {
       "label": "CONFIDENCE_CONFIG",
       "file_type": "code",
       "source_file": "components/wizard/extraction-editors.tsx",
-      "source_location": "L21",
+      "source_location": "L20",
       "id": "wizard_extraction_editors_confidence_config",
-      "community": 6,
+      "community": 13,
       "norm_label": "confidence_config"
     },
     {
       "label": "ConfidenceDot()",
       "file_type": "code",
       "source_file": "components/wizard/extraction-editors.tsx",
-      "source_location": "L36",
+      "source_location": "L35",
       "id": "wizard_extraction_editors_confidencedot",
-      "community": 6,
+      "community": 13,
       "norm_label": "confidencedot()"
     },
     {
-      "label": "[focused, setFocused]",
+      "label": "[text, setText]",
       "file_type": "code",
       "source_file": "components/wizard/extraction-editors.tsx",
-      "source_location": "L164",
-      "id": "wizard_extraction_editors_focused_setfocused",
-      "community": 6,
-      "norm_label": "[focused, setfocused]"
+      "source_location": "L153",
+      "id": "wizard_extraction_editors_text_settext",
+      "community": 13,
+      "norm_label": "[text, settext]"
+    },
+    {
+      "label": "handleChange()",
+      "file_type": "code",
+      "source_file": "components/wizard/extraction-editors.tsx",
+      "source_location": "L160",
+      "id": "wizard_extraction_editors_handlechange",
+      "community": 13,
+      "norm_label": "handlechange()"
+    },
+    {
+      "label": "handleBlur()",
+      "file_type": "code",
+      "source_file": "components/wizard/extraction-editors.tsx",
+      "source_location": "L167",
+      "id": "wizard_extraction_editors_handleblur",
+      "community": 13,
+      "norm_label": "handleblur()"
     },
     {
       "label": "empty",
       "file_type": "code",
       "source_file": "components/wizard/extraction-editors.tsx",
-      "source_location": "L258",
+      "source_location": "L352",
       "id": "wizard_extraction_editors_empty",
-      "community": 6,
+      "community": 13,
       "norm_label": "empty"
     },
     {
       "label": "set()",
       "file_type": "code",
       "source_file": "components/wizard/extraction-editors.tsx",
-      "source_location": "L268",
+      "source_location": "L362",
       "id": "wizard_extraction_editors_set",
-      "community": 6,
+      "community": 13,
       "norm_label": "set()"
-    },
-    {
-      "label": "newItems",
-      "file_type": "code",
-      "source_file": "components/wizard/extraction-editors.tsx",
-      "source_location": "L627",
-      "id": "wizard_extraction_editors_newitems",
-      "community": 6,
-      "norm_label": "newitems"
     },
     {
       "label": "section-header.tsx",
@@ -983,7 +992,7 @@
       "source_file": "components/wizard/step-1.tsx",
       "source_location": "L1",
       "id": "components_wizard_step_1_tsx",
-      "community": 0,
+      "community": 5,
       "norm_label": "step-1.tsx"
     },
     {
@@ -992,7 +1001,7 @@
       "source_file": "components/wizard/step-1.tsx",
       "source_location": "L19",
       "id": "wizard_step_1_required_documents",
-      "community": 0,
+      "community": 5,
       "norm_label": "required_documents"
     },
     {
@@ -1001,7 +1010,7 @@
       "source_file": "components/wizard/step-1.tsx",
       "source_location": "L51",
       "id": "wizard_step_1_documents_setdocuments_manualdata_setmanualdata_setstep",
-      "community": 0,
+      "community": 5,
       "norm_label": "{ documents, setdocuments, manualdata, setmanualdata, setstep }"
     },
     {
@@ -1010,7 +1019,7 @@
       "source_file": "components/wizard/step-1.tsx",
       "source_location": "L54",
       "id": "wizard_step_1_contractcount_setcontractcount",
-      "community": 0,
+      "community": 5,
       "norm_label": "[contractcount, setcontractcount]"
     },
     {
@@ -1019,7 +1028,7 @@
       "source_file": "components/wizard/step-1.tsx",
       "source_location": "L57",
       "id": "wizard_step_1_involvedcontracts_setinvolvedcontracts",
-      "community": 0,
+      "community": 5,
       "norm_label": "[involvedcontracts, setinvolvedcontracts]"
     },
     {
@@ -1028,7 +1037,7 @@
       "source_file": "components/wizard/step-1.tsx",
       "source_location": "L61",
       "id": "wizard_step_1_uploadstatus",
-      "community": 0,
+      "community": 5,
       "norm_label": "uploadstatus"
     },
     {
@@ -1037,7 +1046,7 @@
       "source_file": "components/wizard/step-1.tsx",
       "source_location": "L85",
       "id": "wizard_step_1_handleformsubmit",
-      "community": 0,
+      "community": 5,
       "norm_label": "handleformsubmit()"
     },
     {
@@ -1046,295 +1055,313 @@
       "source_file": "components/wizard/step-2.tsx",
       "source_location": "L1",
       "id": "components_wizard_step_2_tsx",
-      "community": 4,
+      "community": 3,
       "norm_label": "step-2.tsx"
     },
     {
       "label": "ExtractionStatus",
       "file_type": "code",
       "source_file": "components/wizard/step-2.tsx",
-      "source_location": "L49",
+      "source_location": "L50",
       "id": "wizard_step_2_extractionstatus",
-      "community": 4,
+      "community": 3,
       "norm_label": "extractionstatus"
     },
     {
       "label": "validateExtractedData()",
       "file_type": "code",
       "source_file": "components/wizard/step-2.tsx",
-      "source_location": "L57",
+      "source_location": "L58",
       "id": "wizard_step_2_validateextracteddata",
-      "community": 4,
+      "community": 11,
       "norm_label": "validateextracteddata()"
     },
     {
-      "label": "{\r\n    documents,\r\n    extractedData,\r\n    setExtractedData,\r\n    setRawText,\r\n    manualData,\r\n    setStep,\r\n  }",
+      "label": "{\r\n    documents,\r\n    extractedData,\r\n    setExtractedData,\r\n    setRawText,\r\n    manualData,\r\n    setManualData,\r\n    setStep,\r\n  }",
       "file_type": "code",
       "source_file": "components/wizard/step-2.tsx",
-      "source_location": "L154",
-      "id": "wizard_step_2_documents_extracteddata_setextracteddata_setrawtext_manualdata_setstep",
-      "community": 4,
-      "norm_label": "{\r\n    documents,\r\n    extracteddata,\r\n    setextracteddata,\r\n    setrawtext,\r\n    manualdata,\r\n    setstep,\r\n  }"
+      "source_location": "L162",
+      "id": "wizard_step_2_documents_extracteddata_setextracteddata_setrawtext_manualdata_setmanualdata_setstep",
+      "community": 3,
+      "norm_label": "{\r\n    documents,\r\n    extracteddata,\r\n    setextracteddata,\r\n    setrawtext,\r\n    manualdata,\r\n    setmanualdata,\r\n    setstep,\r\n  }"
     },
     {
       "label": "[status, setStatus]",
       "file_type": "code",
       "source_file": "components/wizard/step-2.tsx",
-      "source_location": "L163",
+      "source_location": "L172",
       "id": "wizard_step_2_status_setstatus",
-      "community": 4,
+      "community": 3,
       "norm_label": "[status, setstatus]"
     },
     {
       "label": "[errorMessage, setErrorMessage]",
       "file_type": "code",
       "source_file": "components/wizard/step-2.tsx",
-      "source_location": "L164",
+      "source_location": "L173",
       "id": "wizard_step_2_errormessage_seterrormessage",
-      "community": 4,
+      "community": 3,
       "norm_label": "[errormessage, seterrormessage]"
     },
     {
       "label": "[confirmErrors, setConfirmErrors]",
       "file_type": "code",
       "source_file": "components/wizard/step-2.tsx",
-      "source_location": "L165",
+      "source_location": "L174",
       "id": "wizard_step_2_confirmerrors_setconfirmerrors",
-      "community": 4,
+      "community": 3,
       "norm_label": "[confirmerrors, setconfirmerrors]"
     },
     {
       "label": "DocStatus",
       "file_type": "code",
       "source_file": "components/wizard/step-2.tsx",
-      "source_location": "L167",
+      "source_location": "L176",
       "id": "wizard_step_2_docstatus",
-      "community": 4,
+      "community": 3,
       "norm_label": "docstatus"
     },
     {
       "label": "DocProgress",
       "file_type": "code",
       "source_file": "components/wizard/step-2.tsx",
-      "source_location": "L168",
+      "source_location": "L177",
       "id": "wizard_step_2_docprogress",
-      "community": 4,
+      "community": 3,
       "norm_label": "docprogress"
     },
     {
       "label": "[docProgress, setDocProgress]",
       "file_type": "code",
       "source_file": "components/wizard/step-2.tsx",
-      "source_location": "L169",
+      "source_location": "L178",
       "id": "wizard_step_2_docprogress_setdocprogress",
-      "community": 4,
+      "community": 3,
       "norm_label": "[docprogress, setdocprogress]"
     },
     {
       "label": "updateDoc()",
       "file_type": "code",
       "source_file": "components/wizard/step-2.tsx",
-      "source_location": "L173",
+      "source_location": "L182",
       "id": "wizard_step_2_updatedoc",
-      "community": 4,
+      "community": 3,
       "norm_label": "updatedoc()"
     },
     {
       "label": "[planilla, setPlanilla]",
       "file_type": "code",
       "source_file": "components/wizard/step-2.tsx",
-      "source_location": "L179",
+      "source_location": "L188",
       "id": "wizard_step_2_planilla_setplanilla",
-      "community": 4,
+      "community": 3,
       "norm_label": "[planilla, setplanilla]"
     },
     {
       "label": "[arl, setArl]",
       "file_type": "code",
       "source_file": "components/wizard/step-2.tsx",
-      "source_location": "L180",
+      "source_location": "L189",
       "id": "wizard_step_2_arl_setarl",
-      "community": 4,
+      "community": 3,
       "norm_label": "[arl, setarl]"
     },
     {
       "label": "[contract, setContract]",
       "file_type": "code",
       "source_file": "components/wizard/step-2.tsx",
-      "source_location": "L181",
+      "source_location": "L190",
       "id": "wizard_step_2_contract_setcontract",
-      "community": 4,
+      "community": 3,
       "norm_label": "[contract, setcontract]"
     },
     {
       "label": "[contract2, setContract2]",
       "file_type": "code",
       "source_file": "components/wizard/step-2.tsx",
-      "source_location": "L182",
+      "source_location": "L191",
       "id": "wizard_step_2_contract2_setcontract2",
-      "community": 4,
+      "community": 3,
       "norm_label": "[contract2, setcontract2]"
     },
     {
       "label": "[activityReport, setActivityReport]",
       "file_type": "code",
       "source_file": "components/wizard/step-2.tsx",
-      "source_location": "L183",
+      "source_location": "L192",
       "id": "wizard_step_2_activityreport_setactivityreport",
-      "community": 4,
+      "community": 3,
       "norm_label": "[activityreport, setactivityreport]"
     },
     {
       "label": "[issuerKeys, setIssuerKeys]",
       "file_type": "code",
       "source_file": "components/wizard/step-2.tsx",
-      "source_location": "L184",
+      "source_location": "L193",
       "id": "wizard_step_2_issuerkeys_setissuerkeys",
-      "community": 4,
+      "community": 3,
       "norm_label": "[issuerkeys, setissuerkeys]"
     },
     {
       "label": "[warnings, setWarnings]",
       "file_type": "code",
       "source_file": "components/wizard/step-2.tsx",
-      "source_location": "L185",
+      "source_location": "L194",
       "id": "wizard_step_2_warnings_setwarnings",
-      "community": 4,
+      "community": 3,
       "norm_label": "[warnings, setwarnings]"
     },
     {
       "label": "[confidence, setConfidence]",
       "file_type": "code",
       "source_file": "components/wizard/step-2.tsx",
-      "source_location": "L186",
+      "source_location": "L195",
       "id": "wizard_step_2_confidence_setconfidence",
-      "community": 4,
+      "community": 3,
       "norm_label": "[confidence, setconfidence]"
+    },
+    {
+      "label": "[selectedContract, setSelectedContract]",
+      "file_type": "code",
+      "source_file": "components/wizard/step-2.tsx",
+      "source_location": "L199",
+      "id": "wizard_step_2_selectedcontract_setselectedcontract",
+      "community": 3,
+      "norm_label": "[selectedcontract, setselectedcontract]"
     },
     {
       "label": "abortRef",
       "file_type": "code",
       "source_file": "components/wizard/step-2.tsx",
-      "source_location": "L189",
+      "source_location": "L202",
       "id": "wizard_step_2_abortref",
-      "community": 4,
+      "community": 3,
       "norm_label": "abortref"
+    },
+    {
+      "label": "nextPeriodCheck",
+      "file_type": "code",
+      "source_file": "components/wizard/step-2.tsx",
+      "source_location": "L206",
+      "id": "wizard_step_2_nextperiodcheck",
+      "community": 3,
+      "norm_label": "nextperiodcheck"
     },
     {
       "label": "deadlineCalcNote",
       "file_type": "code",
       "source_file": "components/wizard/step-2.tsx",
-      "source_location": "L191",
+      "source_location": "L215",
       "id": "wizard_step_2_deadlinecalcnote",
-      "community": 4,
+      "community": 3,
       "norm_label": "deadlinecalcnote"
     },
     {
       "label": "planillaConfidence",
       "file_type": "code",
       "source_file": "components/wizard/step-2.tsx",
-      "source_location": "L204",
+      "source_location": "L228",
       "id": "wizard_step_2_planillaconfidence",
-      "community": 4,
+      "community": 3,
       "norm_label": "planillaconfidence"
     },
     {
       "label": "contractConfidence",
       "file_type": "code",
       "source_file": "components/wizard/step-2.tsx",
-      "source_location": "L226",
+      "source_location": "L250",
       "id": "wizard_step_2_contractconfidence",
-      "community": 4,
+      "community": 3,
       "norm_label": "contractconfidence"
     },
     {
       "label": "contract2Confidence",
       "file_type": "code",
       "source_file": "components/wizard/step-2.tsx",
-      "source_location": "L236",
+      "source_location": "L260",
       "id": "wizard_step_2_contract2confidence",
-      "community": 4,
+      "community": 3,
       "norm_label": "contract2confidence"
     },
     {
       "label": "calculated",
       "file_type": "code",
       "source_file": "components/wizard/step-2.tsx",
-      "source_location": "L257",
+      "source_location": "L281",
       "id": "wizard_step_2_calculated",
-      "community": 4,
+      "community": 3,
       "norm_label": "calculated"
     },
     {
       "label": "arlToDMY()",
       "file_type": "code",
       "source_file": "components/wizard/step-2.tsx",
-      "source_location": "L273",
+      "source_location": "L297",
       "id": "wizard_step_2_arltodmy",
-      "community": 4,
+      "community": 3,
       "norm_label": "arltodmy()"
     },
     {
       "label": "applyARLDates()",
       "file_type": "code",
       "source_file": "components/wizard/step-2.tsx",
-      "source_location": "L277",
+      "source_location": "L301",
       "id": "wizard_step_2_applyarldates",
-      "community": 4,
+      "community": 3,
       "norm_label": "applyarldates()"
     },
     {
       "label": "buildFormData",
       "file_type": "code",
       "source_file": "components/wizard/step-2.tsx",
-      "source_location": "L292",
+      "source_location": "L316",
       "id": "wizard_step_2_buildformdata",
-      "community": 4,
+      "community": 3,
       "norm_label": "buildformdata"
     },
     {
       "label": "processStep",
       "file_type": "code",
       "source_file": "components/wizard/step-2.tsx",
-      "source_location": "L304",
+      "source_location": "L328",
       "id": "wizard_step_2_processstep",
-      "community": 4,
+      "community": 3,
       "norm_label": "processstep"
     },
     {
       "label": "handleConfirm()",
       "file_type": "code",
       "source_file": "components/wizard/step-2.tsx",
-      "source_location": "L452",
+      "source_location": "L511",
       "id": "wizard_step_2_handleconfirm",
-      "community": 4,
+      "community": 11,
       "norm_label": "handleconfirm()"
     },
     {
       "label": "handleCancel()",
       "file_type": "code",
       "source_file": "components/wizard/step-2.tsx",
-      "source_location": "L499",
+      "source_location": "L569",
       "id": "wizard_step_2_handlecancel",
-      "community": 4,
+      "community": 3,
       "norm_label": "handlecancel()"
     },
     {
       "label": "handleSkipToManual()",
       "file_type": "code",
       "source_file": "components/wizard/step-2.tsx",
-      "source_location": "L503",
+      "source_location": "L573",
       "id": "wizard_step_2_handleskiptomanual",
-      "community": 4,
+      "community": 3,
       "norm_label": "handleskiptomanual()"
     },
     {
       "label": "docs",
       "file_type": "code",
       "source_file": "components/wizard/step-2.tsx",
-      "source_location": "L534",
+      "source_location": "L604",
       "id": "wizard_step_2_docs",
-      "community": 4,
+      "community": 3,
       "norm_label": "docs"
     },
     {
@@ -1469,7 +1496,7 @@
       "source_file": "components/wizard/step-4.tsx",
       "source_location": "L1",
       "id": "components_wizard_step_4_tsx",
-      "community": 13,
+      "community": 14,
       "norm_label": "step-4.tsx"
     },
     {
@@ -1478,7 +1505,7 @@
       "source_file": "components/wizard/step-4.tsx",
       "source_location": "L20",
       "id": "wizard_step_4_downloadstatus",
-      "community": 13,
+      "community": 14,
       "norm_label": "downloadstatus"
     },
     {
@@ -1487,7 +1514,7 @@
       "source_file": "components/wizard/step-4.tsx",
       "source_location": "L23",
       "id": "wizard_step_4_extracteddata_manualdata_documents",
-      "community": 13,
+      "community": 14,
       "norm_label": "{ extracteddata, manualdata, documents }"
     },
     {
@@ -1496,7 +1523,7 @@
       "source_file": "components/wizard/step-4.tsx",
       "source_location": "L25",
       "id": "wizard_step_4_status_setstatus",
-      "community": 13,
+      "community": 14,
       "norm_label": "[status, setstatus]"
     },
     {
@@ -1505,7 +1532,7 @@
       "source_file": "components/wizard/step-4.tsx",
       "source_location": "L26",
       "id": "wizard_step_4_pdfblob_setpdfblob",
-      "community": 13,
+      "community": 14,
       "norm_label": "[pdfblob, setpdfblob]"
     },
     {
@@ -1514,7 +1541,7 @@
       "source_file": "components/wizard/step-4.tsx",
       "source_location": "L27",
       "id": "wizard_step_4_errormessage_seterrormessage",
-      "community": 13,
+      "community": 14,
       "norm_label": "[errormessage, seterrormessage]"
     },
     {
@@ -1523,7 +1550,7 @@
       "source_file": "components/wizard/step-4.tsx",
       "source_location": "L38",
       "id": "wizard_step_4_generarpdf",
-      "community": 13,
+      "community": 14,
       "norm_label": "generarpdf()"
     },
     {
@@ -1532,7 +1559,7 @@
       "source_file": "components/wizard/step-4.tsx",
       "source_location": "L129",
       "id": "wizard_step_4_verpdf",
-      "community": 13,
+      "community": 14,
       "norm_label": "verpdf()"
     },
     {
@@ -1541,7 +1568,7 @@
       "source_file": "components/wizard/step-4.tsx",
       "source_location": "L134",
       "id": "wizard_step_4_descargarpdf",
-      "community": 13,
+      "community": 14,
       "norm_label": "descargarpdf()"
     },
     {
@@ -1550,7 +1577,7 @@
       "source_file": "components/wizard/step-indicator.tsx",
       "source_location": "L1",
       "id": "components_wizard_step_indicator_tsx",
-      "community": 0,
+      "community": 18,
       "norm_label": "step-indicator.tsx"
     },
     {
@@ -1559,7 +1586,7 @@
       "source_file": "components/wizard/step-indicator.tsx",
       "source_location": "L8",
       "id": "wizard_step_indicator_stepindicatorprops",
-      "community": 0,
+      "community": 18,
       "norm_label": "stepindicatorprops"
     },
     {
@@ -1568,7 +1595,7 @@
       "source_file": "components/wizard/steps-config.ts",
       "source_location": "L1",
       "id": "components_wizard_steps_config_ts",
-      "community": 0,
+      "community": 18,
       "norm_label": "steps-config.ts"
     },
     {
@@ -1577,7 +1604,7 @@
       "source_file": "components/wizard/steps-config.ts",
       "source_location": "L9",
       "id": "wizard_steps_config_stepconfig",
-      "community": 0,
+      "community": 18,
       "norm_label": "stepconfig"
     },
     {
@@ -1586,7 +1613,7 @@
       "source_file": "components/wizard/steps-config.ts",
       "source_location": "L16",
       "id": "wizard_steps_config_steps_config",
-      "community": 0,
+      "community": 18,
       "norm_label": "steps_config"
     },
     {
@@ -1595,7 +1622,7 @@
       "source_file": "lib/store.ts",
       "source_location": "L1",
       "id": "lib_store_ts",
-      "community": 0,
+      "community": 5,
       "norm_label": "store.ts"
     },
     {
@@ -1604,7 +1631,7 @@
       "source_file": "lib/store.ts",
       "source_location": "L13",
       "id": "lib_store_wizardstate",
-      "community": 0,
+      "community": 5,
       "norm_label": "wizardstate"
     },
     {
@@ -1613,7 +1640,7 @@
       "source_file": "lib/store.ts",
       "source_location": "L31",
       "id": "lib_store_initial_state",
-      "community": 0,
+      "community": 5,
       "norm_label": "initial_state"
     },
     {
@@ -1622,7 +1649,7 @@
       "source_file": "lib/store.ts",
       "source_location": "L55",
       "id": "lib_store_usewizardstore",
-      "community": 0,
+      "community": 5,
       "norm_label": "usewizardstore"
     },
     {
@@ -1640,7 +1667,7 @@
       "source_file": "lib/types.ts",
       "source_location": "L3",
       "id": "lib_types_wizardstep",
-      "community": 0,
+      "community": 18,
       "norm_label": "wizardstep"
     },
     {
@@ -1667,7 +1694,7 @@
       "source_file": "lib/types.ts",
       "source_location": "L10",
       "id": "lib_types_contracttype",
-      "community": 6,
+      "community": 13,
       "norm_label": "contracttype"
     },
     {
@@ -1676,7 +1703,7 @@
       "source_file": "lib/types.ts",
       "source_location": "L50",
       "id": "lib_types_riskclass",
-      "community": 6,
+      "community": 13,
       "norm_label": "riskclass"
     },
     {
@@ -1685,7 +1712,7 @@
       "source_file": "lib/types.ts",
       "source_location": "L52",
       "id": "lib_types_documenttype",
-      "community": 6,
+      "community": 13,
       "norm_label": "documenttype"
     },
     {
@@ -1703,7 +1730,7 @@
       "source_file": "lib/types.ts",
       "source_location": "L89",
       "id": "lib_types_uploadeddocuments",
-      "community": 0,
+      "community": 5,
       "norm_label": "uploadeddocuments"
     },
     {
@@ -1712,7 +1739,7 @@
       "source_file": "lib/types.ts",
       "source_location": "L112",
       "id": "lib_types_paymentsheetdata",
-      "community": 3,
+      "community": 0,
       "norm_label": "paymentsheetdata"
     },
     {
@@ -1721,7 +1748,7 @@
       "source_file": "lib/types.ts",
       "source_location": "L122",
       "id": "lib_types_arldata",
-      "community": 3,
+      "community": 0,
       "norm_label": "arldata"
     },
     {
@@ -1730,7 +1757,7 @@
       "source_file": "lib/types.ts",
       "source_location": "L133",
       "id": "lib_types_contractdata",
-      "community": 11,
+      "community": 0,
       "norm_label": "contractdata"
     },
     {
@@ -1748,7 +1775,7 @@
       "source_file": "lib/types.ts",
       "source_location": "L157",
       "id": "lib_types_activityreportdata",
-      "community": 11,
+      "community": 0,
       "norm_label": "activityreportdata"
     },
     {
@@ -1775,7 +1802,7 @@
       "source_file": "lib/types.ts",
       "source_location": "L189",
       "id": "lib_types_validationresult",
-      "community": 3,
+      "community": 0,
       "norm_label": "validationresult"
     },
     {
@@ -1784,7 +1811,7 @@
       "source_file": "lib/types.ts",
       "source_location": "L198",
       "id": "lib_types_rawpdftext",
-      "community": 0,
+      "community": 5,
       "norm_label": "rawpdftext"
     },
     {
@@ -1793,7 +1820,7 @@
       "source_file": "lib/types.ts",
       "source_location": "L209",
       "id": "lib_types_contributioncalculation",
-      "community": 3,
+      "community": 0,
       "norm_label": "contributioncalculation"
     },
     {
@@ -1802,7 +1829,7 @@
       "source_file": "lib/types.ts",
       "source_location": "L228",
       "id": "lib_types_format053data",
-      "community": 5,
+      "community": 0,
       "norm_label": "format053data"
     },
     {
@@ -1811,7 +1838,7 @@
       "source_file": "lib/types.ts",
       "source_location": "L266",
       "id": "lib_types_format069data",
-      "community": 5,
+      "community": 0,
       "norm_label": "format069data"
     },
     {
@@ -2000,7 +2027,7 @@
       "source_file": "lib/constants/contracts.ts",
       "source_location": "L1",
       "id": "lib_constants_contracts_ts",
-      "community": 6,
+      "community": 13,
       "norm_label": "contracts.ts"
     },
     {
@@ -2009,7 +2036,7 @@
       "source_file": "lib/constants/contracts.ts",
       "source_location": "L4",
       "id": "constants_contracts_contract_labels",
-      "community": 6,
+      "community": 13,
       "norm_label": "contract_labels"
     },
     {
@@ -2018,7 +2045,7 @@
       "source_file": "lib/constants/contracts.ts",
       "source_location": "L46",
       "id": "constants_contracts_contract_type_options",
-      "community": 6,
+      "community": 13,
       "norm_label": "contract_type_options"
     },
     {
@@ -2027,8 +2054,35 @@
       "source_file": "lib/constants/institution.ts",
       "source_location": "L1",
       "id": "lib_constants_institution_ts",
-      "community": 5,
+      "community": 6,
       "norm_label": "institution.ts"
+    },
+    {
+      "label": "issuer-instructions.ts",
+      "file_type": "code",
+      "source_file": "lib/constants/issuer-instructions.ts",
+      "source_location": "L1",
+      "id": "lib_constants_issuer_instructions_ts",
+      "community": 1,
+      "norm_label": "issuer-instructions.ts"
+    },
+    {
+      "label": "PILA_ISSUER_INSTRUCTIONS",
+      "file_type": "code",
+      "source_file": "lib/constants/issuer-instructions.ts",
+      "source_location": "L7",
+      "id": "constants_issuer_instructions_pila_issuer_instructions",
+      "community": 1,
+      "norm_label": "pila_issuer_instructions"
+    },
+    {
+      "label": "ARL_ISSUER_INSTRUCTIONS",
+      "file_type": "code",
+      "source_file": "lib/constants/issuer-instructions.ts",
+      "source_location": "L48",
+      "id": "constants_issuer_instructions_arl_issuer_instructions",
+      "community": 1,
+      "norm_label": "arl_issuer_instructions"
     },
     {
       "label": "months.ts",
@@ -2036,7 +2090,7 @@
       "source_file": "lib/constants/months.ts",
       "source_location": "L1",
       "id": "lib_constants_months_ts",
-      "community": 3,
+      "community": 0,
       "norm_label": "months.ts"
     },
     {
@@ -2045,7 +2099,7 @@
       "source_file": "lib/constants/months.ts",
       "source_location": "L2",
       "id": "constants_months_spanish_months",
-      "community": 3,
+      "community": 0,
       "norm_label": "spanish_months"
     },
     {
@@ -2054,7 +2108,7 @@
       "source_file": "lib/constants/pdf.ts",
       "source_location": "L1",
       "id": "lib_constants_pdf_ts",
-      "community": 5,
+      "community": 6,
       "norm_label": "pdf.ts"
     },
     {
@@ -2063,7 +2117,7 @@
       "source_file": "lib/pdf/build-format-data.ts",
       "source_location": "L1",
       "id": "lib_pdf_build_format_data_ts",
-      "community": 3,
+      "community": 0,
       "norm_label": "build-format-data.ts"
     },
     {
@@ -2072,7 +2126,7 @@
       "source_file": "lib/pdf/build-format-data.ts",
       "source_location": "L12",
       "id": "pdf_build_format_data_planillashort",
-      "community": 3,
+      "community": 0,
       "norm_label": "planillashort"
     },
     {
@@ -2081,7 +2135,7 @@
       "source_file": "lib/pdf/build-format-data.ts",
       "source_location": "L19",
       "id": "pdf_build_format_data_laterperiod",
-      "community": 3,
+      "community": 0,
       "norm_label": "laterperiod()"
     },
     {
@@ -2090,7 +2144,7 @@
       "source_file": "lib/pdf/build-format-data.ts",
       "source_location": "L27",
       "id": "pdf_build_format_data_formatexpeditiondate",
-      "community": 3,
+      "community": 0,
       "norm_label": "formatexpeditiondate()"
     },
     {
@@ -2099,7 +2153,7 @@
       "source_file": "lib/pdf/build-format-data.ts",
       "source_location": "L33",
       "id": "pdf_build_format_data_periodtomonthname",
-      "community": 3,
+      "community": 0,
       "norm_label": "periodtomonthname()"
     },
     {
@@ -2108,7 +2162,7 @@
       "source_file": "lib/pdf/build-format-data.ts",
       "source_location": "L39",
       "id": "pdf_build_format_data_periodtospanish",
-      "community": 3,
+      "community": 0,
       "norm_label": "periodtospanish()"
     },
     {
@@ -2117,25 +2171,25 @@
       "source_file": "lib/pdf/build-format-data.ts",
       "source_location": "L45",
       "id": "pdf_build_format_data_todayddmmyyyy",
-      "community": 3,
+      "community": 0,
       "norm_label": "todayddmmyyyy()"
     },
     {
       "label": "buildFormat053Data()",
       "file_type": "code",
       "source_file": "lib/pdf/build-format-data.ts",
-      "source_location": "L53",
+      "source_location": "L56",
       "id": "pdf_build_format_data_buildformat053data",
-      "community": 3,
+      "community": 0,
       "norm_label": "buildformat053data()"
     },
     {
       "label": "buildFormat069Data()",
       "file_type": "code",
       "source_file": "lib/pdf/build-format-data.ts",
-      "source_location": "L124",
+      "source_location": "L127",
       "id": "pdf_build_format_data_buildformat069data",
-      "community": 3,
+      "community": 0,
       "norm_label": "buildformat069data()"
     },
     {
@@ -2144,7 +2198,7 @@
       "source_file": "lib/pdf/document-profiles.ts",
       "source_location": "L1",
       "id": "lib_pdf_document_profiles_ts",
-      "community": 4,
+      "community": 3,
       "norm_label": "document-profiles.ts"
     },
     {
@@ -2153,7 +2207,7 @@
       "source_file": "lib/pdf/document-profiles.ts",
       "source_location": "L3",
       "id": "pdf_document_profiles_doctype",
-      "community": 4,
+      "community": 3,
       "norm_label": "doctype"
     },
     {
@@ -2162,7 +2216,7 @@
       "source_file": "lib/pdf/document-profiles.ts",
       "source_location": "L5",
       "id": "pdf_document_profiles_documentprofile",
-      "community": 4,
+      "community": 3,
       "norm_label": "documentprofile"
     },
     {
@@ -2171,7 +2225,7 @@
       "source_file": "lib/pdf/document-profiles.ts",
       "source_location": "L16",
       "id": "pdf_document_profiles_key",
-      "community": 4,
+      "community": 3,
       "norm_label": "key()"
     },
     {
@@ -2180,7 +2234,7 @@
       "source_file": "lib/pdf/document-profiles.ts",
       "source_location": "L20",
       "id": "pdf_document_profiles_getprofile",
-      "community": 4,
+      "community": 3,
       "norm_label": "getprofile()"
     },
     {
@@ -2189,7 +2243,7 @@
       "source_file": "lib/pdf/document-profiles.ts",
       "source_location": "L32",
       "id": "pdf_document_profiles_saveprofile",
-      "community": 4,
+      "community": 3,
       "norm_label": "saveprofile()"
     },
     {
@@ -2198,7 +2252,7 @@
       "source_file": "lib/pdf/document-profiles.ts",
       "source_location": "L53",
       "id": "pdf_document_profiles_getallprofiles",
-      "community": 4,
+      "community": 3,
       "norm_label": "getallprofiles()"
     },
     {
@@ -2306,7 +2360,7 @@
       "source_file": "lib/pdf/extract-text.ts",
       "source_location": "L1",
       "id": "lib_pdf_extract_text_ts",
-      "community": 5,
+      "community": 6,
       "norm_label": "extract-text.ts"
     },
     {
@@ -2315,7 +2369,7 @@
       "source_file": "lib/pdf/extract-text.ts",
       "source_location": "L4",
       "id": "pdf_extract_text_extracttextfrompdf",
-      "community": 5,
+      "community": 6,
       "norm_label": "extracttextfrompdf()"
     },
     {
@@ -2324,7 +2378,7 @@
       "source_file": "lib/pdf/fill-forms.ts",
       "source_location": "L1",
       "id": "lib_pdf_fill_forms_ts",
-      "community": 5,
+      "community": 6,
       "norm_label": "fill-forms.ts"
     },
     {
@@ -2333,7 +2387,7 @@
       "source_file": "lib/pdf/fill-forms.ts",
       "source_location": "L11",
       "id": "pdf_fill_forms_templates_dir",
-      "community": 5,
+      "community": 6,
       "norm_label": "templates_dir"
     },
     {
@@ -2342,7 +2396,7 @@
       "source_file": "lib/pdf/fill-forms.ts",
       "source_location": "L12",
       "id": "pdf_fill_forms_fonts_dir",
-      "community": 5,
+      "community": 6,
       "norm_label": "fonts_dir"
     },
     {
@@ -2351,7 +2405,7 @@
       "source_file": "lib/pdf/fill-forms.ts",
       "source_location": "L17",
       "id": "pdf_fill_forms_getfontoptions",
-      "community": 5,
+      "community": 6,
       "norm_label": "getfontoptions()"
     },
     {
@@ -2360,7 +2414,7 @@
       "source_file": "lib/pdf/fill-forms.ts",
       "source_location": "L32",
       "id": "pdf_fill_forms_num",
-      "community": 5,
+      "community": 6,
       "norm_label": "num()"
     },
     {
@@ -2369,7 +2423,7 @@
       "source_file": "lib/pdf/fill-forms.ts",
       "source_location": "L36",
       "id": "pdf_fill_forms_loadtemplate",
-      "community": 5,
+      "community": 6,
       "norm_label": "loadtemplate()"
     },
     {
@@ -2378,7 +2432,7 @@
       "source_file": "lib/pdf/fill-forms.ts",
       "source_location": "L49",
       "id": "pdf_fill_forms_fill053",
-      "community": 5,
+      "community": 6,
       "norm_label": "fill053()"
     },
     {
@@ -2387,7 +2441,7 @@
       "source_file": "lib/pdf/fill-forms.ts",
       "source_location": "L112",
       "id": "pdf_fill_forms_fill069",
-      "community": 5,
+      "community": 6,
       "norm_label": "fill069()"
     },
     {
@@ -2396,7 +2450,7 @@
       "source_file": "lib/pdf/fill-forms.ts",
       "source_location": "L238",
       "id": "pdf_fill_forms_validatepdfbytes",
-      "community": 5,
+      "community": 6,
       "norm_label": "validatepdfbytes()"
     },
     {
@@ -2405,16 +2459,16 @@
       "source_file": "lib/pdf/fill-forms.ts",
       "source_location": "L262",
       "id": "pdf_fill_forms_generatevalidationcertificate",
-      "community": 5,
+      "community": 6,
       "norm_label": "generatevalidationcertificate()"
     },
     {
       "label": "combinePDFs()",
       "file_type": "code",
       "source_file": "lib/pdf/fill-forms.ts",
-      "source_location": "L285",
+      "source_location": "L286",
       "id": "pdf_fill_forms_combinepdfs",
-      "community": 5,
+      "community": 6,
       "norm_label": "combinepdfs()"
     },
     {
@@ -2423,7 +2477,7 @@
       "source_file": "lib/pdf/page-count.ts",
       "source_location": "L1",
       "id": "lib_pdf_page_count_ts",
-      "community": 5,
+      "community": 6,
       "norm_label": "page-count.ts"
     },
     {
@@ -2432,8 +2486,197 @@
       "source_file": "lib/pdf/page-count.ts",
       "source_location": "L3",
       "id": "pdf_page_count_getpdfpagecount",
-      "community": 5,
+      "community": 6,
       "norm_label": "getpdfpagecount()"
+    },
+    {
+      "label": "sanity-checks.ts",
+      "file_type": "code",
+      "source_file": "lib/pdf/sanity-checks.ts",
+      "source_location": "L1",
+      "id": "lib_pdf_sanity_checks_ts",
+      "community": 11,
+      "norm_label": "sanity-checks.ts"
+    },
+    {
+      "label": "COMPANY_TOKENS",
+      "file_type": "code",
+      "source_file": "lib/pdf/sanity-checks.ts",
+      "source_location": "L23",
+      "id": "pdf_sanity_checks_company_tokens",
+      "community": 11,
+      "norm_label": "company_tokens"
+    },
+    {
+      "label": "VALID_ARL_RATES",
+      "file_type": "code",
+      "source_file": "lib/pdf/sanity-checks.ts",
+      "source_location": "L45",
+      "id": "pdf_sanity_checks_valid_arl_rates",
+      "community": 11,
+      "norm_label": "valid_arl_rates"
+    },
+    {
+      "label": "VALID_RISK_CLASSES",
+      "file_type": "code",
+      "source_file": "lib/pdf/sanity-checks.ts",
+      "source_location": "L48",
+      "id": "pdf_sanity_checks_valid_risk_classes",
+      "community": 11,
+      "norm_label": "valid_risk_classes"
+    },
+    {
+      "label": "isDMY()",
+      "file_type": "code",
+      "source_file": "lib/pdf/sanity-checks.ts",
+      "source_location": "L52",
+      "id": "pdf_sanity_checks_isdmy",
+      "community": 11,
+      "norm_label": "isdmy()"
+    },
+    {
+      "label": "isISO()",
+      "file_type": "code",
+      "source_file": "lib/pdf/sanity-checks.ts",
+      "source_location": "L53",
+      "id": "pdf_sanity_checks_isiso",
+      "community": 11,
+      "norm_label": "isiso()"
+    },
+    {
+      "label": "isMY()",
+      "file_type": "code",
+      "source_file": "lib/pdf/sanity-checks.ts",
+      "source_location": "L54",
+      "id": "pdf_sanity_checks_ismy",
+      "community": 11,
+      "norm_label": "ismy()"
+    },
+    {
+      "label": "parseDMY()",
+      "file_type": "code",
+      "source_file": "lib/pdf/sanity-checks.ts",
+      "source_location": "L56",
+      "id": "pdf_sanity_checks_parsedmy",
+      "community": 11,
+      "norm_label": "parsedmy()"
+    },
+    {
+      "label": "parseISODate()",
+      "file_type": "code",
+      "source_file": "lib/pdf/sanity-checks.ts",
+      "source_location": "L63",
+      "id": "pdf_sanity_checks_parseisodate",
+      "community": 11,
+      "norm_label": "parseisodate()"
+    },
+    {
+      "label": "looksLikePersonName()",
+      "file_type": "code",
+      "source_file": "lib/pdf/sanity-checks.ts",
+      "source_location": "L76",
+      "id": "pdf_sanity_checks_lookslikepersonname",
+      "community": 11,
+      "norm_label": "lookslikepersonname()"
+    },
+    {
+      "label": "looksLikeDocumentNumber()",
+      "file_type": "code",
+      "source_file": "lib/pdf/sanity-checks.ts",
+      "source_location": "L95",
+      "id": "pdf_sanity_checks_lookslikedocumentnumber",
+      "community": 11,
+      "norm_label": "lookslikedocumentnumber()"
+    },
+    {
+      "label": "looksLikeSheetNumber()",
+      "file_type": "code",
+      "source_file": "lib/pdf/sanity-checks.ts",
+      "source_location": "L102",
+      "id": "pdf_sanity_checks_lookslikesheetnumber",
+      "community": 11,
+      "norm_label": "lookslikesheetnumber()"
+    },
+    {
+      "label": "isValidPeriod()",
+      "file_type": "code",
+      "source_file": "lib/pdf/sanity-checks.ts",
+      "source_location": "L108",
+      "id": "pdf_sanity_checks_isvalidperiod",
+      "community": 11,
+      "norm_label": "isvalidperiod()"
+    },
+    {
+      "label": "isValidDate()",
+      "file_type": "code",
+      "source_file": "lib/pdf/sanity-checks.ts",
+      "source_location": "L115",
+      "id": "pdf_sanity_checks_isvaliddate",
+      "community": 11,
+      "norm_label": "isvaliddate()"
+    },
+    {
+      "label": "isValidARLRate()",
+      "file_type": "code",
+      "source_file": "lib/pdf/sanity-checks.ts",
+      "source_location": "L120",
+      "id": "pdf_sanity_checks_isvalidarlrate",
+      "community": 11,
+      "norm_label": "isvalidarlrate()"
+    },
+    {
+      "label": "isValidRiskClass()",
+      "file_type": "code",
+      "source_file": "lib/pdf/sanity-checks.ts",
+      "source_location": "L125",
+      "id": "pdf_sanity_checks_isvalidriskclass",
+      "community": 11,
+      "norm_label": "isvalidriskclass()"
+    },
+    {
+      "label": "SanityResult",
+      "file_type": "code",
+      "source_file": "lib/pdf/sanity-checks.ts",
+      "source_location": "L132",
+      "id": "pdf_sanity_checks_sanityresult",
+      "community": 11,
+      "norm_label": "sanityresult"
+    },
+    {
+      "label": "checkPaymentSheet()",
+      "file_type": "code",
+      "source_file": "lib/pdf/sanity-checks.ts",
+      "source_location": "L141",
+      "id": "pdf_sanity_checks_checkpaymentsheet",
+      "community": 11,
+      "norm_label": "checkpaymentsheet()"
+    },
+    {
+      "label": "checkARL()",
+      "file_type": "code",
+      "source_file": "lib/pdf/sanity-checks.ts",
+      "source_location": "L202",
+      "id": "pdf_sanity_checks_checkarl",
+      "community": 11,
+      "norm_label": "checkarl()"
+    },
+    {
+      "label": "checkContract()",
+      "file_type": "code",
+      "source_file": "lib/pdf/sanity-checks.ts",
+      "source_location": "L255",
+      "id": "pdf_sanity_checks_checkcontract",
+      "community": 11,
+      "norm_label": "checkcontract()"
+    },
+    {
+      "label": "downgradeConfidence()",
+      "file_type": "code",
+      "source_file": "lib/pdf/sanity-checks.ts",
+      "source_location": "L308",
+      "id": "pdf_sanity_checks_downgradeconfidence",
+      "community": 11,
+      "norm_label": "downgradeconfidence()"
     },
     {
       "label": "utils.ts",
@@ -2441,7 +2684,7 @@
       "source_file": "lib/pdf/utils.ts",
       "source_location": "L1",
       "id": "lib_pdf_utils_ts",
-      "community": 5,
+      "community": 14,
       "norm_label": "utils.ts"
     },
     {
@@ -2450,7 +2693,7 @@
       "source_file": "lib/pdf/utils.ts",
       "source_location": "L5",
       "id": "pdf_utils_nombrearchivofinal",
-      "community": 5,
+      "community": 14,
       "norm_label": "nombrearchivofinal()"
     },
     {
@@ -2459,7 +2702,7 @@
       "source_file": "lib/pdf/parsers/keyword-extractor.ts",
       "source_location": "L1",
       "id": "lib_pdf_parsers_keyword_extractor_ts",
-      "community": 6,
+      "community": 4,
       "norm_label": "keyword-extractor.ts"
     },
     {
@@ -2468,7 +2711,7 @@
       "source_file": "lib/pdf/parsers/keyword-extractor.ts",
       "source_location": "L12",
       "id": "parsers_keyword_extractor_maybestring",
-      "community": 6,
+      "community": 4,
       "norm_label": "maybestring"
     },
     {
@@ -2477,7 +2720,7 @@
       "source_file": "lib/pdf/parsers/keyword-extractor.ts",
       "source_location": "L17",
       "id": "parsers_keyword_extractor_findnear",
-      "community": 6,
+      "community": 4,
       "norm_label": "findnear()"
     },
     {
@@ -2486,7 +2729,7 @@
       "source_file": "lib/pdf/parsers/keyword-extractor.ts",
       "source_location": "L35",
       "id": "parsers_keyword_extractor_normalizedate",
-      "community": 6,
+      "community": 4,
       "norm_label": "normalizedate()"
     },
     {
@@ -2495,7 +2738,7 @@
       "source_file": "lib/pdf/parsers/keyword-extractor.ts",
       "source_location": "L49",
       "id": "parsers_keyword_extractor_joinsplitdates",
-      "community": 5,
+      "community": 4,
       "norm_label": "joinsplitdates()"
     },
     {
@@ -2504,7 +2747,7 @@
       "source_file": "lib/pdf/parsers/keyword-extractor.ts",
       "source_location": "L60",
       "id": "parsers_keyword_extractor_parseamount",
-      "community": 6,
+      "community": 4,
       "norm_label": "parseamount()"
     },
     {
@@ -2513,7 +2756,7 @@
       "source_file": "lib/pdf/parsers/keyword-extractor.ts",
       "source_location": "L78",
       "id": "parsers_keyword_extractor_extractdaterange",
-      "community": 6,
+      "community": 4,
       "norm_label": "extractdaterange()"
     },
     {
@@ -2522,7 +2765,7 @@
       "source_file": "lib/pdf/parsers/keyword-extractor.ts",
       "source_location": "L103",
       "id": "parsers_keyword_extractor_arl_start_labels",
-      "community": 6,
+      "community": 4,
       "norm_label": "arl_start_labels"
     },
     {
@@ -2531,7 +2774,7 @@
       "source_file": "lib/pdf/parsers/keyword-extractor.ts",
       "source_location": "L128",
       "id": "parsers_keyword_extractor_arl_end_labels",
-      "community": 6,
+      "community": 4,
       "norm_label": "arl_end_labels"
     },
     {
@@ -2540,7 +2783,7 @@
       "source_file": "lib/pdf/parsers/keyword-extractor.ts",
       "source_location": "L153",
       "id": "parsers_keyword_extractor_arl_rate_labels",
-      "community": 6,
+      "community": 4,
       "norm_label": "arl_rate_labels"
     },
     {
@@ -2549,7 +2792,7 @@
       "source_file": "lib/pdf/parsers/keyword-extractor.ts",
       "source_location": "L166",
       "id": "parsers_keyword_extractor_default_start_labels",
-      "community": 6,
+      "community": 4,
       "norm_label": "default_start_labels"
     },
     {
@@ -2558,7 +2801,7 @@
       "source_file": "lib/pdf/parsers/keyword-extractor.ts",
       "source_location": "L175",
       "id": "parsers_keyword_extractor_default_end_labels",
-      "community": 6,
+      "community": 4,
       "norm_label": "default_end_labels"
     },
     {
@@ -2567,70 +2810,106 @@
       "source_file": "lib/pdf/parsers/keyword-extractor.ts",
       "source_location": "L188",
       "id": "parsers_keyword_extractor_extractarlcandidates",
-      "community": 6,
+      "community": 4,
       "norm_label": "extractarlcandidates()"
+    },
+    {
+      "label": "extractARLExpeditionDate()",
+      "file_type": "code",
+      "source_file": "lib/pdf/parsers/keyword-extractor.ts",
+      "source_location": "L329",
+      "id": "parsers_keyword_extractor_extractarlexpeditiondate",
+      "community": 4,
+      "norm_label": "extractarlexpeditiondate()"
+    },
+    {
+      "label": "MONTH_ES",
+      "file_type": "code",
+      "source_file": "lib/pdf/parsers/keyword-extractor.ts",
+      "source_location": "L364",
+      "id": "parsers_keyword_extractor_month_es",
+      "community": 4,
+      "norm_label": "month_es"
+    },
+    {
+      "label": "extractMonthNamePeriod()",
+      "file_type": "code",
+      "source_file": "lib/pdf/parsers/keyword-extractor.ts",
+      "source_location": "L380",
+      "id": "parsers_keyword_extractor_extractmonthnameperiod",
+      "community": 4,
+      "norm_label": "extractmonthnameperiod()"
+    },
+    {
+      "label": "extractISOMonthPeriod()",
+      "file_type": "code",
+      "source_file": "lib/pdf/parsers/keyword-extractor.ts",
+      "source_location": "L392",
+      "id": "parsers_keyword_extractor_extractisomonthperiod",
+      "community": 4,
+      "norm_label": "extractisomonthperiod()"
     },
     {
       "label": "extractPILACandidates()",
       "file_type": "code",
       "source_file": "lib/pdf/parsers/keyword-extractor.ts",
-      "source_location": "L299",
+      "source_location": "L399",
       "id": "parsers_keyword_extractor_extractpilacandidates",
-      "community": 6,
+      "community": 4,
       "norm_label": "extractpilacandidates()"
     },
     {
       "label": "extractDocumentTypeFromPILA()",
       "file_type": "code",
       "source_file": "lib/pdf/parsers/keyword-extractor.ts",
-      "source_location": "L468",
+      "source_location": "L643",
       "id": "parsers_keyword_extractor_extractdocumenttypefrompila",
-      "community": 6,
+      "community": 4,
       "norm_label": "extractdocumenttypefrompila()"
     },
     {
       "label": "CONTRACT_START_LABELS",
       "file_type": "code",
       "source_file": "lib/pdf/parsers/keyword-extractor.ts",
-      "source_location": "L493",
+      "source_location": "L668",
       "id": "parsers_keyword_extractor_contract_start_labels",
-      "community": 6,
+      "community": 4,
       "norm_label": "contract_start_labels"
     },
     {
       "label": "CONTRACT_END_LABELS",
       "file_type": "code",
       "source_file": "lib/pdf/parsers/keyword-extractor.ts",
-      "source_location": "L504",
+      "source_location": "L679",
       "id": "parsers_keyword_extractor_contract_end_labels",
-      "community": 6,
+      "community": 4,
       "norm_label": "contract_end_labels"
     },
     {
       "label": "extractContractCandidates()",
       "file_type": "code",
       "source_file": "lib/pdf/parsers/keyword-extractor.ts",
-      "source_location": "L518",
+      "source_location": "L693",
       "id": "parsers_keyword_extractor_extractcontractcandidates",
-      "community": 6,
+      "community": 4,
       "norm_label": "extractcontractcandidates()"
     },
     {
       "label": "detectIssuer()",
       "file_type": "code",
       "source_file": "lib/pdf/parsers/keyword-extractor.ts",
-      "source_location": "L599",
+      "source_location": "L774",
       "id": "parsers_keyword_extractor_detectissuer",
-      "community": 6,
+      "community": 4,
       "norm_label": "detectissuer()"
     },
     {
       "label": "extractActivityReportCandidates()",
       "file_type": "code",
       "source_file": "lib/pdf/parsers/keyword-extractor.ts",
-      "source_location": "L630",
+      "source_location": "L807",
       "id": "parsers_keyword_extractor_extractactivityreportcandidates",
-      "community": 6,
+      "community": 4,
       "norm_label": "extractactivityreportcandidates()"
     },
     {
@@ -2756,7 +3035,7 @@
       "source_file": "lib/schemas/manual-form.ts",
       "source_location": "L1",
       "id": "lib_schemas_manual_form_ts",
-      "community": 0,
+      "community": 5,
       "norm_label": "manual-form.ts"
     },
     {
@@ -2765,7 +3044,7 @@
       "source_file": "lib/schemas/manual-form.ts",
       "source_location": "L9",
       "id": "schemas_manual_form_manualformschema",
-      "community": 0,
+      "community": 5,
       "norm_label": "manualformschema"
     },
     {
@@ -2774,7 +3053,7 @@
       "source_file": "lib/schemas/manual-form.ts",
       "source_location": "L87",
       "id": "schemas_manual_form_manualforminput",
-      "community": 0,
+      "community": 5,
       "norm_label": "manualforminput"
     },
     {
@@ -2810,7 +3089,7 @@
       "source_file": "lib/security/document-integrity.test.mjs",
       "source_location": "L1",
       "id": "lib_security_document_integrity_test_mjs",
-      "community": 18,
+      "community": 21,
       "norm_label": "document-integrity.test.mjs"
     },
     {
@@ -2819,7 +3098,7 @@
       "source_file": "lib/security/document-integrity.test.mjs",
       "source_location": "L9",
       "id": "security_document_integrity_test_extracted",
-      "community": 18,
+      "community": 21,
       "norm_label": "extracted"
     },
     {
@@ -2828,7 +3107,7 @@
       "source_file": "lib/security/document-integrity.test.mjs",
       "source_location": "L41",
       "id": "security_document_integrity_test_manual",
-      "community": 18,
+      "community": 21,
       "norm_label": "manual"
     },
     {
@@ -2837,7 +3116,7 @@
       "source_file": "lib/security/document-integrity.test.mjs",
       "source_location": "L65",
       "id": "security_document_integrity_test_errors",
-      "community": 18,
+      "community": 21,
       "norm_label": "errors"
     },
     {
@@ -2846,7 +3125,7 @@
       "source_file": "lib/security/document-integrity.test.mjs",
       "source_location": "L105",
       "id": "security_document_integrity_test_summary",
-      "community": 18,
+      "community": 21,
       "norm_label": "summary"
     },
     {
@@ -2855,7 +3134,7 @@
       "source_file": "lib/security/request-guards.ts",
       "source_location": "L1",
       "id": "lib_security_request_guards_ts",
-      "community": 5,
+      "community": 6,
       "norm_label": "request-guards.ts"
     },
     {
@@ -2864,7 +3143,7 @@
       "source_file": "lib/security/request-guards.ts",
       "source_location": "L3",
       "id": "security_request_guards_buckets",
-      "community": 5,
+      "community": 6,
       "norm_label": "buckets"
     },
     {
@@ -2873,7 +3152,7 @@
       "source_file": "lib/security/request-guards.ts",
       "source_location": "L5",
       "id": "security_request_guards_cleanupexpiredbuckets",
-      "community": 5,
+      "community": 6,
       "norm_label": "cleanupexpiredbuckets()"
     },
     {
@@ -2882,7 +3161,7 @@
       "source_file": "lib/security/request-guards.ts",
       "source_location": "L12",
       "id": "security_request_guards_getclientip",
-      "community": 5,
+      "community": 6,
       "norm_label": "getclientip()"
     },
     {
@@ -2891,7 +3170,7 @@
       "source_file": "lib/security/request-guards.ts",
       "source_location": "L21",
       "id": "security_request_guards_isratelimited",
-      "community": 5,
+      "community": 6,
       "norm_label": "isratelimited()"
     },
     {
@@ -2900,7 +3179,7 @@
       "source_file": "lib/security/request-guards.ts",
       "source_location": "L41",
       "id": "security_request_guards_exceedscontentlength",
-      "community": 5,
+      "community": 6,
       "norm_label": "exceedscontentlength()"
     },
     {
@@ -2909,7 +3188,7 @@
       "source_file": "lib/security/request-guards.ts",
       "source_location": "L52",
       "id": "security_request_guards_readpdffile",
-      "community": 5,
+      "community": 6,
       "norm_label": "readpdffile()"
     },
     {
@@ -2918,7 +3197,7 @@
       "source_file": "lib/security/request-guards.ts",
       "source_location": "L115",
       "id": "security_request_guards_readimagefile",
-      "community": 5,
+      "community": 6,
       "norm_label": "readimagefile()"
     },
     {
@@ -2927,7 +3206,7 @@
       "source_file": "lib/utils/date-parser.ts",
       "source_location": "L1",
       "id": "lib_utils_date_parser_ts",
-      "community": 3,
+      "community": 0,
       "norm_label": "date-parser.ts"
     },
     {
@@ -2936,7 +3215,7 @@
       "source_file": "lib/utils/date-parser.ts",
       "source_location": "L7",
       "id": "utils_date_parser_parserobustdate",
-      "community": 3,
+      "community": 0,
       "norm_label": "parserobustdate()"
     },
     {
@@ -2945,7 +3224,7 @@
       "source_file": "lib/utils/date-parser.ts",
       "source_location": "L30",
       "id": "utils_date_parser_formattoiso",
-      "community": 3,
+      "community": 0,
       "norm_label": "formattoiso()"
     },
     {
@@ -2954,7 +3233,7 @@
       "source_file": "lib/utils/date-parser.ts",
       "source_location": "L42",
       "id": "utils_date_parser_formattodisplay",
-      "community": 3,
+      "community": 0,
       "norm_label": "formattodisplay()"
     },
     {
@@ -2963,7 +3242,7 @@
       "source_file": "lib/validations/aportes.ts",
       "source_location": "L1",
       "id": "lib_validations_aportes_ts",
-      "community": 3,
+      "community": 0,
       "norm_label": "aportes.ts"
     },
     {
@@ -2972,7 +3251,7 @@
       "source_file": "lib/validations/aportes.ts",
       "source_location": "L23",
       "id": "validations_aportes_calcularvalormensualizado",
-      "community": 3,
+      "community": 0,
       "norm_label": "calcularvalormensualizado()"
     },
     {
@@ -2981,7 +3260,7 @@
       "source_file": "lib/validations/aportes.ts",
       "source_location": "L34",
       "id": "validations_aportes_calcularibc",
-      "community": 3,
+      "community": 0,
       "norm_label": "calcularibc()"
     },
     {
@@ -2990,7 +3269,7 @@
       "source_file": "lib/validations/aportes.ts",
       "source_location": "L42",
       "id": "validations_aportes_calcularbaseefectiva",
-      "community": 3,
+      "community": 0,
       "norm_label": "calcularbaseefectiva()"
     },
     {
@@ -2999,7 +3278,7 @@
       "source_file": "lib/validations/aportes.ts",
       "source_location": "L47",
       "id": "validations_aportes_calcularaportesalud",
-      "community": 3,
+      "community": 0,
       "norm_label": "calcularaportesalud()"
     },
     {
@@ -3008,7 +3287,7 @@
       "source_file": "lib/validations/aportes.ts",
       "source_location": "L52",
       "id": "validations_aportes_calcularaportepension",
-      "community": 3,
+      "community": 0,
       "norm_label": "calcularaportepension()"
     },
     {
@@ -3017,7 +3296,7 @@
       "source_file": "lib/validations/aportes.ts",
       "source_location": "L61",
       "id": "validations_aportes_calcularfsp",
-      "community": 3,
+      "community": 0,
       "norm_label": "calcularfsp()"
     },
     {
@@ -3026,7 +3305,7 @@
       "source_file": "lib/validations/aportes.ts",
       "source_location": "L72",
       "id": "validations_aportes_calcularaportearl",
-      "community": 3,
+      "community": 0,
       "norm_label": "calcularaportearl()"
     },
     {
@@ -3035,7 +3314,7 @@
       "source_file": "lib/validations/aportes.ts",
       "source_location": "L79",
       "id": "validations_aportes_aportesdesdebase",
-      "community": 3,
+      "community": 0,
       "norm_label": "aportesdesdebase()"
     },
     {
@@ -3044,7 +3323,7 @@
       "source_file": "lib/validations/aportes.ts",
       "source_location": "L105",
       "id": "validations_aportes_combinecontributions",
-      "community": 3,
+      "community": 0,
       "norm_label": "combinecontributions()"
     },
     {
@@ -3053,7 +3332,7 @@
       "source_file": "lib/validations/aportes.ts",
       "source_location": "L132",
       "id": "validations_aportes_validarpago",
-      "community": 3,
+      "community": 0,
       "norm_label": "validarpago()"
     },
     {
@@ -3062,7 +3341,7 @@
       "source_file": "lib/validations/aportes.ts",
       "source_location": "L148",
       "id": "validations_aportes_dmytoiso",
-      "community": 3,
+      "community": 0,
       "norm_label": "dmytoiso()"
     },
     {
@@ -3071,7 +3350,7 @@
       "source_file": "lib/validations/aportes.ts",
       "source_location": "L159",
       "id": "validations_aportes_calcularcontribuciones",
-      "community": 3,
+      "community": 0,
       "norm_label": "calcularcontribuciones()"
     },
     {
@@ -3080,7 +3359,7 @@
       "source_file": "lib/validations/cedular.ts",
       "source_location": "L1",
       "id": "lib_validations_cedular_ts",
-      "community": 3,
+      "community": 0,
       "norm_label": "cedular.ts"
     },
     {
@@ -3089,7 +3368,7 @@
       "source_file": "lib/validations/cedular.ts",
       "source_location": "L12",
       "id": "validations_cedular_calculardeclaracioncedular",
-      "community": 3,
+      "community": 0,
       "norm_label": "calculardeclaracioncedular()"
     },
     {
@@ -3098,7 +3377,7 @@
       "source_file": "lib/validations/constantes.ts",
       "source_location": "L1",
       "id": "lib_validations_constantes_ts",
-      "community": 3,
+      "community": 0,
       "norm_label": "constantes.ts"
     },
     {
@@ -3107,7 +3386,7 @@
       "source_file": "lib/validations/fecha-limite.ts",
       "source_location": "L1",
       "id": "lib_validations_fecha_limite_ts",
-      "community": 11,
+      "community": 15,
       "norm_label": "fecha-limite.ts"
     },
     {
@@ -3116,7 +3395,7 @@
       "source_file": "lib/validations/fecha-limite.ts",
       "source_location": "L8",
       "id": "validations_fecha_limite_tabla_digitos",
-      "community": 11,
+      "community": 15,
       "norm_label": "tabla_digitos"
     },
     {
@@ -3125,7 +3404,7 @@
       "source_file": "lib/validations/fecha-limite.ts",
       "source_location": "L27",
       "id": "validations_fecha_limite_calculareaster",
-      "community": 11,
+      "community": 15,
       "norm_label": "calculareaster()"
     },
     {
@@ -3134,7 +3413,7 @@
       "source_file": "lib/validations/fecha-limite.ts",
       "source_location": "L46",
       "id": "validations_fecha_limite_nextmonday",
-      "community": 11,
+      "community": 15,
       "norm_label": "nextmonday()"
     },
     {
@@ -3143,7 +3422,7 @@
       "source_file": "lib/validations/fecha-limite.ts",
       "source_location": "L54",
       "id": "validations_fecha_limite_adddays",
-      "community": 11,
+      "community": 15,
       "norm_label": "adddays()"
     },
     {
@@ -3152,7 +3431,7 @@
       "source_file": "lib/validations/fecha-limite.ts",
       "source_location": "L60",
       "id": "validations_fecha_limite_tokey",
-      "community": 11,
+      "community": 15,
       "norm_label": "tokey()"
     },
     {
@@ -3161,7 +3440,7 @@
       "source_file": "lib/validations/fecha-limite.ts",
       "source_location": "L71",
       "id": "validations_fecha_limite_getholidaysforyear",
-      "community": 11,
+      "community": 15,
       "norm_label": "getholidaysforyear()"
     },
     {
@@ -3170,7 +3449,7 @@
       "source_file": "lib/validations/fecha-limite.ts",
       "source_location": "L114",
       "id": "validations_fecha_limite_holidaycache",
-      "community": 11,
+      "community": 15,
       "norm_label": "holidaycache"
     },
     {
@@ -3179,7 +3458,7 @@
       "source_file": "lib/validations/fecha-limite.ts",
       "source_location": "L116",
       "id": "validations_fecha_limite_esdiahabil",
-      "community": 11,
+      "community": 15,
       "norm_label": "esdiahabil()"
     },
     {
@@ -3188,7 +3467,7 @@
       "source_file": "lib/validations/fecha-limite.ts",
       "source_location": "L124",
       "id": "validations_fecha_limite_nthdiahabil",
-      "community": 11,
+      "community": 15,
       "norm_label": "nthdiahabil()"
     },
     {
@@ -3197,7 +3476,7 @@
       "source_file": "lib/validations/fecha-limite.ts",
       "source_location": "L134",
       "id": "validations_fecha_limite_diaslimite",
-      "community": 11,
+      "community": 15,
       "norm_label": "diaslimite()"
     },
     {
@@ -3206,7 +3485,7 @@
       "source_file": "lib/validations/fecha-limite.ts",
       "source_location": "L144",
       "id": "validations_fecha_limite_diashabilasignados",
-      "community": 11,
+      "community": 15,
       "norm_label": "diashabilasignados()"
     },
     {
@@ -3215,7 +3494,7 @@
       "source_file": "lib/validations/fecha-limite.ts",
       "source_location": "L153",
       "id": "validations_fecha_limite_calcularfechalimite",
-      "community": 11,
+      "community": 15,
       "norm_label": "calcularfechalimite()"
     },
     {
@@ -3224,43 +3503,79 @@
       "source_file": "lib/validations/fechas.ts",
       "source_location": "L1",
       "id": "lib_validations_fechas_ts",
-      "community": 3,
+      "community": 0,
       "norm_label": "fechas.ts"
     },
     {
       "label": "parseDDMMYYYY()",
       "file_type": "code",
       "source_file": "lib/validations/fechas.ts",
-      "source_location": "L6",
+      "source_location": "L7",
       "id": "validations_fechas_parseddmmyyyy",
-      "community": 3,
+      "community": 0,
       "norm_label": "parseddmmyyyy()"
     },
     {
       "label": "validarFechaPago()",
       "file_type": "code",
       "source_file": "lib/validations/fechas.ts",
-      "source_location": "L16",
+      "source_location": "L17",
       "id": "validations_fechas_validarfechapago",
-      "community": 3,
+      "community": 0,
       "norm_label": "validarfechapago()"
     },
     {
       "label": "validarGavelaARL()",
       "file_type": "code",
       "source_file": "lib/validations/fechas.ts",
-      "source_location": "L50",
+      "source_location": "L51",
       "id": "validations_fechas_validargavelaarl",
-      "community": 3,
+      "community": 0,
       "norm_label": "validargavelaarl()"
+    },
+    {
+      "label": "todayColombia()",
+      "file_type": "code",
+      "source_file": "lib/validations/fechas.ts",
+      "source_location": "L96",
+      "id": "validations_fechas_todaycolombia",
+      "community": 0,
+      "norm_label": "todaycolombia()"
+    },
+    {
+      "label": "nextMonthPeriod()",
+      "file_type": "code",
+      "source_file": "lib/validations/fechas.ts",
+      "source_location": "L107",
+      "id": "validations_fechas_nextmonthperiod",
+      "community": 0,
+      "norm_label": "nextmonthperiod()"
+    },
+    {
+      "label": "NextPeriodDeadlineCheck",
+      "file_type": "code",
+      "source_file": "lib/validations/fechas.ts",
+      "source_location": "L114",
+      "id": "validations_fechas_nextperioddeadlinecheck",
+      "community": 0,
+      "norm_label": "nextperioddeadlinecheck"
+    },
+    {
+      "label": "checkNextPeriodDeadline()",
+      "file_type": "code",
+      "source_file": "lib/validations/fechas.ts",
+      "source_location": "L136",
+      "id": "validations_fechas_checknextperioddeadline",
+      "community": 0,
+      "norm_label": "checknextperioddeadline()"
     },
     {
       "label": "calcularMesesContrato()",
       "file_type": "code",
       "source_file": "lib/validations/fechas.ts",
-      "source_location": "L98",
+      "source_location": "L161",
       "id": "validations_fechas_calcularmesescontrato",
-      "community": 3,
+      "community": 0,
       "norm_label": "calcularmesescontrato()"
     },
     {
@@ -3269,25 +3584,25 @@
       "source_file": "lib/validations/index.ts",
       "source_location": "L1",
       "id": "lib_validations_index_ts",
-      "community": 3,
+      "community": 0,
       "norm_label": "index.ts"
     },
     {
       "label": "ValidationSummary",
       "file_type": "code",
       "source_file": "lib/validations/index.ts",
-      "source_location": "L19",
+      "source_location": "L24",
       "id": "validations_index_validationsummary",
-      "community": 3,
+      "community": 0,
       "norm_label": "validationsummary"
     },
     {
       "label": "runValidations()",
       "file_type": "code",
       "source_file": "lib/validations/index.ts",
-      "source_location": "L39",
+      "source_location": "L44",
       "id": "validations_index_runvalidations",
-      "community": 3,
+      "community": 0,
       "norm_label": "runvalidations()"
     },
     {
@@ -3296,7 +3611,7 @@
       "source_file": "lib/validations/informe.ts",
       "source_location": "L1",
       "id": "lib_validations_informe_ts",
-      "community": 11,
+      "community": 0,
       "norm_label": "informe.ts"
     },
     {
@@ -3305,7 +3620,7 @@
       "source_file": "lib/validations/informe.ts",
       "source_location": "L12",
       "id": "validations_informe_isrecent",
-      "community": 11,
+      "community": 0,
       "norm_label": "isrecent()"
     },
     {
@@ -3314,7 +3629,7 @@
       "source_file": "lib/validations/informe.ts",
       "source_location": "L37",
       "id": "validations_informe_normalizename",
-      "community": 11,
+      "community": 0,
       "norm_label": "normalizename()"
     },
     {
@@ -3323,7 +3638,7 @@
       "source_file": "lib/validations/informe.ts",
       "source_location": "L48",
       "id": "validations_informe_validarinformeactividades",
-      "community": 11,
+      "community": 0,
       "norm_label": "validarinformeactividades()"
     },
     {
@@ -3332,7 +3647,7 @@
       "source_file": "scratch/debug_pdf.py",
       "source_location": "L1",
       "id": "scratch_debug_pdf_py",
-      "community": 24,
+      "community": 27,
       "norm_label": "debug_pdf.py"
     },
     {
@@ -3341,7 +3656,7 @@
       "source_file": "scratch/debug_pdf.py",
       "source_location": "L4",
       "id": "scratch_debug_pdf_extract_all",
-      "community": 24,
+      "community": 27,
       "norm_label": "extract_all()"
     },
     {
@@ -3350,7 +3665,7 @@
       "source_file": "scratch/debug_pdf_text.ts",
       "source_location": "L1",
       "id": "scratch_debug_pdf_text_ts",
-      "community": 25,
+      "community": 28,
       "norm_label": "debug_pdf_text.ts"
     },
     {
@@ -3359,8 +3674,116 @@
       "source_file": "scratch/debug_pdf_text.ts",
       "source_location": "L4",
       "id": "scratch_debug_pdf_text_debug",
-      "community": 25,
+      "community": 28,
       "norm_label": "debug()"
+    },
+    {
+      "label": "test-extractors.ts",
+      "file_type": "code",
+      "source_file": "scripts/test-extractors.ts",
+      "source_location": "L1",
+      "id": "scripts_test_extractors_ts",
+      "community": 4,
+      "norm_label": "test-extractors.ts"
+    },
+    {
+      "label": "ROOT",
+      "file_type": "code",
+      "source_file": "scripts/test-extractors.ts",
+      "source_location": "L36",
+      "id": "scripts_test_extractors_root",
+      "community": 4,
+      "norm_label": "root"
+    },
+    {
+      "label": "full",
+      "file_type": "code",
+      "source_file": "scripts/test-extractors.ts",
+      "source_location": "L44",
+      "id": "scripts_test_extractors_full",
+      "community": 4,
+      "norm_label": "full"
+    },
+    {
+      "label": "CaseFiles",
+      "file_type": "code",
+      "source_file": "scripts/test-extractors.ts",
+      "source_location": "L52",
+      "id": "scripts_test_extractors_casefiles",
+      "community": 4,
+      "norm_label": "casefiles"
+    },
+    {
+      "label": "findCaseFiles()",
+      "file_type": "code",
+      "source_file": "scripts/test-extractors.ts",
+      "source_location": "L61",
+      "id": "scripts_test_extractors_findcasefiles",
+      "community": 4,
+      "norm_label": "findcasefiles()"
+    },
+    {
+      "label": "extractPdfText()",
+      "file_type": "code",
+      "source_file": "scripts/test-extractors.ts",
+      "source_location": "L84",
+      "id": "scripts_test_extractors_extractpdftext",
+      "community": 4,
+      "norm_label": "extractpdftext()"
+    },
+    {
+      "label": "CaseResult",
+      "file_type": "code",
+      "source_file": "scripts/test-extractors.ts",
+      "source_location": "L92",
+      "id": "scripts_test_extractors_caseresult",
+      "community": 4,
+      "norm_label": "caseresult"
+    },
+    {
+      "label": "runCase()",
+      "file_type": "code",
+      "source_file": "scripts/test-extractors.ts",
+      "source_location": "L125",
+      "id": "scripts_test_extractors_runcase",
+      "community": 4,
+      "norm_label": "runcase()"
+    },
+    {
+      "label": "summarize()",
+      "file_type": "code",
+      "source_file": "scripts/test-extractors.ts",
+      "source_location": "L200",
+      "id": "scripts_test_extractors_summarize",
+      "community": 4,
+      "norm_label": "summarize()"
+    },
+    {
+      "label": "ExpectedValues",
+      "file_type": "code",
+      "source_file": "scripts/test-extractors.ts",
+      "source_location": "L233",
+      "id": "scripts_test_extractors_expectedvalues",
+      "community": 4,
+      "norm_label": "expectedvalues"
+    },
+    {
+      "label": "compareWithExpected()",
+      "file_type": "code",
+      "source_file": "scripts/test-extractors.ts",
+      "source_location": "L244",
+      "id": "scripts_test_extractors_comparewithexpected",
+      "community": 4,
+      "norm_label": "comparewithexpected()"
+    },
+    {
+      "label": "main()",
+      "file_type": "code",
+      "source_file": "scripts/test-extractors.ts",
+      "source_location": "L282",
+      "id": "scripts_test_extractors_main",
+      "community": 4,
+      "norm_label": "main()"
     },
     {
       "label": "CLAUDE.md",
@@ -3368,7 +3791,7 @@
       "source_file": "CLAUDE.md",
       "source_location": "L1",
       "id": "claude_md",
-      "community": 15,
+      "community": 19,
       "norm_label": "claude.md"
     },
     {
@@ -3377,7 +3800,7 @@
       "source_file": "CLAUDE.md",
       "source_location": "L1",
       "id": "verificacion_pagos_app_claude_claude_md",
-      "community": 15,
+      "community": 19,
       "norm_label": "claude.md"
     },
     {
@@ -3386,7 +3809,7 @@
       "source_file": "CLAUDE.md",
       "source_location": "L2",
       "id": "verificacion_pagos_app_claude_graphify",
-      "community": 15,
+      "community": 19,
       "norm_label": "graphify"
     },
     {
@@ -3395,7 +3818,7 @@
       "source_file": "CLAUDE.md",
       "source_location": "L16",
       "id": "verificacion_pagos_app_claude_1_think_before_coding",
-      "community": 15,
+      "community": 19,
       "norm_label": "1. think before coding"
     },
     {
@@ -3404,7 +3827,7 @@
       "source_file": "CLAUDE.md",
       "source_location": "L26",
       "id": "verificacion_pagos_app_claude_2_simplicity_first",
-      "community": 15,
+      "community": 19,
       "norm_label": "2. simplicity first"
     },
     {
@@ -3413,7 +3836,7 @@
       "source_file": "CLAUDE.md",
       "source_location": "L38",
       "id": "verificacion_pagos_app_claude_3_surgical_changes",
-      "community": 15,
+      "community": 19,
       "norm_label": "3. surgical changes"
     },
     {
@@ -3422,7 +3845,7 @@
       "source_file": "CLAUDE.md",
       "source_location": "L54",
       "id": "verificacion_pagos_app_claude_4_goal_driven_execution",
-      "community": 15,
+      "community": 19,
       "norm_label": "4. goal-driven execution"
     },
     {
@@ -3431,7 +3854,7 @@
       "source_file": "CLAUDE.md",
       "source_location": "L64",
       "id": "verificacion_pagos_app_claude_codeblock_1",
-      "community": 15,
+      "community": 19,
       "norm_label": "code:block1 (1. [step] \u2192 verify: [check])"
     },
     {
@@ -3989,7 +4412,7 @@
       "source_file": "README.md",
       "source_location": "L1",
       "id": "readme_md",
-      "community": 17,
+      "community": 20,
       "norm_label": "readme.md"
     },
     {
@@ -3998,7 +4421,7 @@
       "source_file": "README.md",
       "source_location": "L1",
       "id": "verificacion_pagos_app_readme_next_js_template",
-      "community": 17,
+      "community": 20,
       "norm_label": "next.js template"
     },
     {
@@ -4007,7 +4430,7 @@
       "source_file": "README.md",
       "source_location": "L5",
       "id": "verificacion_pagos_app_readme_adding_components",
-      "community": 17,
+      "community": 20,
       "norm_label": "adding components"
     },
     {
@@ -4016,7 +4439,7 @@
       "source_file": "README.md",
       "source_location": "L9",
       "id": "verificacion_pagos_app_readme_codeblock_1",
-      "community": 17,
+      "community": 20,
       "norm_label": "code:bash (npx shadcn@latest add button)"
     },
     {
@@ -4025,7 +4448,7 @@
       "source_file": "README.md",
       "source_location": "L15",
       "id": "verificacion_pagos_app_readme_using_components",
-      "community": 17,
+      "community": 20,
       "norm_label": "using components"
     },
     {
@@ -4034,8 +4457,17 @@
       "source_file": "README.md",
       "source_location": "L19",
       "id": "verificacion_pagos_app_readme_codeblock_2",
-      "community": 17,
+      "community": 20,
       "norm_label": "code:tsx (import { button } from \"@/components/ui/button\";)"
+    },
+    {
+      "label": "certificado_validacion_7c9578cf.md",
+      "file_type": "document",
+      "source_file": "graphify-out/converted/certificado_validacion_7c9578cf.md",
+      "source_location": "L1",
+      "id": "graphify_out_converted_certificado_validacion_7c9578cf_md",
+      "community": 31,
+      "norm_label": "certificado_validacion_7c9578cf.md"
     },
     {
       "label": "2026-05-05.md",
@@ -4043,7 +4475,7 @@
       "source_file": "memory/2026-05-05.md",
       "source_location": "L1",
       "id": "memory_2026_05_05_md",
-      "community": 19,
+      "community": 23,
       "norm_label": "2026-05-05.md"
     },
     {
@@ -4052,7 +4484,7 @@
       "source_file": "memory/2026-05-05.md",
       "source_location": "L1",
       "id": "memory_2026_05_05_memory_log_2026_05_05",
-      "community": 19,
+      "community": 23,
       "norm_label": "memory log - 2026-05-05"
     },
     {
@@ -4061,7 +4493,7 @@
       "source_file": "memory/2026-05-05.md",
       "source_location": "L3",
       "id": "memory_2026_05_05_critical_errors_detected",
-      "community": 19,
+      "community": 23,
       "norm_label": "critical errors detected"
     },
     {
@@ -4070,15 +4502,87 @@
       "source_file": "memory/2026-05-05.md",
       "source_location": "L10",
       "id": "memory_2026_05_05_system_state",
-      "community": 19,
+      "community": 23,
       "norm_label": "system state"
+    },
+    {
+      "label": "Matrices_d5214341.md",
+      "file_type": "document",
+      "source_file": "graphify-out/converted/Matrices_d5214341.md",
+      "source_location": "L1",
+      "id": "graphify_out_converted_matrices_d5214341_md",
+      "community": 22,
+      "norm_label": "matrices_d5214341.md"
+    },
+    {
+      "label": "Sheet: Resumen General",
+      "file_type": "document",
+      "source_file": "graphify-out/converted/Matrices_d5214341.md",
+      "source_location": "L3",
+      "id": "converted_matrices_d5214341_sheet_resumen_general",
+      "community": 22,
+      "norm_label": "sheet: resumen general"
+    },
+    {
+      "label": "Sheet: Casos de prueba",
+      "file_type": "document",
+      "source_file": "graphify-out/converted/Matrices_d5214341.md",
+      "source_location": "L14",
+      "id": "converted_matrices_d5214341_sheet_casos_de_prueba",
+      "community": 22,
+      "norm_label": "sheet: casos de prueba"
+    },
+    {
+      "label": "Sheet: Metricas",
+      "file_type": "document",
+      "source_file": "graphify-out/converted/Matrices_d5214341.md",
+      "source_location": "L68",
+      "id": "converted_matrices_d5214341_sheet_metricas",
+      "community": 22,
+      "norm_label": "sheet: metricas"
+    },
+    {
+      "label": "Sheet: Clasificaciones",
+      "file_type": "document",
+      "source_file": "graphify-out/converted/Matrices_d5214341.md",
+      "source_location": "L80",
+      "id": "converted_matrices_d5214341_sheet_clasificaciones",
+      "community": 22,
+      "norm_label": "sheet: clasificaciones"
+    },
+    {
+      "label": "[focused, setFocused]",
+      "file_type": "code",
+      "source_file": "components/wizard/extraction-editors.tsx",
+      "source_location": "L164",
+      "community": 13,
+      "norm_label": "[focused, setfocused]",
+      "id": "wizard_extraction_editors_focused_setfocused"
+    },
+    {
+      "label": "newItems",
+      "file_type": "code",
+      "source_file": "components/wizard/extraction-editors.tsx",
+      "source_location": "L627",
+      "community": 13,
+      "norm_label": "newitems",
+      "id": "wizard_extraction_editors_newitems"
+    },
+    {
+      "label": "{\r\n    documents,\r\n    extractedData,\r\n    setExtractedData,\r\n    setRawText,\r\n    manualData,\r\n    setStep,\r\n  }",
+      "file_type": "code",
+      "source_file": "components/wizard/step-2.tsx",
+      "source_location": "L154",
+      "community": 3,
+      "norm_label": "{\r\n    documents,\r\n    extracteddata,\r\n    setextracteddata,\r\n    setrawtext,\r\n    manualdata,\r\n    setstep,\r\n  }",
+      "id": "wizard_step_2_documents_extracteddata_setextracteddata_setrawtext_manualdata_setstep"
     },
     {
       "label": "REQUIRED_DOCUMENTS",
       "file_type": "code",
       "source_file": "app/page.tsx",
       "source_location": "L18",
-      "community": 14,
+      "community": 17,
       "norm_label": "required_documents",
       "id": "app_page_required_documents"
     },
@@ -4100,7 +4604,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 26,
+      "community": 29,
       "norm_label": "agent behavioral guidelines",
       "id": "agents_md_behavioral_guidelines"
     },
@@ -4113,7 +4617,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 26,
+      "community": 29,
       "norm_label": "claude behavioral guidelines",
       "id": "claude_md_behavioral_guidelines"
     },
@@ -4139,7 +4643,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 28,
+      "community": 32,
       "norm_label": "sample unal contract text (ose no. 14, daniel vick gutierrez)",
       "id": "contract_text_scratch"
     },
@@ -4217,7 +4721,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 2,
+      "community": 8,
       "norm_label": "pdf text extraction api route",
       "tags": [
         "api",
@@ -4269,7 +4773,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 2,
+      "community": 8,
       "norm_label": "pdfjs-dist (text extraction library)",
       "id": "pdfjs_dist"
     },
@@ -4815,7 +5319,7 @@
         "wizard"
       ],
       "summary": "Landing page describing the 4-step wizard workflow",
-      "community": 29,
+      "community": 33,
       "norm_label": "landing page",
       "id": "app_page"
     },
@@ -5638,6 +6142,17 @@
       "source_file": "app/api/extract/route.ts",
       "source_location": "L15",
       "weight": 1.0,
+      "source": "app_api_extract_route_ts",
+      "target": "parsers_keyword_extractor_extractarlexpeditiondate",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "app/api/extract/route.ts",
+      "source_location": "L15",
+      "weight": 1.0,
       "confidence_score": 1.0,
       "source": "app_api_extract_route_ts",
       "target": "parsers_keyword_extractor_extractpilacandidates"
@@ -5757,11 +6272,99 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "app/api/extract/route.ts",
+      "source_location": "L30",
+      "weight": 1.0,
+      "source": "app_api_extract_route_ts",
+      "target": "lib_pdf_sanity_checks_ts",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "app/api/extract/route.ts",
+      "source_location": "L30",
+      "weight": 1.0,
+      "source": "app_api_extract_route_ts",
+      "target": "pdf_sanity_checks_checkpaymentsheet",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "app/api/extract/route.ts",
+      "source_location": "L30",
+      "weight": 1.0,
+      "source": "app_api_extract_route_ts",
+      "target": "pdf_sanity_checks_checkarl",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "app/api/extract/route.ts",
+      "source_location": "L30",
+      "weight": 1.0,
+      "source": "app_api_extract_route_ts",
+      "target": "pdf_sanity_checks_checkcontract",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "app/api/extract/route.ts",
+      "source_location": "L30",
+      "weight": 1.0,
+      "source": "app_api_extract_route_ts",
+      "target": "pdf_sanity_checks_downgradeconfidence",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "app/api/extract/route.ts",
       "source_location": "L29",
       "weight": 1.0,
       "confidence_score": 1.0,
       "source": "app_api_extract_route_ts",
       "target": "lib_constants_contracts_ts"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "app/api/extract/route.ts",
+      "source_location": "L37",
+      "weight": 1.0,
+      "source": "app_api_extract_route_ts",
+      "target": "lib_constants_issuer_instructions_ts",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "app/api/extract/route.ts",
+      "source_location": "L37",
+      "weight": 1.0,
+      "source": "app_api_extract_route_ts",
+      "target": "constants_issuer_instructions_pila_issuer_instructions",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "app/api/extract/route.ts",
+      "source_location": "L37",
+      "weight": 1.0,
+      "source": "app_api_extract_route_ts",
+      "target": "constants_issuer_instructions_arl_issuer_instructions",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports_from",
@@ -8193,17 +8796,6 @@
       "weight": 1.0,
       "confidence_score": 1.0,
       "source": "components_wizard_extraction_editors_tsx",
-      "target": "lib_types_contracttype"
-    },
-    {
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "components/wizard/extraction-editors.tsx",
-      "source_location": "L7",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "components_wizard_extraction_editors_tsx",
       "target": "lib_types_documenttype"
     },
     {
@@ -8252,11 +8844,31 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "components/wizard/extraction-editors.tsx",
-      "source_location": "L164",
+      "source_location": "L153",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "components_wizard_extraction_editors_tsx",
-      "target": "wizard_extraction_editors_focused_setfocused"
+      "target": "wizard_extraction_editors_text_settext",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "components/wizard/extraction-editors.tsx",
+      "source_location": "L160",
+      "weight": 1.0,
+      "source": "components_wizard_extraction_editors_tsx",
+      "target": "wizard_extraction_editors_handlechange",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "components/wizard/extraction-editors.tsx",
+      "source_location": "L167",
+      "weight": 1.0,
+      "source": "components_wizard_extraction_editors_tsx",
+      "target": "wizard_extraction_editors_handleblur",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -8279,6 +8891,38 @@
       "target": "wizard_extraction_editors_set"
     },
     {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "components/wizard/step-2.tsx",
+      "source_location": "L42",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "components_wizard_step_2_tsx",
+      "target": "components_wizard_extraction_editors_tsx"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "components/wizard/extraction-editors.tsx",
+      "source_location": "L7",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "components_wizard_extraction_editors_tsx",
+      "target": "lib_types_contracttype"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "components/wizard/extraction-editors.tsx",
+      "source_location": "L164",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "components_wizard_extraction_editors_tsx",
+      "target": "wizard_extraction_editors_focused_setfocused"
+    },
+    {
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "components/wizard/extraction-editors.tsx",
@@ -8289,15 +8933,15 @@
       "target": "wizard_extraction_editors_newitems"
     },
     {
-      "relation": "imports_from",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "components/wizard/step-2.tsx",
-      "source_location": "L42",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "components/wizard/extraction-editors.tsx",
+      "source_location": "L174",
       "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "components_wizard_step_2_tsx",
-      "target": "components_wizard_extraction_editors_tsx"
+      "source": "wizard_extraction_editors_handleblur",
+      "target": "parsers_keyword_extractor_parseamount"
     },
     {
       "relation": "imports_from",
@@ -8618,6 +9262,28 @@
       "source_file": "components/wizard/step-2.tsx",
       "source_location": "L26",
       "weight": 1.0,
+      "source": "components_wizard_step_2_tsx",
+      "target": "lib_validations_fechas_ts",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "components/wizard/step-2.tsx",
+      "source_location": "L26",
+      "weight": 1.0,
+      "source": "components_wizard_step_2_tsx",
+      "target": "validations_fechas_checknextperioddeadline",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "components/wizard/step-2.tsx",
+      "source_location": "L26",
+      "weight": 1.0,
       "confidence_score": 1.0,
       "source": "components_wizard_step_2_tsx",
       "target": "lib_types_ts"
@@ -8734,11 +9400,11 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "components/wizard/step-2.tsx",
-      "source_location": "L154",
+      "source_location": "L162",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "components_wizard_step_2_tsx",
-      "target": "wizard_step_2_documents_extracteddata_setextracteddata_setrawtext_manualdata_setstep"
+      "target": "wizard_step_2_documents_extracteddata_setextracteddata_setrawtext_manualdata_setmanualdata_setstep",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -8894,11 +9560,31 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "components/wizard/step-2.tsx",
+      "source_location": "L199",
+      "weight": 1.0,
+      "source": "components_wizard_step_2_tsx",
+      "target": "wizard_step_2_selectedcontract_setselectedcontract",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "components/wizard/step-2.tsx",
       "source_location": "L189",
       "weight": 1.0,
       "confidence_score": 1.0,
       "source": "components_wizard_step_2_tsx",
       "target": "wizard_step_2_abortref"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "components/wizard/step-2.tsx",
+      "source_location": "L206",
+      "weight": 1.0,
+      "source": "components_wizard_step_2_tsx",
+      "target": "wizard_step_2_nextperiodcheck",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -9031,6 +9717,16 @@
       "target": "wizard_step_2_docs"
     },
     {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "components/wizard/step-2.tsx",
+      "source_location": "L154",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "components_wizard_step_2_tsx",
+      "target": "wizard_step_2_documents_extracteddata_setextracteddata_setrawtext_manualdata_setstep"
+    },
+    {
       "relation": "calls",
       "context": "call",
       "confidence": "EXTRACTED",
@@ -9040,6 +9736,28 @@
       "confidence_score": 1.0,
       "source": "wizard_step_2_handleconfirm",
       "target": "wizard_step_2_validateextracteddata"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "components/wizard/step-2.tsx",
+      "source_location": "L77",
+      "weight": 1.0,
+      "source": "wizard_step_2_validateextracteddata",
+      "target": "pdf_sanity_checks_isdmy"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "components/wizard/step-2.tsx",
+      "source_location": "L81",
+      "weight": 1.0,
+      "source": "wizard_step_2_validateextracteddata",
+      "target": "pdf_sanity_checks_ismy"
     },
     {
       "relation": "calls",
@@ -9940,6 +10658,17 @@
       "relation": "imports_from",
       "context": "import",
       "confidence": "EXTRACTED",
+      "source_file": "lib/pdf/sanity-checks.ts",
+      "source_location": "L9",
+      "weight": 1.0,
+      "source": "lib_pdf_sanity_checks_ts",
+      "target": "lib_types_ts",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
       "source_file": "lib/pdf/parsers/keyword-extractor.ts",
       "source_location": "L1",
       "weight": 1.0,
@@ -9992,6 +10721,17 @@
       "target": "lib_types_ts"
     },
     {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/test-extractors.ts",
+      "source_location": "L30",
+      "weight": 1.0,
+      "source": "scripts_test_extractors_ts",
+      "target": "lib_types_ts",
+      "confidence_score": 1.0
+    },
+    {
       "relation": "imports",
       "context": "import",
       "confidence": "EXTRACTED",
@@ -10012,6 +10752,17 @@
       "confidence_score": 1.0,
       "source": "lib_types_confidencemap",
       "target": "lib_pdf_extract_helpers_ts"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/pdf/sanity-checks.ts",
+      "source_location": "L9",
+      "weight": 1.0,
+      "source": "lib_pdf_sanity_checks_ts",
+      "target": "lib_types_confidencemap",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports",
@@ -10083,6 +10834,17 @@
       "relation": "imports",
       "context": "import",
       "confidence": "EXTRACTED",
+      "source_file": "lib/pdf/sanity-checks.ts",
+      "source_location": "L9",
+      "weight": 1.0,
+      "source": "lib_pdf_sanity_checks_ts",
+      "target": "lib_types_paymentsheetdata",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
       "source_file": "lib/pdf/parsers/keyword-extractor.ts",
       "source_location": "L1",
       "weight": 1.0,
@@ -10100,6 +10862,28 @@
       "confidence_score": 1.0,
       "source": "lib_types_paymentsheetdata",
       "target": "lib_validations_fechas_ts"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/test-extractors.ts",
+      "source_location": "L30",
+      "weight": 1.0,
+      "source": "scripts_test_extractors_ts",
+      "target": "lib_types_paymentsheetdata",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/pdf/sanity-checks.ts",
+      "source_location": "L9",
+      "weight": 1.0,
+      "source": "lib_pdf_sanity_checks_ts",
+      "target": "lib_types_arldata",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports",
@@ -10138,6 +10922,28 @@
       "relation": "imports",
       "context": "import",
       "confidence": "EXTRACTED",
+      "source_file": "scripts/test-extractors.ts",
+      "source_location": "L30",
+      "weight": 1.0,
+      "source": "scripts_test_extractors_ts",
+      "target": "lib_types_arldata",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/pdf/sanity-checks.ts",
+      "source_location": "L9",
+      "weight": 1.0,
+      "source": "lib_pdf_sanity_checks_ts",
+      "target": "lib_types_contractdata",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
       "source_file": "lib/pdf/parsers/keyword-extractor.ts",
       "source_location": "L1",
       "weight": 1.0,
@@ -10166,6 +10972,17 @@
       "confidence_score": 1.0,
       "source": "lib_validations_informe_ts",
       "target": "lib_types_contractdata"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/test-extractors.ts",
+      "source_location": "L30",
+      "weight": 1.0,
+      "source": "scripts_test_extractors_ts",
+      "target": "lib_types_contractdata",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports",
@@ -10719,6 +11536,26 @@
       "confidence_score": 1.0,
       "source": "lib_pdf_fill_forms_ts",
       "target": "lib_constants_institution_ts"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/constants/issuer-instructions.ts",
+      "source_location": "L7",
+      "weight": 1.0,
+      "source": "lib_constants_issuer_instructions_ts",
+      "target": "constants_issuer_instructions_pila_issuer_instructions",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/constants/issuer-instructions.ts",
+      "source_location": "L48",
+      "weight": 1.0,
+      "source": "lib_constants_issuer_instructions_ts",
+      "target": "constants_issuer_instructions_arl_issuer_instructions",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -11391,6 +12228,525 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
+      "source_file": "lib/pdf/sanity-checks.ts",
+      "source_location": "L23",
+      "weight": 1.0,
+      "source": "lib_pdf_sanity_checks_ts",
+      "target": "pdf_sanity_checks_company_tokens",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/pdf/sanity-checks.ts",
+      "source_location": "L45",
+      "weight": 1.0,
+      "source": "lib_pdf_sanity_checks_ts",
+      "target": "pdf_sanity_checks_valid_arl_rates",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/pdf/sanity-checks.ts",
+      "source_location": "L48",
+      "weight": 1.0,
+      "source": "lib_pdf_sanity_checks_ts",
+      "target": "pdf_sanity_checks_valid_risk_classes",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/pdf/sanity-checks.ts",
+      "source_location": "L52",
+      "weight": 1.0,
+      "source": "lib_pdf_sanity_checks_ts",
+      "target": "pdf_sanity_checks_isdmy",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/pdf/sanity-checks.ts",
+      "source_location": "L53",
+      "weight": 1.0,
+      "source": "lib_pdf_sanity_checks_ts",
+      "target": "pdf_sanity_checks_isiso",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/pdf/sanity-checks.ts",
+      "source_location": "L54",
+      "weight": 1.0,
+      "source": "lib_pdf_sanity_checks_ts",
+      "target": "pdf_sanity_checks_ismy",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/pdf/sanity-checks.ts",
+      "source_location": "L56",
+      "weight": 1.0,
+      "source": "lib_pdf_sanity_checks_ts",
+      "target": "pdf_sanity_checks_parsedmy",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/pdf/sanity-checks.ts",
+      "source_location": "L63",
+      "weight": 1.0,
+      "source": "lib_pdf_sanity_checks_ts",
+      "target": "pdf_sanity_checks_parseisodate",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/pdf/sanity-checks.ts",
+      "source_location": "L76",
+      "weight": 1.0,
+      "source": "lib_pdf_sanity_checks_ts",
+      "target": "pdf_sanity_checks_lookslikepersonname",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/pdf/sanity-checks.ts",
+      "source_location": "L95",
+      "weight": 1.0,
+      "source": "lib_pdf_sanity_checks_ts",
+      "target": "pdf_sanity_checks_lookslikedocumentnumber",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/pdf/sanity-checks.ts",
+      "source_location": "L102",
+      "weight": 1.0,
+      "source": "lib_pdf_sanity_checks_ts",
+      "target": "pdf_sanity_checks_lookslikesheetnumber",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/pdf/sanity-checks.ts",
+      "source_location": "L108",
+      "weight": 1.0,
+      "source": "lib_pdf_sanity_checks_ts",
+      "target": "pdf_sanity_checks_isvalidperiod",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/pdf/sanity-checks.ts",
+      "source_location": "L115",
+      "weight": 1.0,
+      "source": "lib_pdf_sanity_checks_ts",
+      "target": "pdf_sanity_checks_isvaliddate",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/pdf/sanity-checks.ts",
+      "source_location": "L120",
+      "weight": 1.0,
+      "source": "lib_pdf_sanity_checks_ts",
+      "target": "pdf_sanity_checks_isvalidarlrate",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/pdf/sanity-checks.ts",
+      "source_location": "L125",
+      "weight": 1.0,
+      "source": "lib_pdf_sanity_checks_ts",
+      "target": "pdf_sanity_checks_isvalidriskclass",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/pdf/sanity-checks.ts",
+      "source_location": "L132",
+      "weight": 1.0,
+      "source": "lib_pdf_sanity_checks_ts",
+      "target": "pdf_sanity_checks_sanityresult",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/pdf/sanity-checks.ts",
+      "source_location": "L141",
+      "weight": 1.0,
+      "source": "lib_pdf_sanity_checks_ts",
+      "target": "pdf_sanity_checks_checkpaymentsheet",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/pdf/sanity-checks.ts",
+      "source_location": "L202",
+      "weight": 1.0,
+      "source": "lib_pdf_sanity_checks_ts",
+      "target": "pdf_sanity_checks_checkarl",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/pdf/sanity-checks.ts",
+      "source_location": "L255",
+      "weight": 1.0,
+      "source": "lib_pdf_sanity_checks_ts",
+      "target": "pdf_sanity_checks_checkcontract",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/pdf/sanity-checks.ts",
+      "source_location": "L308",
+      "weight": 1.0,
+      "source": "lib_pdf_sanity_checks_ts",
+      "target": "pdf_sanity_checks_downgradeconfidence",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/test-extractors.ts",
+      "source_location": "L25",
+      "weight": 1.0,
+      "source": "scripts_test_extractors_ts",
+      "target": "lib_pdf_sanity_checks_ts",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/pdf/sanity-checks.ts",
+      "source_location": "L117",
+      "weight": 1.0,
+      "source": "pdf_sanity_checks_isvaliddate",
+      "target": "pdf_sanity_checks_isdmy",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/pdf/sanity-checks.ts",
+      "source_location": "L186",
+      "weight": 1.0,
+      "source": "pdf_sanity_checks_checkpaymentsheet",
+      "target": "pdf_sanity_checks_isdmy",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/pdf/sanity-checks.ts",
+      "source_location": "L117",
+      "weight": 1.0,
+      "source": "pdf_sanity_checks_isvaliddate",
+      "target": "pdf_sanity_checks_isiso",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/pdf/sanity-checks.ts",
+      "source_location": "L110",
+      "weight": 1.0,
+      "source": "pdf_sanity_checks_isvalidperiod",
+      "target": "pdf_sanity_checks_ismy",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/pdf/sanity-checks.ts",
+      "source_location": "L187",
+      "weight": 1.0,
+      "source": "pdf_sanity_checks_checkpaymentsheet",
+      "target": "pdf_sanity_checks_parsedmy",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/pdf/sanity-checks.ts",
+      "source_location": "L243",
+      "weight": 1.0,
+      "source": "pdf_sanity_checks_checkarl",
+      "target": "pdf_sanity_checks_parsedmy",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/pdf/sanity-checks.ts",
+      "source_location": "L290",
+      "weight": 1.0,
+      "source": "pdf_sanity_checks_checkcontract",
+      "target": "pdf_sanity_checks_parsedmy",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/pdf/sanity-checks.ts",
+      "source_location": "L243",
+      "weight": 1.0,
+      "source": "pdf_sanity_checks_checkarl",
+      "target": "pdf_sanity_checks_parseisodate",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/pdf/sanity-checks.ts",
+      "source_location": "L290",
+      "weight": 1.0,
+      "source": "pdf_sanity_checks_checkcontract",
+      "target": "pdf_sanity_checks_parseisodate",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/pdf/sanity-checks.ts",
+      "source_location": "L152",
+      "weight": 1.0,
+      "source": "pdf_sanity_checks_checkpaymentsheet",
+      "target": "pdf_sanity_checks_lookslikepersonname",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/pdf/sanity-checks.ts",
+      "source_location": "L211",
+      "weight": 1.0,
+      "source": "pdf_sanity_checks_checkarl",
+      "target": "pdf_sanity_checks_lookslikepersonname",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/pdf/sanity-checks.ts",
+      "source_location": "L268",
+      "weight": 1.0,
+      "source": "pdf_sanity_checks_checkcontract",
+      "target": "pdf_sanity_checks_lookslikepersonname",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/pdf/sanity-checks.ts",
+      "source_location": "L158",
+      "weight": 1.0,
+      "source": "pdf_sanity_checks_checkpaymentsheet",
+      "target": "pdf_sanity_checks_lookslikedocumentnumber",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/pdf/sanity-checks.ts",
+      "source_location": "L217",
+      "weight": 1.0,
+      "source": "pdf_sanity_checks_checkarl",
+      "target": "pdf_sanity_checks_lookslikedocumentnumber",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/pdf/sanity-checks.ts",
+      "source_location": "L274",
+      "weight": 1.0,
+      "source": "pdf_sanity_checks_checkcontract",
+      "target": "pdf_sanity_checks_lookslikedocumentnumber",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/pdf/sanity-checks.ts",
+      "source_location": "L164",
+      "weight": 1.0,
+      "source": "pdf_sanity_checks_checkpaymentsheet",
+      "target": "pdf_sanity_checks_lookslikesheetnumber",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/pdf/sanity-checks.ts",
+      "source_location": "L170",
+      "weight": 1.0,
+      "source": "pdf_sanity_checks_checkpaymentsheet",
+      "target": "pdf_sanity_checks_isvalidperiod",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/pdf/sanity-checks.ts",
+      "source_location": "L176",
+      "weight": 1.0,
+      "source": "pdf_sanity_checks_checkpaymentsheet",
+      "target": "pdf_sanity_checks_isvaliddate",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/pdf/sanity-checks.ts",
+      "source_location": "L235",
+      "weight": 1.0,
+      "source": "pdf_sanity_checks_checkarl",
+      "target": "pdf_sanity_checks_isvaliddate",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/pdf/sanity-checks.ts",
+      "source_location": "L283",
+      "weight": 1.0,
+      "source": "pdf_sanity_checks_checkcontract",
+      "target": "pdf_sanity_checks_isvaliddate",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/pdf/sanity-checks.ts",
+      "source_location": "L223",
+      "weight": 1.0,
+      "source": "pdf_sanity_checks_checkarl",
+      "target": "pdf_sanity_checks_isvalidarlrate",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/pdf/sanity-checks.ts",
+      "source_location": "L229",
+      "weight": 1.0,
+      "source": "pdf_sanity_checks_checkarl",
+      "target": "pdf_sanity_checks_isvalidriskclass",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/test-extractors.ts",
+      "source_location": "L25",
+      "weight": 1.0,
+      "source": "scripts_test_extractors_ts",
+      "target": "pdf_sanity_checks_checkpaymentsheet",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "scripts/test-extractors.ts",
+      "source_location": "L137",
+      "weight": 1.0,
+      "source": "scripts_test_extractors_runcase",
+      "target": "pdf_sanity_checks_checkpaymentsheet"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/test-extractors.ts",
+      "source_location": "L25",
+      "weight": 1.0,
+      "source": "scripts_test_extractors_ts",
+      "target": "pdf_sanity_checks_checkarl",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "scripts/test-extractors.ts",
+      "source_location": "L155",
+      "weight": 1.0,
+      "source": "scripts_test_extractors_runcase",
+      "target": "pdf_sanity_checks_checkarl"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/test-extractors.ts",
+      "source_location": "L25",
+      "weight": 1.0,
+      "source": "scripts_test_extractors_ts",
+      "target": "pdf_sanity_checks_checkcontract",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "scripts/test-extractors.ts",
+      "source_location": "L174",
+      "weight": 1.0,
+      "source": "scripts_test_extractors_runcase",
+      "target": "pdf_sanity_checks_checkcontract"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
       "source_file": "lib/pdf/utils.ts",
       "source_location": "L5",
       "weight": 1.0,
@@ -11522,6 +12878,46 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "lib/pdf/parsers/keyword-extractor.ts",
+      "source_location": "L329",
+      "weight": 1.0,
+      "source": "lib_pdf_parsers_keyword_extractor_ts",
+      "target": "parsers_keyword_extractor_extractarlexpeditiondate",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/pdf/parsers/keyword-extractor.ts",
+      "source_location": "L364",
+      "weight": 1.0,
+      "source": "lib_pdf_parsers_keyword_extractor_ts",
+      "target": "parsers_keyword_extractor_month_es",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/pdf/parsers/keyword-extractor.ts",
+      "source_location": "L380",
+      "weight": 1.0,
+      "source": "lib_pdf_parsers_keyword_extractor_ts",
+      "target": "parsers_keyword_extractor_extractmonthnameperiod",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/pdf/parsers/keyword-extractor.ts",
+      "source_location": "L392",
+      "weight": 1.0,
+      "source": "lib_pdf_parsers_keyword_extractor_ts",
+      "target": "parsers_keyword_extractor_extractisomonthperiod",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/pdf/parsers/keyword-extractor.ts",
       "source_location": "L299",
       "weight": 1.0,
       "confidence_score": 1.0,
@@ -11587,6 +12983,17 @@
       "confidence_score": 1.0,
       "source": "lib_pdf_parsers_keyword_extractor_ts",
       "target": "parsers_keyword_extractor_extractactivityreportcandidates"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/test-extractors.ts",
+      "source_location": "L16",
+      "weight": 1.0,
+      "source": "scripts_test_extractors_ts",
+      "target": "lib_pdf_parsers_keyword_extractor_ts",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -11670,6 +13077,17 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "lib/pdf/parsers/keyword-extractor.ts",
+      "source_location": "L348",
+      "weight": 1.0,
+      "source": "parsers_keyword_extractor_extractarlexpeditiondate",
+      "target": "parsers_keyword_extractor_normalizedate",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/pdf/parsers/keyword-extractor.ts",
       "source_location": "L325",
       "weight": 1.0,
       "confidence_score": 1.0,
@@ -11697,6 +13115,28 @@
       "confidence_score": 1.0,
       "source": "parsers_keyword_extractor_extractactivityreportcandidates",
       "target": "parsers_keyword_extractor_normalizedate"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/test-extractors.ts",
+      "source_location": "L16",
+      "weight": 1.0,
+      "source": "scripts_test_extractors_ts",
+      "target": "parsers_keyword_extractor_joinsplitdates",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "scripts/test-extractors.ts",
+      "source_location": "L89",
+      "weight": 1.0,
+      "source": "scripts_test_extractors_extractpdftext",
+      "target": "parsers_keyword_extractor_joinsplitdates"
     },
     {
       "relation": "calls",
@@ -11752,6 +13192,160 @@
       "confidence_score": 1.0,
       "source": "parsers_keyword_extractor_extractarlcandidates",
       "target": "parsers_keyword_extractor_detectissuer"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/test-extractors.ts",
+      "source_location": "L16",
+      "weight": 1.0,
+      "source": "scripts_test_extractors_ts",
+      "target": "parsers_keyword_extractor_extractarlcandidates",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "scripts/test-extractors.ts",
+      "source_location": "L152",
+      "weight": 1.0,
+      "source": "scripts_test_extractors_runcase",
+      "target": "parsers_keyword_extractor_extractarlcandidates"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/test-extractors.ts",
+      "source_location": "L16",
+      "weight": 1.0,
+      "source": "scripts_test_extractors_ts",
+      "target": "parsers_keyword_extractor_extractarlexpeditiondate",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "scripts/test-extractors.ts",
+      "source_location": "L161",
+      "weight": 1.0,
+      "source": "scripts_test_extractors_runcase",
+      "target": "parsers_keyword_extractor_extractarlexpeditiondate"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/pdf/parsers/keyword-extractor.ts",
+      "source_location": "L596",
+      "weight": 1.0,
+      "source": "parsers_keyword_extractor_extractpilacandidates",
+      "target": "parsers_keyword_extractor_extractmonthnameperiod",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/pdf/parsers/keyword-extractor.ts",
+      "source_location": "L592",
+      "weight": 1.0,
+      "source": "parsers_keyword_extractor_extractpilacandidates",
+      "target": "parsers_keyword_extractor_extractisomonthperiod",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/test-extractors.ts",
+      "source_location": "L16",
+      "weight": 1.0,
+      "source": "scripts_test_extractors_ts",
+      "target": "parsers_keyword_extractor_extractpilacandidates",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "scripts/test-extractors.ts",
+      "source_location": "L134",
+      "weight": 1.0,
+      "source": "scripts_test_extractors_runcase",
+      "target": "parsers_keyword_extractor_extractpilacandidates"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/test-extractors.ts",
+      "source_location": "L16",
+      "weight": 1.0,
+      "source": "scripts_test_extractors_ts",
+      "target": "parsers_keyword_extractor_extractcontractcandidates",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "scripts/test-extractors.ts",
+      "source_location": "L171",
+      "weight": 1.0,
+      "source": "scripts_test_extractors_runcase",
+      "target": "parsers_keyword_extractor_extractcontractcandidates"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/test-extractors.ts",
+      "source_location": "L16",
+      "weight": 1.0,
+      "source": "scripts_test_extractors_ts",
+      "target": "parsers_keyword_extractor_detectissuer",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "scripts/test-extractors.ts",
+      "source_location": "L141",
+      "weight": 1.0,
+      "source": "scripts_test_extractors_runcase",
+      "target": "parsers_keyword_extractor_detectissuer"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/test-extractors.ts",
+      "source_location": "L16",
+      "weight": 1.0,
+      "source": "scripts_test_extractors_ts",
+      "target": "parsers_keyword_extractor_extractactivityreportcandidates",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "scripts/test-extractors.ts",
+      "source_location": "L188",
+      "weight": 1.0,
+      "source": "scripts_test_extractors_runcase",
+      "target": "parsers_keyword_extractor_extractactivityreportcandidates"
     },
     {
       "relation": "contains",
@@ -12761,6 +14355,17 @@
       "relation": "imports_from",
       "context": "import",
       "confidence": "EXTRACTED",
+      "source_file": "lib/validations/fechas.ts",
+      "source_location": "L3",
+      "weight": 1.0,
+      "source": "lib_validations_fechas_ts",
+      "target": "lib_validations_fecha_limite_ts",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
       "source_file": "lib/validations/index.ts",
       "source_location": "L8",
       "weight": 1.0,
@@ -12915,11 +14520,33 @@
       "relation": "imports",
       "context": "import",
       "confidence": "EXTRACTED",
+      "source_file": "lib/validations/fechas.ts",
+      "source_location": "L3",
+      "weight": 1.0,
+      "source": "lib_validations_fechas_ts",
+      "target": "validations_fecha_limite_calcularfechalimite",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
       "source_file": "lib/validations/index.ts",
       "source_location": "L8",
       "weight": 1.0,
       "confidence_score": 1.0,
       "source": "lib_validations_index_ts",
+      "target": "validations_fecha_limite_calcularfechalimite"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/validations/fechas.ts",
+      "source_location": "L143",
+      "weight": 1.0,
+      "source": "validations_fechas_checknextperioddeadline",
       "target": "validations_fecha_limite_calcularfechalimite"
     },
     {
@@ -12967,6 +14594,46 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "lib/validations/fechas.ts",
+      "source_location": "L96",
+      "weight": 1.0,
+      "source": "lib_validations_fechas_ts",
+      "target": "validations_fechas_todaycolombia",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/validations/fechas.ts",
+      "source_location": "L107",
+      "weight": 1.0,
+      "source": "lib_validations_fechas_ts",
+      "target": "validations_fechas_nextmonthperiod",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/validations/fechas.ts",
+      "source_location": "L114",
+      "weight": 1.0,
+      "source": "lib_validations_fechas_ts",
+      "target": "validations_fechas_nextperioddeadlinecheck",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/validations/fechas.ts",
+      "source_location": "L136",
+      "weight": 1.0,
+      "source": "lib_validations_fechas_ts",
+      "target": "validations_fechas_checknextperioddeadline",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/validations/fechas.ts",
       "source_location": "L98",
       "weight": 1.0,
       "confidence_score": 1.0,
@@ -12994,6 +14661,17 @@
       "confidence_score": 1.0,
       "source": "validations_fechas_parseddmmyyyy",
       "target": "validations_fechas_validarfechapago"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/validations/fechas.ts",
+      "source_location": "L144",
+      "weight": 1.0,
+      "source": "validations_fechas_checknextperioddeadline",
+      "target": "validations_fechas_parseddmmyyyy",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports",
@@ -13038,6 +14716,50 @@
       "weight": 1.0,
       "source": "validations_fechas_validargavelaarl",
       "target": "validations_index_runvalidations"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/validations/fechas.ts",
+      "source_location": "L141",
+      "weight": 1.0,
+      "source": "validations_fechas_checknextperioddeadline",
+      "target": "validations_fechas_todaycolombia",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/validations/fechas.ts",
+      "source_location": "L142",
+      "weight": 1.0,
+      "source": "validations_fechas_checknextperioddeadline",
+      "target": "validations_fechas_nextmonthperiod",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/validations/index.ts",
+      "source_location": "L7",
+      "weight": 1.0,
+      "source": "lib_validations_index_ts",
+      "target": "validations_fechas_checknextperioddeadline",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/validations/index.ts",
+      "source_location": "L232",
+      "weight": 1.0,
+      "source": "validations_index_runvalidations",
+      "target": "validations_fechas_checknextperioddeadline"
     },
     {
       "relation": "imports",
@@ -13185,6 +14907,171 @@
       "confidence_score": 1.0,
       "source": "scratch_debug_pdf_text_ts",
       "target": "scratch_debug_pdf_text_debug"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/test-extractors.ts",
+      "source_location": "L36",
+      "weight": 1.0,
+      "source": "scripts_test_extractors_ts",
+      "target": "scripts_test_extractors_root",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/test-extractors.ts",
+      "source_location": "L44",
+      "weight": 1.0,
+      "source": "scripts_test_extractors_ts",
+      "target": "scripts_test_extractors_full",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/test-extractors.ts",
+      "source_location": "L52",
+      "weight": 1.0,
+      "source": "scripts_test_extractors_ts",
+      "target": "scripts_test_extractors_casefiles",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/test-extractors.ts",
+      "source_location": "L61",
+      "weight": 1.0,
+      "source": "scripts_test_extractors_ts",
+      "target": "scripts_test_extractors_findcasefiles",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/test-extractors.ts",
+      "source_location": "L84",
+      "weight": 1.0,
+      "source": "scripts_test_extractors_ts",
+      "target": "scripts_test_extractors_extractpdftext",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/test-extractors.ts",
+      "source_location": "L92",
+      "weight": 1.0,
+      "source": "scripts_test_extractors_ts",
+      "target": "scripts_test_extractors_caseresult",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/test-extractors.ts",
+      "source_location": "L125",
+      "weight": 1.0,
+      "source": "scripts_test_extractors_ts",
+      "target": "scripts_test_extractors_runcase",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/test-extractors.ts",
+      "source_location": "L200",
+      "weight": 1.0,
+      "source": "scripts_test_extractors_ts",
+      "target": "scripts_test_extractors_summarize",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/test-extractors.ts",
+      "source_location": "L233",
+      "weight": 1.0,
+      "source": "scripts_test_extractors_ts",
+      "target": "scripts_test_extractors_expectedvalues",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/test-extractors.ts",
+      "source_location": "L244",
+      "weight": 1.0,
+      "source": "scripts_test_extractors_ts",
+      "target": "scripts_test_extractors_comparewithexpected",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/test-extractors.ts",
+      "source_location": "L282",
+      "weight": 1.0,
+      "source": "scripts_test_extractors_ts",
+      "target": "scripts_test_extractors_main",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/test-extractors.ts",
+      "source_location": "L292",
+      "weight": 1.0,
+      "source": "scripts_test_extractors_main",
+      "target": "scripts_test_extractors_findcasefiles",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/test-extractors.ts",
+      "source_location": "L131",
+      "weight": 1.0,
+      "source": "scripts_test_extractors_runcase",
+      "target": "scripts_test_extractors_extractpdftext",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/test-extractors.ts",
+      "source_location": "L307",
+      "weight": 1.0,
+      "source": "scripts_test_extractors_main",
+      "target": "scripts_test_extractors_runcase",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/test-extractors.ts",
+      "source_location": "L309",
+      "weight": 1.0,
+      "source": "scripts_test_extractors_main",
+      "target": "scripts_test_extractors_summarize",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/test-extractors.ts",
+      "source_location": "L310",
+      "weight": 1.0,
+      "source": "scripts_test_extractors_main",
+      "target": "scripts_test_extractors_comparewithexpected",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -13945,6 +15832,46 @@
       "confidence_score": 1.0,
       "source": "memory_2026_05_05_memory_log_2026_05_05",
       "target": "memory_2026_05_05_system_state"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "graphify-out/converted/Matrices_d5214341.md",
+      "source_location": "L3",
+      "weight": 1.0,
+      "source": "graphify_out_converted_matrices_d5214341_md",
+      "target": "converted_matrices_d5214341_sheet_resumen_general",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "graphify-out/converted/Matrices_d5214341.md",
+      "source_location": "L14",
+      "weight": 1.0,
+      "source": "graphify_out_converted_matrices_d5214341_md",
+      "target": "converted_matrices_d5214341_sheet_casos_de_prueba",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "graphify-out/converted/Matrices_d5214341.md",
+      "source_location": "L68",
+      "weight": 1.0,
+      "source": "graphify_out_converted_matrices_d5214341_md",
+      "target": "converted_matrices_d5214341_sheet_metricas",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "graphify-out/converted/Matrices_d5214341.md",
+      "source_location": "L80",
+      "weight": 1.0,
+      "source": "graphify_out_converted_matrices_d5214341_md",
+      "target": "converted_matrices_d5214341_sheet_clasificaciones",
+      "confidence_score": 1.0
     },
     {
       "relation": "conceptually_related_to",
@@ -15181,5 +17108,5 @@
       "summary": "Layered PDF security: client-side magic byte + /JS scan -> server-side keyword fingerprint validation -> AI extraction"
     }
   ],
-  "built_at_commit": "d3f1b3e00d5f42b41729112e1a6da4953d3cd91a"
+  "built_at_commit": "75c1593477bba3fbb59592e6659ccb8f9f9977a2"
 }

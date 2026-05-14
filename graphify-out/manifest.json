@@ -24,8 +24,8 @@
     "hash": "b91154fba2706f023f14063d24d5ea81"
   },
   "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\app\\api\\extract\\route.ts": {
-    "mtime": 1778269740.7580717,
-    "hash": "0cc84ffad0fe91140cdb21aae3f25ca7"
+    "mtime": 1778707735.211567,
+    "hash": "85adce068f4af5fa22084d051b8a2ef4"
   },
   "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\app\\api\\extract-text\\route.ts": {
     "mtime": 1778162812.62537,
@@ -112,8 +112,8 @@
     "hash": "7020d33828bb60cb722536eb37d5c0d5"
   },
   "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\components\\wizard\\extraction-editors.tsx": {
-    "mtime": 1778269741.2267215,
-    "hash": "23d80d7babacb221ddced576e8799f7e"
+    "mtime": 1778708156.2463737,
+    "hash": "4ac4386ef7712ae3c6585ee254a56e13"
   },
   "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\components\\wizard\\section-header.tsx": {
     "mtime": 1777395253.4110065,
@@ -124,12 +124,12 @@
     "hash": "5c682c18bf575a63998f2a336a001c87"
   },
   "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\components\\wizard\\step-2.tsx": {
-    "mtime": 1778274031.4287875,
-    "hash": "ad02711633a6af48e7fdfe836c2d5dc5"
+    "mtime": 1778706039.4777012,
+    "hash": "f424230dbd625df79bad2b5faf130f4d"
   },
   "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\components\\wizard\\step-3.tsx": {
-    "mtime": 1778532611.9947317,
-    "hash": "e353229da4e2655cd425b0559c454634"
+    "mtime": 1778702656.7030795,
+    "hash": "ce1e58d014cfdb60406d7c96e7813716"
   },
   "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\components\\wizard\\step-4.tsx": {
     "mtime": 1778162812.6369374,
@@ -171,20 +171,24 @@
     "mtime": 1778270184.9898255,
     "hash": "858f5150da677320fbf3e87390755391"
   },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\lib\\constants\\issuer-instructions.ts": {
+    "mtime": 1778703775.9719577,
+    "hash": "a4f8c5b1818072ba2bb6a33b9f05508d"
+  },
   "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\lib\\constants\\months.ts": {
     "mtime": 1777395253.4200344,
     "hash": "55cff919d1af8456982fdfcec12ad9bd"
   },
   "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\lib\\constants\\pdf.ts": {
-    "mtime": 1777395253.4210334,
-    "hash": "4f4133f9ddb5b572ea3f163900fa3739"
+    "mtime": 1778703638.658005,
+    "hash": "115883021834b85510b5d8059217cbd2"
   },
   "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\lib\\pdf\\build-format-data.ts": {
-    "mtime": 1778269741.5977023,
-    "hash": "f6717929ba75937c3b459ca92d750e19"
+    "mtime": 1778599881.756981,
+    "hash": "7d069a9a20241132cb53f382c1c34330"
   },
   "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\lib\\pdf\\document-profiles.ts": {
-    "mtime": 1777395253.5343184,
+    "mtime": 1778699493.1174734,
     "hash": "6a348493a070f7dc43d7263d07a416a8"
   },
   "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\lib\\pdf\\document-validator.ts": {
@@ -200,20 +204,24 @@
     "hash": "e78e37c8d734669fd2b2c8a5a803a697"
   },
   "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\lib\\pdf\\fill-forms.ts": {
-    "mtime": 1778532573.6578972,
-    "hash": "fcb3cb80296459bb21b4ba6f2c9c2f28"
+    "mtime": 1778602550.3893452,
+    "hash": "6093eaed7250a9fa1640bcfa7029ef60"
   },
   "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\lib\\pdf\\page-count.ts": {
     "mtime": 1777561720.505521,
     "hash": "6c78ff181b9f3e45c820ef8531039635"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\lib\\pdf\\sanity-checks.ts": {
+    "mtime": 1778704282.2485573,
+    "hash": "8976acad50aef010b16d06e716518f50"
   },
   "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\lib\\pdf\\utils.ts": {
     "mtime": 1777395253.5378666,
     "hash": "d7ecae6696ab2402af3d88bd3260fdce"
   },
   "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\lib\\pdf\\parsers\\keyword-extractor.ts": {
-    "mtime": 1778269741.7403147,
-    "hash": "003500732095f2eaf77f65c54cc36e59"
+    "mtime": 1778707137.0960712,
+    "hash": "1f9f2ba21c4f3941483e8d6ab0a03b65"
   },
   "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\lib\\schemas\\activity-report.ts": {
     "mtime": 1778269741.7642038,
@@ -268,12 +276,12 @@
     "hash": "d2f145f57129a9c5ff6e98c053d95dea"
   },
   "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\lib\\validations\\fechas.ts": {
-    "mtime": 1778162812.650449,
-    "hash": "8936f7188b80b2d1824caa558cfc6258"
+    "mtime": 1778702573.8251863,
+    "hash": "06e8a4d892202618073b3c6314511be9"
   },
   "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\lib\\validations\\index.ts": {
-    "mtime": 1778532597.8275266,
-    "hash": "31cfc1c028134a4aa1b188a8e65acbb8"
+    "mtime": 1778702609.7807088,
+    "hash": "8ae8b9169b09c37d5b9f4a792da2dd1e"
   },
   "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\lib\\validations\\informe.ts": {
     "mtime": 1778532588.0247061,
@@ -286,6 +294,10 @@
   "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\scratch\\debug_pdf_text.ts": {
     "mtime": 1778269742.1024137,
     "hash": "4586b8d9a61b98f2ac43560264082c26"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\scripts\\test-extractors.ts": {
+    "mtime": 1778707193.162888,
+    "hash": "2b8adadfa06e381a2d768cdea0981b3e"
   },
   "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\CLAUDE.md": {
     "mtime": 1778531966.9411328,
@@ -303,6 +315,10 @@
     "mtime": 1777395253.3941476,
     "hash": "fab60f412cc9016f85fcc1f484d778bc"
   },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\graphify-out\\converted\\certificado_validacion_7c9578cf.md": {
+    "mtime": 1778711835.026241,
+    "hash": "9e81603d178be7a9a0fe1e6b2d324674"
+  },
   "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\memory\\2026-05-05.md": {
     "mtime": 1778162812.6524496,
     "hash": "ef9cb62dd13c0ba639c9df35e023ed34"
@@ -310,6 +326,10 @@
   "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\scratch\\contract_text.txt": {
     "mtime": 1778162812.6599588,
     "hash": "bfe231793be6b8d4618c71eee8292c3c"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\graphify-out\\converted\\Matrices_d5214341.md": {
+    "mtime": 1778711836.321951,
+    "hash": "714ccce5e98a53f0f10884fb5ba06371"
   },
   "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\lib\\docs-test\\ARL.pdf": {
     "mtime": 1777395253.4260848,
@@ -326,6 +346,438 @@
   "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\lib\\docs-test\\PLANILLA.pdf": {
     "mtime": 1777395253.4311912,
     "hash": "8cead9fe6b4ac64a7d82d8126c5c38d2"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\test-app\\Casos\\01_Operadores Planilla\\Aportes en Linea\\Tipo1\\4013_OSE_20_2026.PDF": {
+    "mtime": 1778699613.5240586,
+    "hash": "e13a67e4b3717a430fb130d4eced7191"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\test-app\\Casos\\01_Operadores Planilla\\Aportes en Linea\\Tipo1\\ARL_Sura.pdf": {
+    "mtime": 1778699613.5375743,
+    "hash": "93d1db03322704bf846215d77a3477f1"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\test-app\\Casos\\01_Operadores Planilla\\Aportes en Linea\\Tipo1\\Planilla_AportesEnLinea_1.pdf": {
+    "mtime": 1778699613.5496647,
+    "hash": "353cf89b2b29f97ffc748712952c3e07"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\test-app\\Casos\\01_Operadores Planilla\\Aportes en Linea\\Tipo2\\4001_OSE_30_2026.PDF": {
+    "mtime": 1778699613.5616717,
+    "hash": "b3ab2659ba08c8d23b5deb10a308dabf"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\test-app\\Casos\\01_Operadores Planilla\\Aportes en Linea\\Tipo2\\ARL_Positiva.pdf": {
+    "mtime": 1778699613.5687122,
+    "hash": "3654269cf475d21fcad54741c43f99f0"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\test-app\\Casos\\01_Operadores Planilla\\Aportes en Linea\\Tipo2\\Planilla_AportesEnLinea_2.pdf": {
+    "mtime": 1778699613.5792248,
+    "hash": "0063b978b18053bda33adaaf03be36c8"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\test-app\\Casos\\01_Operadores Planilla\\Asopagos\\Tipo1\\4001_OPS_30_2026.PDF": {
+    "mtime": 1778699613.5972993,
+    "hash": "317fee65f841e11fb711adb2e5aec385"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\test-app\\Casos\\01_Operadores Planilla\\Asopagos\\Tipo1\\ARL_Sura.pdf": {
+    "mtime": 1778699613.6063204,
+    "hash": "1fe38e1baace5c1488bfec438a4a6f93"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\test-app\\Casos\\01_Operadores Planilla\\Asopagos\\Tipo1\\Planilla_Asopagos.pdf": {
+    "mtime": 1778699613.6128325,
+    "hash": "2d10e2b5385a9d1ab17db207dea3a5ac"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\test-app\\Casos\\01_Operadores Planilla\\Asopagos\\Tipo2\\4062_OPS_3_2026.PDF": {
+    "mtime": 1778699613.626867,
+    "hash": "12f785ec9531ae03d44ea15afe55a061"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\test-app\\Casos\\01_Operadores Planilla\\Asopagos\\Tipo2\\ARL_Sura.pdf": {
+    "mtime": 1778699613.6348732,
+    "hash": "f847b5bbf09979b2dfd6074bdee44fdb"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\test-app\\Casos\\01_Operadores Planilla\\Asopagos\\Tipo2\\Planilla_Asopagos_2.pdf": {
+    "mtime": 1778699613.642874,
+    "hash": "cd18a2f907b0eb756750c96357c222b5"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\test-app\\Casos\\01_Operadores Planilla\\Asopagos\\Tipo3\\4010_OPS_19_2026.PDF": {
+    "mtime": 1778699613.6539032,
+    "hash": "c3116de048434bcbebae8bdd3a1bd030"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\test-app\\Casos\\01_Operadores Planilla\\Asopagos\\Tipo3\\ARL_Positiva.pdf": {
+    "mtime": 1778699613.6609015,
+    "hash": "4b87e004c70cb02dd1fda3c6026348cc"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\test-app\\Casos\\01_Operadores Planilla\\Asopagos\\Tipo3\\Planilla_Asopagos_3.pdf": {
+    "mtime": 1778699613.6684139,
+    "hash": "94c01f1a64ba5d4356dc51d1e11a3396"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\test-app\\Casos\\01_Operadores Planilla\\Asopagos\\Tipo4\\4001_OPS_4_2026.PDF": {
+    "mtime": 1778699613.679413,
+    "hash": "635091209f5a2aec341f53d7e12d74e8"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\test-app\\Casos\\01_Operadores Planilla\\Asopagos\\Tipo4\\ARL_Sura.pdf": {
+    "mtime": 1778699613.6879284,
+    "hash": "48ee437e1cc0198e4bedf5ef3075080e"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\test-app\\Casos\\01_Operadores Planilla\\Asopagos\\Tipo4\\Planilla_Asopagos_4.pdf": {
+    "mtime": 1778699613.6949282,
+    "hash": "24a2244cf91a6e9ef52d5a8cf7543172"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\test-app\\Casos\\01_Operadores Planilla\\Enlace\\4013_OSE_10_2026.PDF": {
+    "mtime": 1778699613.7054439,
+    "hash": "f06cb49372bd819408b7fbb62c697176"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\test-app\\Casos\\01_Operadores Planilla\\Enlace\\ARL_Sura.pdf": {
+    "mtime": 1778699613.7149942,
+    "hash": "27ad879840619e27dda5f9f2c2b67a4c"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\test-app\\Casos\\01_Operadores Planilla\\Enlace\\Planilla_Enlace.pdf": {
+    "mtime": 1778699613.7209938,
+    "hash": "cb3577f45a50c49bee0b2929b03172ed"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\test-app\\Casos\\01_Operadores Planilla\\Mi Planilla\\4001-OEF-12-2025.pdf": {
+    "mtime": 1778699613.732655,
+    "hash": "f06f16547660f5152adfa142248463b2"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\test-app\\Casos\\01_Operadores Planilla\\Mi Planilla\\ARL.pdf": {
+    "mtime": 1778699613.7416532,
+    "hash": "4a5b7ae327eb50dcb8b0f8e9982c2c8d"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\test-app\\Casos\\01_Operadores Planilla\\Mi Planilla\\Planilla_Mi_Planilla.pdf": {
+    "mtime": 1778699613.748674,
+    "hash": "0f25e2e3f215113878a35d84450714c1"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\test-app\\Casos\\01_Operadores Planilla\\Simple\\4063_OSE_3_2026.PDF": {
+    "mtime": 1778699613.7597127,
+    "hash": "4219de8ec6ee0f61bd556922d70f0520"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\test-app\\Casos\\01_Operadores Planilla\\Simple\\ARL_Positiva.pdf": {
+    "mtime": 1778699613.766845,
+    "hash": "447bd1b6a30364d4dd61373f7151be36"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\test-app\\Casos\\01_Operadores Planilla\\Simple\\Planilla_Simple.pdf": {
+    "mtime": 1778699613.7728455,
+    "hash": "29cbec1f7aa9d7f414bca2686352b6d7"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\test-app\\Casos\\01_Operadores Planilla\\Soi\\Tipo1\\4011_OPS_12_2026.PDF": {
+    "mtime": 1778699613.788368,
+    "hash": "ac6f97abce6599373a77afc39dbaf430"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\test-app\\Casos\\01_Operadores Planilla\\Soi\\Tipo1\\ARL_Sura.pdf": {
+    "mtime": 1778699613.7973683,
+    "hash": "53d070e27d201bb1b83d568362e9b49b"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\test-app\\Casos\\01_Operadores Planilla\\Soi\\Tipo1\\Planilla_Soi.pdf": {
+    "mtime": 1778699613.805482,
+    "hash": "5c56468b1283d375bbd9fea3473fa1d2"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\test-app\\Casos\\01_Operadores Planilla\\Soi\\Tipo2\\4011_OPS_12_2026.PDF": {
+    "mtime": 1778699613.8179998,
+    "hash": "ac6f97abce6599373a77afc39dbaf430"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\test-app\\Casos\\01_Operadores Planilla\\Soi\\Tipo2\\ARL_Sura.pdf": {
+    "mtime": 1778699613.8275075,
+    "hash": "b4dd1c1dc754ee87ad02ca4ee4f6142c"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\test-app\\Casos\\01_Operadores Planilla\\Soi\\Tipo2\\Planilla_Soi_2.pdf": {
+    "mtime": 1778699613.837016,
+    "hash": "d514b1ace1ee4be95886c494c753a713"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\test-app\\Casos\\02_ARL\\Colmena\\4062_OEF_6_2025.PDF": {
+    "mtime": 1778699613.8516543,
+    "hash": "ecdc488ebd3c62c600ae65255bb6cad9"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\test-app\\Casos\\02_ARL\\Colmena\\ARL_Colmena.pdf": {
+    "mtime": 1778699613.860655,
+    "hash": "02843362c7bc48ad07360407128fd17f"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\test-app\\Casos\\02_ARL\\Colmena\\Planilla_Enlace.pdf": {
+    "mtime": 1778699613.866727,
+    "hash": "e769709d5be639c436ca6660f1167365"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\test-app\\Casos\\02_ARL\\Positiva\\4063_OEF_14_2026.PDF": {
+    "mtime": 1778699613.880245,
+    "hash": "523974263edf8ae083bc4fdb3c72d93b"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\test-app\\Casos\\02_ARL\\Positiva\\ARL_Positiva.pdf": {
+    "mtime": 1778699613.8867555,
+    "hash": "cbe0f4bda305611471c1b5b7426f9b78"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\test-app\\Casos\\02_ARL\\Positiva\\Planilla_Asopagos.pdf": {
+    "mtime": 1778699613.8951483,
+    "hash": "02f67183a4cb21743db433586ddd2974"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\test-app\\Casos\\02_ARL\\Sura\\Tipo1\\4001_OPS_30_2026.PDF": {
+    "mtime": 1778699613.9116673,
+    "hash": "317fee65f841e11fb711adb2e5aec385"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\test-app\\Casos\\02_ARL\\Sura\\Tipo1\\ARL_Sura.pdf": {
+    "mtime": 1778699613.9208825,
+    "hash": "1fe38e1baace5c1488bfec438a4a6f93"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\test-app\\Casos\\02_ARL\\Sura\\Tipo1\\Planilla_Asopagos.pdf": {
+    "mtime": 1778699613.9268818,
+    "hash": "2d10e2b5385a9d1ab17db207dea3a5ac"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\test-app\\Casos\\02_ARL\\Sura\\Tipo2\\4001_OPS_46_2026.PDF": {
+    "mtime": 1778699613.9383945,
+    "hash": "d388da8d6f09a1e1750338052a55d1de"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\test-app\\Casos\\02_ARL\\Sura\\Tipo2\\ARL_Sura_2.pdf": {
+    "mtime": 1778699613.9483945,
+    "hash": "24209dac795d263308b3c732e47cd64e"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\test-app\\Casos\\02_ARL\\Sura\\Tipo2\\Planilla_Asopagos.pdf": {
+    "mtime": 1778699613.9554155,
+    "hash": "e2f5219afcc1d635aa922bda2c334639"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\test-app\\Casos\\03_Contratos\\CSI\\4011_OSE_4_2026.PDF": {
+    "mtime": 1778699613.9699771,
+    "hash": "ede1a1b918bb1460cb8097f8a85e5918"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\test-app\\Casos\\03_Contratos\\CSI\\ARL_Sura.pdf": {
+    "mtime": 1778699613.9789743,
+    "hash": "e151310acaa81665464d8a6f25efcb0c"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\test-app\\Casos\\03_Contratos\\CSI\\CSI_1_4011_OSE_4_2026.pdf": {
+    "mtime": 1778699613.9884858,
+    "hash": "0c8b4c57d99b1c77d06afac6b22ccd9e"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\test-app\\Casos\\03_Contratos\\CSI\\Planilla_Asopagos_Apotes_Incompletos.pdf": {
+    "mtime": 1778699613.996526,
+    "hash": "539bb348d3d6871f410127649bba8a45"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\test-app\\Casos\\03_Contratos\\Doble\\4001-OEF-12-2025.pdf": {
+    "mtime": 1778699614.0066524,
+    "hash": "f06f16547660f5152adfa142248463b2"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\test-app\\Casos\\03_Contratos\\Doble\\4060-OSE-8-2026.pdf": {
+    "mtime": 1778699614.0141613,
+    "hash": "7162a276512259f071c012815889beb6"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\test-app\\Casos\\03_Contratos\\Doble\\ARL.pdf": {
+    "mtime": 1778699614.0231602,
+    "hash": "4a5b7ae327eb50dcb8b0f8e9982c2c8d"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\test-app\\Casos\\03_Contratos\\Doble\\Planilla_02.pdf": {
+    "mtime": 1778699614.030672,
+    "hash": "0f25e2e3f215113878a35d84450714c1"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\test-app\\Casos\\03_Contratos\\Doble\\Planilla_03.pdf": {
+    "mtime": 1778699614.0396786,
+    "hash": "32817ca790b42cdd0028554ff3e5b2bb"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\test-app\\Casos\\03_Contratos\\Sencillo\\4001_OPS_30_2026.PDF": {
+    "mtime": 1778699614.0513039,
+    "hash": "317fee65f841e11fb711adb2e5aec385"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\test-app\\Casos\\03_Contratos\\Sencillo\\ARL_Sura.pdf": {
+    "mtime": 1778699614.0613098,
+    "hash": "1fe38e1baace5c1488bfec438a4a6f93"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\test-app\\Casos\\03_Contratos\\Sencillo\\Planilla_Asopagos.pdf": {
+    "mtime": 1778699614.067827,
+    "hash": "2d10e2b5385a9d1ab17db207dea3a5ac"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\test-app\\Casos\\04_Informes\\Estandar\\4062_OEF_6_2025.PDF": {
+    "mtime": 1778699614.0823429,
+    "hash": "ecdc488ebd3c62c600ae65255bb6cad9"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\test-app\\Casos\\04_Informes\\Estandar\\ARL_Sura.pdf": {
+    "mtime": 1778699614.0908582,
+    "hash": "02843362c7bc48ad07360407128fd17f"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\test-app\\Casos\\04_Informes\\Estandar\\Informe.pdf": {
+    "mtime": 1778699614.0998576,
+    "hash": "ce5e42e4e20022628457a6df7fabb580"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\test-app\\Casos\\04_Informes\\Estandar\\Planilla_Enlace.pdf": {
+    "mtime": 1778699614.1073687,
+    "hash": "e769709d5be639c436ca6660f1167365"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\test-app\\Casos\\04_Informes\\Formato Diferente\\4001_OPS_4_2026.PDF": {
+    "mtime": 1778699614.1178937,
+    "hash": "635091209f5a2aec341f53d7e12d74e8"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\test-app\\Casos\\04_Informes\\Formato Diferente\\ARL_Sura.pdf": {
+    "mtime": 1778699614.12692,
+    "hash": "48ee437e1cc0198e4bedf5ef3075080e"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\test-app\\Casos\\04_Informes\\Formato Diferente\\Informe_Modelo_Personal.pdf": {
+    "mtime": 1778699614.13492,
+    "hash": "05dfe3f1b2c1b558f3ddb515ae4b2408"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\test-app\\Casos\\04_Informes\\Formato Diferente\\Planilla_Asopagos_4.pdf": {
+    "mtime": 1778699614.142439,
+    "hash": "24a2244cf91a6e9ef52d5a8cf7543172"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\test-app\\Casos\\04_Informes\\Imagenes Contenidas\\4065_OEF_9_2025.PDF": {
+    "mtime": 1778699614.1534693,
+    "hash": "c10d096ab38bfe6d14075bec96a101cd"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\test-app\\Casos\\04_Informes\\Imagenes Contenidas\\ARL_Sura.pdf": {
+    "mtime": 1778699614.161466,
+    "hash": "6d8f28d6b956effbd6e4be3e2dcb67b7"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\test-app\\Casos\\04_Informes\\Imagenes Contenidas\\Informe_Imagenes.pdf": {
+    "mtime": 1778699614.1729777,
+    "hash": "ba90906fc65f01836939f491d0d1785e"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\test-app\\Casos\\04_Informes\\Imagenes Contenidas\\Planilla_Asopagos.pdf": {
+    "mtime": 1778699614.179979,
+    "hash": "7bb641976d09ab54c7c49c506c24f43e"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\test-app\\Casos\\05_Especiales\\Aportes Incompletos\\4011_OSE_4_2026.PDF": {
+    "mtime": 1778699614.194504,
+    "hash": "ede1a1b918bb1460cb8097f8a85e5918"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\test-app\\Casos\\05_Especiales\\Aportes Incompletos\\ARL_Sura.pdf": {
+    "mtime": 1778699614.2025394,
+    "hash": "e151310acaa81665464d8a6f25efcb0c"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\test-app\\Casos\\05_Especiales\\Aportes Incompletos\\Planilla_Asopagos_Apotes_Incompletos.pdf": {
+    "mtime": 1778699614.2095768,
+    "hash": "539bb348d3d6871f410127649bba8a45"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\test-app\\Casos\\05_Especiales\\ARL Mora\\4014_OSE_4_2026.PDF": {
+    "mtime": 1778699614.2210898,
+    "hash": "96f53d1b464d7c11818393a3f832e189"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\test-app\\Casos\\05_Especiales\\ARL Mora\\ARL_Sura_Mora.pdf": {
+    "mtime": 1778699614.2290905,
+    "hash": "e4067ce362fa8910437c106e6d49036b"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\test-app\\Casos\\05_Especiales\\ARL Mora\\Planilla_Asopagos.pdf": {
+    "mtime": 1778699614.236606,
+    "hash": "82641aec393a51023c0069a7f142d7eb"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\test-app\\Casos\\05_Especiales\\ARL otro Contrato\\4010_OEF_11_2025.PDF": {
+    "mtime": 1778699614.2481563,
+    "hash": "cf23f81a43ad261cf1d951ae82bc734b"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\test-app\\Casos\\05_Especiales\\ARL otro Contrato\\ARL_Positiva.pdf": {
+    "mtime": 1778699614.255697,
+    "hash": "93c6024af3fceb58954dcf02fed1e682"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\test-app\\Casos\\05_Especiales\\ARL otro Contrato\\Planilla_Asopagos.pdf": {
+    "mtime": 1778699614.2627015,
+    "hash": "2de39ec2beb304fef20b9f2e3373f678"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\test-app\\Casos\\05_Especiales\\ARL Vencida\\4001_OPS_30_2026.PDF": {
+    "mtime": 1778699614.273796,
+    "hash": "317fee65f841e11fb711adb2e5aec385"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\test-app\\Casos\\05_Especiales\\ARL Vencida\\ARL_Sura_Vencido.pdf": {
+    "mtime": 1778699614.2823129,
+    "hash": "e35017da03a38185058b469b2c1bad72"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\test-app\\Casos\\05_Especiales\\ARL Vencida\\Planilla_Asopagos.pdf": {
+    "mtime": 1778699614.2903178,
+    "hash": "2d10e2b5385a9d1ab17db207dea3a5ac"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\test-app\\Casos\\05_Especiales\\Diferentes Personas\\4001_OPS_4_2026.PDF": {
+    "mtime": 1778699614.3003175,
+    "hash": "635091209f5a2aec341f53d7e12d74e8"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\test-app\\Casos\\05_Especiales\\Diferentes Personas\\ARL_Sura.pdf": {
+    "mtime": 1778699614.3098407,
+    "hash": "27ad879840619e27dda5f9f2c2b67a4c"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\test-app\\Casos\\05_Especiales\\Diferentes Personas\\Planilla_Asopagos.pdf": {
+    "mtime": 1778699614.3171175,
+    "hash": "2d10e2b5385a9d1ab17db207dea3a5ac"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\test-app\\Casos\\05_Especiales\\Escaneados\\4001_OPS_30_2026.PDF": {
+    "mtime": 1778699614.3276193,
+    "hash": "317fee65f841e11fb711adb2e5aec385"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\test-app\\Casos\\05_Especiales\\Escaneados\\ARL_Sura.pdf": {
+    "mtime": 1778699614.3367004,
+    "hash": "1fe38e1baace5c1488bfec438a4a6f93"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\test-app\\Casos\\05_Especiales\\Escaneados\\Planilla_Asopagos.pdf": {
+    "mtime": 1778699614.3447046,
+    "hash": "107650aaf87ee639216fb5a7a299e48d"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\test-app\\Casos\\05_Especiales\\Pantallazos\\ARL_Pnatallazo\\4010_OPS_5_2026.PDF": {
+    "mtime": 1778699614.3713236,
+    "hash": "8a2287f95b508a3e0bb131e37e56fd35"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\test-app\\Casos\\05_Especiales\\Pantallazos\\ARL_Pnatallazo\\ARL_Sura_Imagen.pdf": {
+    "mtime": 1778699614.3814845,
+    "hash": "8b28e9cacd3bdbc13b1c508ab618789a"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\test-app\\Casos\\05_Especiales\\Pantallazos\\ARL_Pnatallazo\\Planilla_Asopagos.pdf": {
+    "mtime": 1778699614.3894894,
+    "hash": "000f9cac56b7c02e0c329eb3732c2297"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\test-app\\Casos\\05_Especiales\\Pantallazos\\Planilla_Pantallazo\\4001_OPS_30_2026.PDF": {
+    "mtime": 1778699614.400489,
+    "hash": "317fee65f841e11fb711adb2e5aec385"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\test-app\\Casos\\05_Especiales\\Pantallazos\\Planilla_Pantallazo\\ARL_Sura.pdf": {
+    "mtime": 1778699614.4097667,
+    "hash": "1fe38e1baace5c1488bfec438a4a6f93"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\test-app\\Casos\\05_Especiales\\Pantallazos\\Planilla_Pantallazo\\Planilla_Asopagos.pdf": {
+    "mtime": 1778699614.4198105,
+    "hash": "7b2f054101f8b7412c4a0ba9048d69f8"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\test-app\\Casos\\05_Especiales\\Planilla No Paga\\4001_OSE_128_2025.PDF": {
+    "mtime": 1778699614.4318087,
+    "hash": "8d9bfb9e72f816ddf7edf476d9d0e297"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\test-app\\Casos\\05_Especiales\\Planilla No Paga\\ARL_Positiva.pdf": {
+    "mtime": 1778699614.4393263,
+    "hash": "cc00ad55293b00c0c372d86eb173b462"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\test-app\\Casos\\05_Especiales\\Planilla No Paga\\Planilla_Asopagos_Sin_Pagar.pdf": {
+    "mtime": 1778699614.4463263,
+    "hash": "f7c278f9eddb0decaf708e4e847c8038"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\test-app\\Casos\\05_Especiales\\Planilla no perteneciente\\4001_OSE_30_2026.PDF": {
+    "mtime": 1778699614.4573507,
+    "hash": "b3ab2659ba08c8d23b5deb10a308dabf"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\test-app\\Casos\\05_Especiales\\Planilla no perteneciente\\ARL_Positiva.pdf": {
+    "mtime": 1778699614.4650192,
+    "hash": "3654269cf475d21fcad54741c43f99f0"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\test-app\\Casos\\05_Especiales\\Planilla no perteneciente\\Planilla_AportesEnLinea_No_Pertenece.pdf": {
+    "mtime": 1778699614.476023,
+    "hash": "0063b978b18053bda33adaaf03be36c8"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\test-app\\Casos\\05_Especiales\\Rotados\\4062_OEF_7_2025.PDF": {
+    "mtime": 1778699614.4875286,
+    "hash": "82006b70891f6c9f2a672a9c9f24cc80"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\test-app\\Casos\\05_Especiales\\Rotados\\ARL_Sura_Mora.pdf": {
+    "mtime": 1778699614.503582,
+    "hash": "522c0805937e3f38d11369ab13483725"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\test-app\\Casos\\05_Especiales\\Rotados\\Planilla_Aportes_Linea_Rotada.pdf": {
+    "mtime": 1778699614.5130942,
+    "hash": "d91008d5724ef359696dee66a7b38bf7"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\test-app\\Casos\\05_Especiales\\Siguiente Planilla Faltante\\4001_OPS_30_2026.PDF": {
+    "mtime": 1778699614.5251024,
+    "hash": "317fee65f841e11fb711adb2e5aec385"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\test-app\\Casos\\05_Especiales\\Siguiente Planilla Faltante\\ARL_Sura.pdf": {
+    "mtime": 1778699614.5346243,
+    "hash": "1fe38e1baace5c1488bfec438a4a6f93"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\test-app\\Casos\\05_Especiales\\Siguiente Planilla Faltante\\Planilla_Asopagos.pdf": {
+    "mtime": 1778699614.5416243,
+    "hash": "2d10e2b5385a9d1ab17db207dea3a5ac"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\test-app\\Casos\\05_Especiales\\Varias Planillas\\4011_OPS_20_2026.PDF": {
+    "mtime": 1778699614.5531745,
+    "hash": "582b5ffc22fc1ad0ba367a12c5b73856"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\test-app\\Casos\\05_Especiales\\Varias Planillas\\ARL_Positiva.pdf": {
+    "mtime": 1778699614.5611825,
+    "hash": "f7ca4058aee421fe4c84a45fc11a4fdf"
+  },
+  "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\test-app\\Casos\\05_Especiales\\Varias Planillas\\Planillas_Varios_Periodos.pdf": {
+    "mtime": 1778699614.5716994,
+    "hash": "a98001df8b2272611bb03243a0147349"
   },
   "C:\\Users\\STEM\\Desktop\\verificacion-pagos-app\\public\\un.svg": {
     "mtime": 1777561720.5170307,

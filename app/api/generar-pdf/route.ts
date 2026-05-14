@@ -18,11 +18,6 @@ import {
   generateValidationCertificate,
 } from "@/lib/pdf/fill-forms"
 import { getPdfPageCount } from "@/lib/pdf/page-count"
-import { extractTextFromPDF } from "@/lib/pdf/extract-text"
-import {
-  extractPILACandidates,
-  joinSplitDates,
-} from "@/lib/pdf/parsers/keyword-extractor"
 import { nombreArchivoFinal } from "@/lib/pdf/utils"
 import {
   exceedsContentLength,
@@ -37,6 +32,7 @@ export const maxDuration = 60 // 60 segundos (requiere plan Pro en Vercel, o aum
 
 const ExtractedDataSchema = z.object({
   paymentSheet: PaymentSheetSchema.nullable(),
+  paymentSheet2: PaymentSheetSchema.nullable().optional(),
   arl: ARLSchema.nullable(),
   contract: ContractSchema.nullable(),
   contract2: ContractSchema.nullable().optional(),
@@ -238,28 +234,14 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Extract basic data from planilla2 (sheet number, dates, period) if present.
-    let paymentSheet2Data:
-      | { sheetNumber?: string; paymentDate?: string; period?: string }
-      | undefined
-    if (planilla2Bytes) {
-      try {
-        // Crear un ArrayBuffer limpio desde los bytes (evita problemas de offset con .buffer)
-        const ab = planilla2Bytes.buffer.slice(
-          planilla2Bytes.byteOffset,
-          planilla2Bytes.byteOffset + planilla2Bytes.byteLength
-        ) as ArrayBuffer
-        const text = await extractTextFromPDF(ab)
-        const cands = extractPILACandidates(joinSplitDates(text))
-        paymentSheet2Data = {
-          sheetNumber: cands.sheetNumber,
-          paymentDate: cands.paymentDate,
-          period: cands.period,
+    // Use paymentSheet2 already extracted in the wizard (step 3).
+    const paymentSheet2Data = extracted.paymentSheet2
+      ? {
+          sheetNumber: extracted.paymentSheet2.sheetNumber,
+          paymentDate: extracted.paymentSheet2.paymentDate,
+          period: extracted.paymentSheet2.period,
         }
-      } catch {
-        // Non-fatal: proceed without planilla2 data
-      }
-    }
+      : undefined
 
     const datos053 = buildFormat053Data(
       extracted,

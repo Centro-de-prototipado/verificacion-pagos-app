@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from "next/server"
 import { z } from "zod"
 
-import { generateWithFallback, snapshotProviders } from "@/lib/ai/client"
-import type { OnProviderProgress, ProviderEntry } from "@/lib/ai/client"
-import { extractWithValidation } from "@/lib/ai/extraction"
+import { snapshotProviders } from "@/lib/ai/client"
+import type { OnProviderProgress } from "@/lib/ai/client"
+import { extract } from "@/lib/extraction/extract"
+import { joinSplitDates } from "@/lib/extraction/preprocess"
 import { ARLSchema } from "@/lib/schemas/arl"
 import { ContractSchema } from "@/lib/schemas/contract"
 import { PaymentSheetSchema } from "@/lib/schemas/payment-sheet"
@@ -12,33 +13,8 @@ import type { ARLExtracted } from "@/lib/schemas/arl"
 import type { ContractExtracted } from "@/lib/schemas/contract"
 import type { PaymentSheetExtracted } from "@/lib/schemas/payment-sheet"
 import type { ActivityReportExtracted } from "@/lib/schemas/activity-report"
-import {
-  extractARLCandidates,
-  extractARLExpeditionDate,
-  extractPILACandidates,
-  extractContractCandidates,
-  extractActivityReportCandidates,
-  extractDocumentTypeFromPILA,
-  detectIssuer,
-  joinSplitDates,
-} from "@/lib/pdf/parsers/keyword-extractor"
 import { isDocumentMatch } from "@/lib/pdf/document-validator"
-import {
-  fillFromCandidates,
-  computeConfidence,
-} from "@/lib/pdf/extract-helpers"
-import {
-  checkPaymentSheet,
-  checkARL,
-  checkContract,
-  downgradeConfidence,
-} from "@/lib/pdf/sanity-checks"
-import { CONTRACT_TYPES_PROMPT } from "@/lib/constants/contracts"
-import {
-  PILA_ISSUER_INSTRUCTIONS,
-  ARL_ISSUER_INSTRUCTIONS,
-} from "@/lib/constants/issuer-instructions"
-import type { ExtractedData, RawPDFText, ConfidenceMap } from "@/lib/types"
+import type { ConfidenceLevel, ConfidenceMap, ExtractedData } from "@/lib/types"
 import {
   exceedsContentLength,
   getClientIp,
@@ -62,19 +38,7 @@ export type ExtractionStreamEvent =
     }
   | { type: "error"; message: string; details?: string }
 
-// ─── Profile hint shape (sent by the client) ─────────────────────────────────
-
-interface ProfileHint {
-  docType: string
-  issuer: string
-  example: Record<string, unknown>
-}
-
-const ProfileHintSchema = z.object({
-  docType: z.string(),
-  issuer: z.string(),
-  example: z.record(z.string(), z.unknown()),
-})
+// ─── Request shape ───────────────────────────────────────────────────────────
 
 const ExtractRequestSchema = z.object({
   rawText: z.object({
@@ -85,33 +49,150 @@ const ExtractRequestSchema = z.object({
     paymentSheet2: z.string().optional(),
     activityReport: z.string().optional(),
   }),
-  profiles: z.array(ProfileHintSchema).default([]),
+  /** Per-document base64-encoded PDF bytes. Only sent when the doc text is
+   *  scanned/empty — enables Mistral OCR fallback. */
+  rawPdf: z
+    .object({
+      paymentSheet: z.string().optional(),
+      arl: z.string().optional(),
+      contract: z.string().optional(),
+      contract2: z.string().optional(),
+      paymentSheet2: z.string().optional(),
+      activityReport: z.string().optional(),
+    })
+    .optional()
+    .default({}),
+  paymentRequestPeriod: z.string().optional(),
+  contractCount: z.enum(["1", "2"]).optional(),
+  involvedContracts: z.enum(["1", "2", "Ambos"]).optional(),
+  obligationsHint: z.array(z.string()).default([]),
 })
 
-const MAX_JSON_BYTES = 6 * 1024 * 1024 // 6 MB
+// Bumped to 20 MB to accommodate base64-encoded PDF bytes for OCR fallback.
+const MAX_JSON_BYTES = 20 * 1024 * 1024
 const RATE_LIMIT_WINDOW_MS = 60 * 1000
 const RATE_LIMIT_MAX_REQUESTS = 10
 
-// ─── Request parsing ──────────────────────────────────────────────────────────
+// ─── Soft sanity checks (warnings only — never block extraction) ─────────────
 
-async function parseRequest(
-  request: NextRequest
-): Promise<{ rawText: RawPDFText; profiles: ProfileHint[] }> {
-  const body = await request.json()
-  const parsed = ExtractRequestSchema.safeParse(body)
-  if (!parsed.success) {
-    throw new Error("El body debe incluir rawText con el formato esperado.")
-  }
-  return { rawText: parsed.data.rawText, profiles: parsed.data.profiles }
+const COMPANY_TOKENS = [
+  "S.A.S", "SAS", "LTDA", "LIMITADA", "ARL", "SURA", "SURAMERICANA",
+  "POSITIVA", "COLMENA", "COLPATRIA", "BOLIVAR", "BOLÍVAR", "LIBERTY",
+  "EQUIDAD", "MAPFRE", "AXA", "EPS", "PROTECCION", "PROTECCIÓN", "PORVENIR",
+  "COLPENSIONES", "COLFONDOS", "SANITAS", "COMPENSAR", "FAMISANAR",
+  "ASOPAGOS", "SIMPLE", "APORTES EN LINEA", "APORTES EN LÍNEA",
+  "ENLACE OPERATIVO", "MI PLANILLA", "UNIVERSIDAD NACIONAL", "U. NACIONAL",
+  "UNAL", "COMPAÑÍA", "COMPANIA", "SEGUROS", "INSTITUTO", "FUNDACION",
+  "FUNDACIÓN", "MINISTERIO", "GOBIERNO", "SECRETARÍA", "SECRETARIA",
+  "EMPRESA", "CORPORACIÓN", "CORPORACION",
+]
+
+function looksLikeCompany(name: string): boolean {
+  if (!name) return false
+  const padded = ` ${name.toUpperCase()} `
+  return COMPANY_TOKENS.some(
+    (tok) =>
+      padded.includes(` ${tok} `) ||
+      padded.includes(` ${tok},`) ||
+      name.startsWith(`${tok} `) ||
+      name.endsWith(` ${tok}`)
+  )
 }
 
-function findProfile(
-  profiles: ProfileHint[],
-  docType: string,
-  issuer: string
-): Record<string, unknown> | undefined {
-  return profiles.find((p) => p.docType === docType && p.issuer === issuer)
-    ?.example
+const VALID_RATE_BY_RISK: Record<string, number> = {
+  I: 0.522, II: 1.044, III: 2.436, IV: 4.35, V: 6.96,
+}
+
+function parseDMY(s: string): Date | null {
+  const m = s.match(/^(\d{2})\/(\d{2})\/(\d{4})$/)
+  if (!m) return null
+  return new Date(+m[3], +m[2] - 1, +m[1])
+}
+
+// ─── Cross-doc name consistency ──────────────────────────────────────────────
+
+function normalizeName(s: string): string {
+  return s
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
+    .replace(/[^a-z\s]/g, "")
+    .trim()
+}
+
+function nameOverlap(a: string, b: string): number {
+  const ta = new Set(a.split(/\s+/).filter((w) => w.length > 2))
+  return b
+    .split(/\s+/)
+    .filter((w) => w.length > 2)
+    .filter((w) => ta.has(w)).length
+}
+
+// ─── Per-field confidence ────────────────────────────────────────────────────
+// Present → "high", null/empty → "low". Medium gets stamped later when a
+// sanity warning specifically targets a field.
+
+function isMissing(v: unknown): boolean {
+  return v === null || v === undefined || v === "" || v === 0
+}
+
+function buildConfidence<T extends object>(data: T): ConfidenceMap {
+  const map: ConfidenceMap = {}
+  for (const [k, v] of Object.entries(data)) {
+    map[k] = isMissing(v) ? ("low" as ConfidenceLevel) : ("high" as ConfidenceLevel)
+  }
+  return map
+}
+
+function downgrade(
+  confidence: Record<string, ConfidenceMap>,
+  docKey: string,
+  field: string
+): void {
+  if (!confidence[docKey]) confidence[docKey] = {}
+  confidence[docKey][field] = "medium"
+}
+
+/**
+ * Convert null/undefined fields to safe defaults that match the existing
+ * non-nullable type contracts in lib/types.ts. The UI editors expect "" for
+ * missing strings, 0 for numbers, etc. `paymentDeadline` is kept nullable
+ * because the canonical PaymentSheetData declares it as `string | null`.
+ */
+function denull<T extends Record<string, unknown>>(data: T): T {
+  const out: Record<string, unknown> = {}
+  for (const [k, v] of Object.entries(data)) {
+    if (v === null || v === undefined) {
+      if (k === "paymentDeadline") out[k] = null
+      else out[k] = typeof v === "number" ? 0 : ""
+    } else out[k] = v
+  }
+  return out as T
+}
+
+// ─── ARL expedition-date check (last 30 days) ────────────────────────────────
+
+function extractExpeditionDate(text: string): string | null {
+  const labelled = text.match(
+    /(?:fecha\s+de\s+(?:expedici[oó]n|generaci[oó]n|emisi[oó]n)|expedido\s+el|fecha\s+del?\s+certificad)[^\d]{0,30}(\d{2}[\/\-]\d{2}[\/\-]\d{4})/i
+  )
+  if (labelled) return labelled[1].replace(/-/g, "/")
+  const iso = text.match(
+    /(?:fecha\s+de\s+(?:expedici[oó]n|generaci[oó]n|emisi[oó]n)|expedido\s+el)[^\d]{0,30}(\d{4})[\/\-](\d{2})[\/\-](\d{2})/i
+  )
+  if (iso) return `${iso[3]}/${iso[2]}/${iso[1]}`
+  return null
+}
+
+function daysSince(ddmmyyyy: string): number | null {
+  const m = ddmmyyyy.match(/^(\d{2})\/(\d{2})\/(\d{4})$/)
+  if (!m) return null
+  const issued = new Date(+m[3], +m[2] - 1, +m[1])
+  const today = new Date(
+    new Date().toLocaleString("en-US", { timeZone: "America/Bogota" })
+  )
+  today.setHours(0, 0, 0, 0)
+  return Math.floor((today.getTime() - issued.getTime()) / 86_400_000)
 }
 
 // ─── Route handler ────────────────────────────────────────────────────────────
@@ -138,53 +219,59 @@ export async function POST(request: NextRequest) {
     )
   }
 
-  let rawText: RawPDFText
-  let profiles: ProfileHint[]
-  let obligationsHint: string[] = []
-  let paymentRequestPeriod: string | undefined
-  let contractCount: "1" | "2" | undefined
-  let involvedContracts: "1" | "2" | "Ambos" | undefined
+  const body = await request.json().catch(() => null)
+  const parsed = ExtractRequestSchema.safeParse(body)
+  if (!parsed.success) {
+    return NextResponse.json(
+      { error: "El body debe incluir rawText con el formato esperado." },
+      { status: 400 }
+    )
+  }
 
-  try {
-    const body = await request.json()
-    rawText = body.rawText
-    profiles = body.profiles || []
-    obligationsHint = body.obligationsHint || []
-    paymentRequestPeriod =
-      typeof body.paymentRequestPeriod === "string"
-        ? body.paymentRequestPeriod
-        : undefined
-    contractCount =
-      body.contractCount === "1" || body.contractCount === "2"
-        ? body.contractCount
-        : undefined
-    involvedContracts =
-      body.involvedContracts === "1" ||
-      body.involvedContracts === "2" ||
-      body.involvedContracts === "Ambos"
-        ? body.involvedContracts
-        : undefined
-  } catch (error) {
-    const message =
-      error instanceof Error ? error.message : "No se pudo leer la solicitud."
-    return NextResponse.json({ error: message }, { status: 400 })
+  const {
+    rawText,
+    rawPdf,
+    paymentRequestPeriod,
+    contractCount,
+    involvedContracts,
+    obligationsHint,
+  } = parsed.data
+
+  /** Decode optional base64 PDF bytes per document. */
+  const decode = (b64: string | undefined): Uint8Array | undefined => {
+    if (!b64) return undefined
+    try {
+      // Strip data URL prefix if present
+      const pure = b64.replace(/^data:application\/pdf;base64,/, "")
+      return new Uint8Array(Buffer.from(pure, "base64"))
+    } catch {
+      return undefined
+    }
+  }
+
+  const pdfBytes = {
+    paymentSheet: decode(rawPdf.paymentSheet),
+    arl: decode(rawPdf.arl),
+    contract: decode(rawPdf.contract),
+    contract2: decode(rawPdf.contract2),
+    paymentSheet2: decode(rawPdf.paymentSheet2),
+    activityReport: decode(rawPdf.activityReport),
   }
 
   const encoder = new TextEncoder()
   const { readable, writable } = new TransformStream<Uint8Array, Uint8Array>()
   const writer = writable.getWriter()
-
   const send = (event: ExtractionStreamEvent) => {
     try {
       writer.write(encoder.encode(JSON.stringify(event) + "\n"))
     } catch {
-      // stream already closed (client disconnected)
+      /* client disconnected */
     }
   }
 
   ;(async () => {
     try {
-      const cleanText = {
+      const text = {
         paymentSheet: joinSplitDates(rawText.paymentSheet ?? ""),
         arl: joinSplitDates(rawText.arl ?? ""),
         contract: joinSplitDates(rawText.contract ?? ""),
@@ -193,524 +280,392 @@ export async function POST(request: NextRequest) {
         activityReport: joinSplitDates(rawText.activityReport ?? ""),
       }
 
-      const issuerKeys = {
-        paymentSheet: detectIssuer(cleanText.paymentSheet, "pila"),
-        arl: detectIssuer(cleanText.arl, "arl"),
-        contract: "unal",
-        contract2: cleanText.contract2 ? "unal" : undefined,
-        paymentSheet2: cleanText.paymentSheet2
-          ? detectIssuer(cleanText.paymentSheet2, "pila")
-          : undefined,
+      // If the PDF will go through OCR (bytes provided), skip the text-based
+      // fingerprint check entirely. Screenshots often carry junk metadata
+      // (image filename, URL) that's enough text to defeat `isDocumentMatch`
+      // but not real document content — trust the user's upload slot and let
+      // OCR handle extraction.
+      const checkOrAccept = (
+        txt: string,
+        kind: Parameters<typeof isDocumentMatch>[1],
+        hasBytes: boolean
+      ) => {
+        if (hasBytes) return { valid: true, label: "OCR" }
+        return isDocumentMatch(txt, kind)
       }
 
-      const pilaCandidate = extractPILACandidates(cleanText.paymentSheet)
-      const arlCandidate = extractARLCandidates(cleanText.arl)
-      const contractCand = extractContractCandidates(cleanText.contract)
-      const contract2Cand = cleanText.contract2
-        ? extractContractCandidates(cleanText.contract2)
-        : null
-      const reportCand = cleanText.activityReport
-        ? extractActivityReportCandidates(cleanText.activityReport)
-        : null
-      const ps2Candidate = cleanText.paymentSheet2
-        ? extractPILACandidates(cleanText.paymentSheet2)
-        : null
-
-      // The PILA shows the contractor's own document type unambiguously.
-      // Override whatever the contract extractor guessed — the contract always
-      // contains UNAL's NIT and other NITs which cause false positives.
-      const pilaDocumentType = extractDocumentTypeFromPILA(
-        cleanText.paymentSheet
-      )
-      contractCand.documentType = pilaDocumentType
-      if (contract2Cand) contract2Cand.documentType = pilaDocumentType
-      // Document type for both payment sheets should be the same
-
-      // Validate that each PDF is the expected document type before calling the AI.
-      const docChecks = {
-        paymentSheet: isDocumentMatch(cleanText.paymentSheet, "pila"),
-        arl: isDocumentMatch(cleanText.arl, "arl"),
-        contract: isDocumentMatch(cleanText.contract, "contract"),
-        contract2: cleanText.contract2
-          ? isDocumentMatch(cleanText.contract2, "contract")
-          : null,
-        activityReport: cleanText.activityReport
-          ? isDocumentMatch(cleanText.activityReport, "report")
-          : null,
-        paymentSheet2: cleanText.paymentSheet2
-          ? isDocumentMatch(cleanText.paymentSheet2, "pila")
-          : null,
+      const checks = {
+        paymentSheet: checkOrAccept(
+          text.paymentSheet,
+          "pila",
+          !!pdfBytes.paymentSheet
+        ),
+        arl: checkOrAccept(text.arl, "arl", !!pdfBytes.arl),
+        contract: checkOrAccept(text.contract, "contract", !!pdfBytes.contract),
+        contract2:
+          text.contract2 || pdfBytes.contract2
+            ? checkOrAccept(text.contract2, "contract", !!pdfBytes.contract2)
+            : null,
+        activityReport:
+          text.activityReport || pdfBytes.activityReport
+            ? checkOrAccept(
+                text.activityReport,
+                "report",
+                !!pdfBytes.activityReport
+              )
+            : null,
+        paymentSheet2:
+          text.paymentSheet2 || pdfBytes.paymentSheet2
+            ? checkOrAccept(text.paymentSheet2, "pila", !!pdfBytes.paymentSheet2)
+            : null,
       }
 
-      // Snapshot providers ONCE so all parallel extractions start from the same
-      // provider (devstral first) instead of each advancing the index independently.
       const snapshot = snapshotProviders()
-
-      // Helper: wraps model-level progress into doc-level stream events
-      const makeOnProgress =
+      const onProgress =
         (doc: string): OnProviderProgress =>
-        (type, model) => {
+        (type, model) =>
           send({ type, doc, model } as ExtractionStreamEvent)
-        }
 
-      const pilaIssuerHint =
-        PILA_ISSUER_INSTRUCTIONS[issuerKeys.paymentSheet] ?? ""
-      const arlIssuerHint = ARL_ISSUER_INSTRUCTIONS[issuerKeys.arl] ?? ""
-
-      // If the user told us which period they're billing, tell the AI to prefer
-      // that period when the planilla contains multiple (case "Varias Planillas").
+      // ── Hints for ambiguous cases ────────────────────────────────────────
       const periodHint = paymentRequestPeriod
-        ? `\n\nContexto: el contratista solicita el pago del período ${paymentRequestPeriod}. ` +
-          `Si la planilla contiene MÚLTIPLES períodos cotizados, elige el que coincide con ${paymentRequestPeriod} ` +
-          `(o el más cercano si no existe exacto). NUNCA tomes el primero por defecto cuando hay varios.`
+        ? `El contratista solicita el pago del período ${paymentRequestPeriod}. ` +
+          `Si la planilla contiene múltiples períodos cotizados, elige el que coincide con ${paymentRequestPeriod}.`
         : ""
 
-      // When the contractor has two contracts and the ARL shows coverage for
-      // BOTH (case "ARL Doble"), tell the AI which row to use for dates.
       const arlDoubleHint =
         contractCount === "2" && involvedContracts && involvedContracts !== "Ambos"
-          ? `\n\nContexto: el contratista tiene DOS contratos y este pago corresponde al Contrato ${involvedContracts}. ` +
-            `Si el certificado ARL muestra COBERTURAS para múltiples contratos (varias filas con fechas distintas), ` +
-            `extrae las fechas de inicio/fin de la fila correspondiente al contrato ${involvedContracts} ` +
-            `(usualmente identificable por el número de OPS/OSE o las fechas que coinciden con ese contrato).`
+          ? `Este pago corresponde al Contrato ${involvedContracts}. ` +
+            `Si el ARL muestra coberturas para múltiples contratos, extrae las fechas de la fila correspondiente al contrato ${involvedContracts}.`
           : contractCount === "2" && involvedContracts === "Ambos"
-            ? `\n\nContexto: el contratista tiene DOS contratos activos y se cobran AMBOS en este período. ` +
-              `Si el ARL muestra dos coberturas, usa la fecha de inicio MÁS TEMPRANA y la fecha de fin MÁS TARDÍA ` +
-              `para cubrir todo el rango.`
+            ? `Se cobran AMBOS contratos. Si el ARL muestra dos coberturas, usa la fecha de inicio MÁS TEMPRANA y la fecha de fin MÁS TARDÍA.`
             : ""
 
+      const reportObligationsHint = obligationsHint.length
+        ? `El contrato tiene estas obligaciones, búscalas en el reporte:\n${obligationsHint.map((o) => `- ${o}`).join("\n")}`
+        : ""
+
+      // ── Parallel extraction ──────────────────────────────────────────────
       const [r0, r1, r2, r3, r4, r5] = await Promise.allSettled([
-        docChecks.paymentSheet.valid
-          ? extractWithValidation<PaymentSheetExtracted>({
-              text: cleanText.paymentSheet,
+        checks.paymentSheet.valid
+          ? extract<PaymentSheetExtracted>({
+              text: text.paymentSheet,
+              pdfBytes: pdfBytes.paymentSheet,
               schema: PaymentSheetSchema,
               docLabel: "Planilla PILA de seguridad social",
-              candidates: pilaCandidate,
-              profileExample: findProfile(
-                profiles,
-                "pila",
-                issuerKeys.paymentSheet
-              ),
+              docType: "pila",
+              hints: periodHint,
               snapshot,
-              extraInstructions:
-                "IMPORTANTE — contractorName es el nombre de la PERSONA NATURAL que cotiza (nunca el nombre del operador de planilla, nunca una empresa, nunca 'Universidad Nacional de Colombia').\n\n" +
-                "Reglas generales:\n" +
-                "1. sheetNumber: si el candidato tiene varios números separados por ' / ' (tablas SOI/Aportes en Línea con múltiples filas), " +
-                "elige el que corresponda al contratista (cruza con su CC/NIT). Si no puedes determinarlo, usa el último. " +
-                "En SOI, el número de planilla tiene 10 dígitos y va DESPUÉS de la Clave Pago (8-9 dígitos) — no confundas los dos. " +
-                "Para Simple S.A., el número de planilla es la 'Referencia de Pago' que aparece en la sección 'Información de la Planilla Pagada'.\n" +
-                "2. period: extrae el mes cotizado en formato MM/YYYY. Puede aparecer como 'marzo de 2026' (→ 03/2026), 'YYYY-MM' (→ MM/YYYY), o MM/YYYY directamente. No lo deduzcas de paymentDate.\n" +
-                "3. paymentDate: fecha en que se realizó el pago (DD/MM/YYYY). Puede aparecer como 'PAGADO DD/MM/YYYY' o 'Fecha de pago: YYYY-MM-DD'. Convierte siempre a DD/MM/YYYY.\n" +
-                "4. paymentDeadline: fecha límite de pago (DD/MM/YYYY); si parece invertida con paymentDate, corrígela (paymentDeadline ≥ paymentDate).\n" +
-                "5. contractorName y documentNumber: búscalos en la sección de 'Datos del Cotizante', 'Información General', o en la primera línea con CC/NIT." +
-                (pilaIssuerHint ? `\n\nInstrucciones específicas del formato:\n${pilaIssuerHint}` : "") +
-                periodHint,
-              onProgress: makeOnProgress("paymentSheet"),
+              onProgress: onProgress("paymentSheet"),
             })
-          : Promise.resolve(null),
-        docChecks.arl.valid
-          ? extractWithValidation<ARLExtracted>({
-              text: cleanText.arl,
+          : Promise.resolve({ data: null, scanned: false }),
+        checks.arl.valid
+          ? extract<ARLExtracted>({
+              text: text.arl,
+              pdfBytes: pdfBytes.arl,
               schema: ARLSchema,
               docLabel: "Certificado de afiliación ARL",
-              candidates: arlCandidate,
-              profileExample: findProfile(profiles, "arl", issuerKeys.arl),
+              docType: "arl",
+              hints: arlDoubleHint,
               snapshot,
-              extraInstructions:
-                "IMPORTANTE — contractorName es el nombre de la PERSONA NATURAL afiliada (el trabajador independiente). " +
-                "NUNCA uses el nombre de la ARL (Sura, Positiva, Colmena, etc.), NUNCA 'Universidad Nacional de Colombia', NUNCA el nombre del tomador o empresa.\n\n" +
-                "Reglas para fechas:\n" +
-                "1. Si el documento tiene las etiquetas 'Fecha inicio contrato' y/o 'Fecha fin contrato' " +
-                "(o variantes como 'Fecha de inicio contrato', 'Fecha de fin contrato'), " +
-                "SIEMPRE usa ESAS fechas para startDate y endDate. " +
-                "NO uses la 'Fecha de inicio de cobertura' ni la 'Fecha de inicio de afiliación' en ese caso.\n" +
-                "2. Solo si el documento NO tiene etiquetas de 'contrato', usa la fecha de inicio/fin de cobertura o afiliación.\n" +
-                "3. El candidato startDate ya fue calculado priorizando las fechas de contrato — confía en él si es no nulo.\n" +
-                "4. riskClass: clase de riesgo (I, II, III, IV, V). Cruza con la tasa: 0.522%=I, 1.044%=II, 2.436%=III, 4.350%=IV, 6.960%=V." +
-                (arlIssuerHint ? `\n\nInstrucciones específicas del formato:\n${arlIssuerHint}` : "") +
-                arlDoubleHint,
-              onProgress: makeOnProgress("arl"),
+              onProgress: onProgress("arl"),
             })
-          : Promise.resolve(null),
-        docChecks.contract.valid
-          ? extractWithValidation<ContractExtracted>({
-              text: cleanText.contract,
+          : Promise.resolve({ data: null, scanned: false }),
+        checks.contract.valid
+          ? extract<ContractExtracted>({
+              text: text.contract,
+              pdfBytes: pdfBytes.contract,
               schema: ContractSchema,
-              docLabel: "Contrato UNAL (contrato 1)",
-              candidates: contractCand,
-              profileExample: findProfile(profiles, "contract", "unal"),
+              docLabel: "Contrato UNAL",
+              docType: "contract",
               snapshot,
-              extraInstructions:
-                `Tipos de contrato válidos (usa solo estas siglas exactas): ${CONTRACT_TYPES_PROMPT}. ` +
-                "Reglas adicionales:\n" +
-                "1. NO extraigas startDate ni endDate del contrato — se tomarán del certificado ARL.\n" +
-                "2. specificObligations: Busca la sección 'OBLIGACIONES ESPECÍFICAS DEL CONTRATISTA' y extrae cada obligación enumerada como un elemento del array. Usa el texto lo más fiel posible.",
-              onProgress: makeOnProgress("contract"),
+              onProgress: onProgress("contract"),
             })
-          : Promise.resolve(null),
-        docChecks.contract2?.valid
-          ? extractWithValidation<ContractExtracted>({
-              text: cleanText.contract2,
+          : Promise.resolve({ data: null, scanned: false }),
+        checks.contract2?.valid
+          ? extract<ContractExtracted>({
+              text: text.contract2,
+              pdfBytes: pdfBytes.contract2,
               schema: ContractSchema,
-              docLabel: "Contrato UNAL (contrato 2)",
-              candidates: contract2Cand ?? {},
-              profileExample: findProfile(profiles, "contract", "unal"),
+              docLabel: "Contrato UNAL (segundo)",
+              docType: "contract",
               snapshot,
-              extraInstructions:
-                `Tipos de contrato válidos (usa solo estas siglas exactas): ${CONTRACT_TYPES_PROMPT}. ` +
-                "Reglas adicionales:\n" +
-                "1. NO extraigas startDate ni endDate del contrato — se tomarán del certificado ARL.\n" +
-                "2. specificObligations: Busca la sección 'OBLIGACIONES ESPECÍFICAS DEL CONTRATISTA' y extrae cada obligación enumerada como un elemento del array. Usa el texto lo más fiel posible.",
-              onProgress: makeOnProgress("contract2"),
+              onProgress: onProgress("contract2"),
             })
-          : Promise.resolve(null),
-        docChecks.activityReport?.valid
-          ? extractWithValidation<ActivityReportExtracted>({
-              text: cleanText.activityReport,
+          : Promise.resolve({ data: null, scanned: false }),
+        checks.activityReport?.valid
+          ? extract<ActivityReportExtracted>({
+              text: text.activityReport,
+              pdfBytes: pdfBytes.activityReport,
               schema: ActivityReportSchema,
               docLabel: "Informe de actividades",
-              candidates: reportCand ?? {},
+              docType: "report",
+              hints: reportObligationsHint,
               snapshot,
-              extraInstructions:
-                "Reglas para el Informe de Actividades:\n" +
-                "1. La tabla de actividades suele tener muchos items (ej. del 1 al 13) y puede extenderse por MUCHAS PÁGINAS. Debes extraer TODOS los items de todas las páginas.\n" +
-                "2. Para el campo 'activityDescription', usa ÚNICAMENTE el texto de la columna 'OBLIGACIÓN ESPECÍFICA' (Incluir cada obligación tal como se pactó en la OPS). IGNORA la columna 'ACTIVIDADES EJECUTADAS'.\n" +
-                "3. Asegúrate de capturar los valores numéricos de '% periodo' y '% acumulado' para cada fila.\n" +
-                "4. isSigned: busca evidencias de firma al final del documento (página final).\n" +
-                (obligationsHint.length > 0
-                  ? `\nNOTA: El contrato tiene estas obligaciones, búscalas exactamente en el reporte:\n${obligationsHint.map((o) => `- ${o}`).join("\n")}`
-                  : ""),
-              onProgress: makeOnProgress("activityReport"),
+              onProgress: onProgress("activityReport"),
             })
-          : Promise.resolve(null),
-        docChecks.paymentSheet2?.valid
-          ? extractWithValidation<PaymentSheetExtracted>({
-              text: cleanText.paymentSheet2,
+          : Promise.resolve({ data: null, scanned: false }),
+        checks.paymentSheet2?.valid
+          ? extract<PaymentSheetExtracted>({
+              text: text.paymentSheet2,
+              pdfBytes: pdfBytes.paymentSheet2,
               schema: PaymentSheetSchema,
               docLabel: "Planilla PILA (mes siguiente)",
-              candidates: ps2Candidate ?? {},
-              profileExample: findProfile(
-                profiles,
-                "pila",
-                issuerKeys.paymentSheet2 || ""
-              ),
+              docType: "pila",
               snapshot,
-              extraInstructions:
-                "Extrae los datos de la planilla del MES SIGUIENTE al de la primera planilla. " +
-                "Esta planilla debe ser cronológicamente posterior. " +
-                "Aplica las mismas reglas de extracción que en la primera planilla " +
-                "(contractorName es persona natural, sheetNumber 6-16 dígitos, period MM/YYYY, paymentDate DD/MM/YYYY).",
-              onProgress: makeOnProgress("paymentSheet2"),
+              onProgress: onProgress("paymentSheet2"),
             })
-          : Promise.resolve(null),
+          : Promise.resolve({ data: null, scanned: false }),
       ])
 
       const warnings: string[] = []
       const confidence: Record<string, ConfidenceMap> = {}
 
-      // Warn immediately for documents that don't match the expected type.
-      if (
-        !docChecks.paymentSheet.valid &&
-        cleanText.paymentSheet.trim().length > 0
-      )
-        warnings.push(
-          `Planilla — el PDF no parece ser una ${docChecks.paymentSheet.label}. Verifica que subiste el archivo correcto.`
-        )
-      if (!docChecks.arl.valid && cleanText.arl.trim().length > 0)
-        warnings.push(
-          `ARL — el PDF no parece ser un ${docChecks.arl.label}. Verifica que subiste el archivo correcto.`
-        )
-      if (!docChecks.contract.valid && cleanText.contract.trim().length > 0)
-        warnings.push(
-          `Contrato — el PDF no parece ser un ${docChecks.contract.label}. Verifica que subiste el archivo correcto.`
-        )
-      if (
-        docChecks.contract2 &&
-        !docChecks.contract2.valid &&
-        cleanText.contract2.trim().length > 0
-      )
-        warnings.push(
-          `Contrato 2 — el PDF no parece ser un ${docChecks.contract2.label}. Verifica que subiste el archivo correcto.`
-        )
-      if (
-        docChecks.activityReport &&
-        !docChecks.activityReport.valid &&
-        cleanText.activityReport.trim().length > 0
-      )
-        warnings.push(
-          `Informe — el PDF no parece ser un ${docChecks.activityReport.label}. Verifica que subiste el archivo correcto.`
-        )
-
-      const aiPS =
-        r0.status === "fulfilled"
-          ? (r0.value as Record<string, unknown> | null)
-          : null
-      const aiARL =
-        r1.status === "fulfilled"
-          ? (r1.value as Record<string, unknown> | null)
-          : null
-      const aiC1 =
-        r2.status === "fulfilled"
-          ? (r2.value as Record<string, unknown> | null)
-          : null
-      const aiC2 =
-        r3.status === "fulfilled"
-          ? (r3.value as Record<string, unknown> | null)
-          : null
-      const aiReport =
-        r4.status === "fulfilled"
-          ? (r4.value as Record<string, unknown> | null)
-          : null
-      const aiPS2 =
-        r5.status === "fulfilled"
-          ? (r5.value as Record<string, unknown> | null)
-          : null
-
-      const psRaw = fillFromCandidates(
-        aiPS,
-        pilaCandidate as Record<string, unknown>
-      )
-      const paymentSheet = psRaw as PaymentSheetExtracted | null
-      if (r0.status === "rejected") {
-        warnings.push(`Planilla — error de extracción: ${r0.reason}`)
-      } else if (!aiPS) {
-        const len = cleanText.paymentSheet.trim().length
-        warnings.push(
-          len === 0
-            ? "Planilla — el PDF no contiene texto extraíble (¿es un PDF escaneado o protegido?)"
-            : `Planilla — el documento tiene muy poco texto extraíble (${len} caracteres). Podría ser un escaneo; intenta con uno más legible.`
-        )
-      } else {
-        if (!psRaw?.sheetNumber)
-          warnings.push("Planilla — número de planilla no encontrado")
-        if (!psRaw?.paymentDate)
-          warnings.push("Planilla — fecha de pago no encontrada")
-        if (!psRaw?.period)
-          warnings.push("Planilla — período de cotización no encontrado")
-      }
-      if (psRaw)
-        confidence.paymentSheet = computeConfidence(
-          pilaCandidate as Record<string, unknown>,
-          psRaw
-        )
-
-      const ps2Raw = fillFromCandidates(
-        aiPS2,
-        ps2Candidate as Record<string, unknown>
-      )
-      const paymentSheet2 = ps2Raw as PaymentSheetExtracted | null
-      if (r5.status === "rejected" && cleanText.paymentSheet2)
-        warnings.push(`Planilla 2 — error de extracción: ${r5.reason}`)
-      if (ps2Raw)
-        confidence.paymentSheet2 = computeConfidence(
-          ps2Candidate as Record<string, unknown>,
-          ps2Raw
-        )
-
-      const arlRaw = fillFromCandidates(
-        aiARL,
-        arlCandidate as Record<string, unknown>
-      )
-      const arl = arlRaw as ARLExtracted | null
-      if (r1.status === "rejected") {
-        warnings.push(`ARL — error de extracción: ${r1.reason}`)
-      } else if (!aiARL) {
-        const len = cleanText.arl.trim().length
-        warnings.push(
-          len === 0
-            ? "ARL — el PDF no contiene texto extraíble (¿es un PDF escaneado o protegido?)"
-            : `ARL — el documento tiene muy poco texto extraíble (${len} caracteres). Podría ser un escaneo; verifica su legibilidad.`
-        )
-      } else {
-        if (!arlRaw?.startDate)
-          warnings.push("ARL — fecha de inicio de cobertura no encontrada")
-        if (!arlRaw?.endDate)
-          warnings.push("ARL — fecha de fin de cobertura no encontrada")
-      }
-      if (arlRaw)
-        confidence.arl = computeConfidence(
-          arlCandidate as Record<string, unknown>,
-          arlRaw
-        )
-
-      // ── ARL additional validations ────────────────────────────────────────
-      if (cleanText.arl.trim().length > 0) {
-        // 1. Verify UNAL is the employer
-        if (
-          !cleanText.arl
-            .toLowerCase()
-            .includes("universidad nacional de colombia")
-        ) {
+      // ── Wrong-document warnings ──────────────────────────────────────────
+      const wrongTypeWarn = (key: string, label: string, raw: string) => {
+        if (raw.trim().length > 0)
           warnings.push(
-            "ARL — no se encontró 'Universidad Nacional de Colombia' como entidad contratante. Verifica que el certificado corresponda al contrato UNAL."
+            `${label} — el PDF no parece ser un(a) ${label}. Verifica que subiste el archivo correcto.`
+          )
+      }
+      if (!checks.paymentSheet.valid)
+        wrongTypeWarn("paymentSheet", "Planilla", text.paymentSheet)
+      if (!checks.arl.valid) wrongTypeWarn("arl", "ARL", text.arl)
+      if (!checks.contract.valid)
+        wrongTypeWarn("contract", "Contrato", text.contract)
+      if (checks.contract2 && !checks.contract2.valid)
+        wrongTypeWarn("contract2", "Contrato 2", text.contract2)
+      if (checks.activityReport && !checks.activityReport.valid)
+        wrongTypeWarn("activityReport", "Informe", text.activityReport)
+
+      // ── Collect results ──────────────────────────────────────────────────
+      const collect = <T extends Record<string, unknown>>(
+        result: PromiseSettledResult<{
+          data: T | null
+          scanned: boolean
+          validationError?: string
+        }>,
+        docKey: string,
+        docLabel: string,
+        sourceText: string
+      ): T | null => {
+        if (result.status === "rejected") {
+          warnings.push(`${docLabel} — error de extracción: ${result.reason}`)
+          return null
+        }
+        const { data, scanned, validationError } = result.value
+        if (data) {
+          confidence[docKey] = buildConfidence(data)
+          return denull(data)
+        }
+        if (sourceText.trim().length === 0) return null
+        if (scanned) {
+          warnings.push(
+            `${docLabel} — el PDF no contiene texto extraíble (¿es un PDF escaneado o protegido?).`
+          )
+        } else if (validationError) {
+          warnings.push(
+            `${docLabel} — la IA no logró extraer datos válidos. Ingresa los valores manualmente.`
           )
         }
+        return null
+      }
 
-        // 2. Certificate must be issued within the last 30 days
-        const expedDate = extractARLExpeditionDate(cleanText.arl)
-        if (expedDate) {
-          const [d, m, y] = expedDate.split("/").map(Number)
-          const issued = new Date(y, m - 1, d)
-          const today = new Date(
-            new Date().toLocaleString("en-US", { timeZone: "America/Bogota" })
+      const paymentSheet = collect<PaymentSheetExtracted>(
+        r0,
+        "paymentSheet",
+        "Planilla",
+        text.paymentSheet
+      )
+      const arl = collect<ARLExtracted>(r1, "arl", "ARL", text.arl)
+      const contract = collect<ContractExtracted>(
+        r2,
+        "contract",
+        "Contrato",
+        text.contract
+      )
+      const contract2 = collect<ContractExtracted>(
+        r3,
+        "contract2",
+        "Contrato 2",
+        text.contract2
+      )
+      const activityReport = collect<ActivityReportExtracted>(
+        r4,
+        "activityReport",
+        "Informe",
+        text.activityReport
+      )
+      const paymentSheet2 = collect<PaymentSheetExtracted>(
+        r5,
+        "paymentSheet2",
+        "Planilla (mes siguiente)",
+        text.paymentSheet2
+      )
+
+      // ── Format-level downgrades (schema is permissive; we flag invalid here) ─
+      const DMY_RE = /^\d{2}\/\d{2}\/\d{4}$/
+      const PERIOD_RE = /^(0[1-9]|1[0-2])\/\d{4}$/
+      const flagFormat = (
+        docKey: string,
+        field: string,
+        value: string | undefined | null,
+        re: RegExp,
+        label: string,
+        formatLabel: string
+      ) => {
+        if (!value) return
+        if (!re.test(value)) {
+          warnings.push(
+            `${label} — el campo "${field}" tiene un formato no estándar ("${value}"). Debe ser ${formatLabel}.`
           )
-          today.setHours(0, 0, 0, 0)
-          const diffDays = Math.floor(
-            (today.getTime() - issued.getTime()) / 86_400_000
+          downgrade(confidence, docKey, field)
+        }
+      }
+      flagFormat("paymentSheet", "paymentDate", paymentSheet?.paymentDate, DMY_RE, "Planilla", "DD/MM/YYYY")
+      flagFormat("paymentSheet", "paymentDeadline", paymentSheet?.paymentDeadline, DMY_RE, "Planilla", "DD/MM/YYYY")
+      flagFormat("paymentSheet", "period", paymentSheet?.period, PERIOD_RE, "Planilla", "MM/YYYY")
+      flagFormat("arl", "startDate", arl?.startDate, DMY_RE, "ARL", "DD/MM/YYYY")
+      flagFormat("arl", "endDate", arl?.endDate, DMY_RE, "ARL", "DD/MM/YYYY")
+      // Document number length (5-12 digits)
+      const flagDocLen = (docKey: string, value: string | undefined | null, label: string) => {
+        if (!value) return
+        if (value.length < 5 || value.length > 12) {
+          warnings.push(
+            `${label} — el documento "${value}" no parece válido (debe tener 5-12 dígitos).`
           )
-          if (diffDays > 30) {
+          downgrade(confidence, docKey, "documentNumber")
+        }
+      }
+      flagDocLen("paymentSheet", paymentSheet?.documentNumber, "Planilla")
+      flagDocLen("arl", arl?.documentNumber, "ARL")
+      flagDocLen("contract", contract?.documentNumber, "Contrato")
+      // Sheet number length (6-16 digits)
+      if (paymentSheet?.sheetNumber) {
+        const len = paymentSheet.sheetNumber.length
+        if (len < 6 || len > 16) {
+          warnings.push(
+            `Planilla — el número de planilla "${paymentSheet.sheetNumber}" tiene una longitud poco común (esperado 6-16 dígitos).`
+          )
+          downgrade(confidence, "paymentSheet", "sheetNumber")
+        }
+      }
+
+      // ── Soft sanity warnings (do NOT block extraction) ───────────────────
+      // Each warning that targets a specific field also downgrades its
+      // confidence from "high" to "medium" so the UI flags it.
+      if (paymentSheet?.contractorName && looksLikeCompany(paymentSheet.contractorName)) {
+        warnings.push(
+          `Planilla — el nombre "${paymentSheet.contractorName}" parece de una empresa u operador. Verifica que sea el cotizante.`
+        )
+        downgrade(confidence, "paymentSheet", "contractorName")
+      }
+      if (arl?.contractorName && looksLikeCompany(arl.contractorName)) {
+        warnings.push(
+          `ARL — el nombre "${arl.contractorName}" parece de una empresa o ARL. Verifica que sea el afiliado.`
+        )
+        downgrade(confidence, "arl", "contractorName")
+      }
+      if (contract?.contractorName && looksLikeCompany(contract.contractorName)) {
+        warnings.push(
+          `Contrato — el nombre "${contract.contractorName}" parece de una entidad. Verifica que sea el contratista.`
+        )
+        downgrade(confidence, "contract", "contractorName")
+      }
+      if (arl?.riskClass && arl.cotizationRate) {
+        const want = VALID_RATE_BY_RISK[arl.riskClass]
+        if (want && Math.abs(arl.cotizationRate - want) > 0.01) {
+          warnings.push(
+            `ARL — la tasa ${arl.cotizationRate}% no corresponde a la clase de riesgo ${arl.riskClass} (esperado ${want}%).`
+          )
+          downgrade(confidence, "arl", "cotizationRate")
+          downgrade(confidence, "arl", "riskClass")
+        }
+      }
+      if (arl?.startDate && arl?.endDate) {
+        const s = parseDMY(arl.startDate)
+        const e = parseDMY(arl.endDate)
+        if (s && e && s > e) {
+          warnings.push(
+            `ARL — fecha de fin (${arl.endDate}) es anterior a la de inicio (${arl.startDate}).`
+          )
+          downgrade(confidence, "arl", "endDate")
+        }
+      }
+      if (paymentSheet?.paymentDate && paymentSheet?.paymentDeadline) {
+        const p = parseDMY(paymentSheet.paymentDate)
+        const dl = parseDMY(paymentSheet.paymentDeadline)
+        if (p && dl && p > dl) {
+          warnings.push(
+            `Planilla — fecha de pago (${paymentSheet.paymentDate}) es posterior a la fecha límite (${paymentSheet.paymentDeadline}).`
+          )
+          downgrade(confidence, "paymentSheet", "paymentDeadline")
+        }
+      }
+
+      // ── ARL expedition-date check (30 days max) ──────────────────────────
+      // Solo aplica cuando hay texto extraído. Para PDFs vía OCR, esta
+      // validación no es viable porque no tenemos el texto del certificado.
+      if (text.arl.trim().length > 0) {
+        const exp = extractExpeditionDate(text.arl)
+        if (exp) {
+          const days = daysSince(exp)
+          if (days !== null && days > 30) {
             warnings.push(
-              `ARL — el certificado fue expedido hace ${diffDays} días (${expedDate}). Debe tener menos de 30 días de antigüedad.`
+              `ARL — el certificado fue expedido hace ${days} días (${exp}). Debe tener menos de 30 días.`
             )
           }
         }
       }
 
-      const c1Raw = fillFromCandidates(
-        aiC1,
-        contractCand as Record<string, unknown>
-      )
-      const contract = c1Raw as ContractExtracted | null
-      if (r2.status === "rejected") {
-        warnings.push(`Contrato — error de extracción: ${r2.reason}`)
-      } else if (!aiC1) {
-        const len = cleanText.contract.trim().length
-        warnings.push(
-          len === 0
-            ? "Contrato — el PDF no contiene texto extraíble (¿es un PDF escaneado o protegido?)"
-            : `Contrato — el texto extraído es inusualmente corto (${len} caracteres). Podría estar incompleto o ser un escaneo.`
-        )
-      } else {
-        if (!c1Raw?.orderNumber)
-          warnings.push("Contrato — número de orden no encontrado")
-        if (!c1Raw?.documentNumber)
-          warnings.push("Contrato — número de documento no encontrado")
-      }
-      if (c1Raw)
-        confidence.contract = computeConfidence(
-          contractCand as Record<string, unknown>,
-          c1Raw
-        )
-
-      const c2Candidates = (contract2Cand ?? {}) as Record<string, unknown>
-      const c2Raw = fillFromCandidates(aiC2, c2Candidates)
-      const contract2 = c2Raw as ContractExtracted | null
-      if (r3.status === "rejected" && cleanText.contract2)
-        warnings.push(`Contrato 2 — error de extracción: ${r3.reason}`)
-      else if (
-        r3.status === "fulfilled" &&
-        !aiC2 &&
-        cleanText.contract2.trim().length > 0
-      )
-        warnings.push("Contrato 2 — la IA no pudo interpretar el documento")
-      if (c2Raw) confidence.contract2 = computeConfidence(c2Candidates, c2Raw)
-
-      const reportCandidates = (reportCand ?? {}) as Record<string, unknown>
-      const reportRaw = fillFromCandidates(aiReport, reportCandidates)
-      const activityReport = reportRaw as ActivityReportExtracted | null
-      if (r4.status === "rejected" && cleanText.activityReport)
-        warnings.push(`Informe — error de extracción: ${r4.reason}`)
-      else if (
-        r4.status === "fulfilled" &&
-        !aiReport &&
-        cleanText.activityReport.trim().length > 0
-      )
-        warnings.push("Informe — la IA no pudo interpretar el documento")
-      if (reportRaw)
-        confidence.activityReport = computeConfidence(
-          reportCandidates,
-          reportRaw
-        )
-
-      // ── Per-field sanity checks ──────────────────────────────────────────────
-      // Validate each extracted value makes sense for its field. Mismatches
-      // (e.g. insurer name in contractorName) produce specific warnings and
-      // downgrade that field's confidence so the UI flags it for manual review.
-      const sanityResults = [
-        checkPaymentSheet(paymentSheet),
-        checkARL(arl),
-        checkContract(contract, "Contrato"),
-        ...(contract2 ? [checkContract(contract2, "Contrato 2")] : []),
-        ...(paymentSheet2 ? [checkPaymentSheet(paymentSheet2)] : []),
-      ]
-      for (const result of sanityResults) {
-        warnings.push(...result.warnings)
-        downgradeConfidence(confidence, result.lowConfidenceFields)
-      }
-
-      // ── Cross-document name consistency check ────────────────────────────────
-      // Compares contractorName across documents. A significant mismatch usually
-      // means the extractor picked up the wrong person's name (e.g., insurer name
-      // instead of contractor name, or a different person's data).
-      const normalize = (s: string) =>
-        s
-          .toLowerCase()
-          .normalize("NFD")
-          .replace(/[̀-ͯ]/g, "")
-          .replace(/[^a-z\s]/g, "")
-          .trim()
-
-      const names = {
-        planilla: normalize(paymentSheet?.contractorName ?? ""),
-        arl: normalize(arl?.contractorName ?? ""),
-        contract: normalize(contract?.contractorName ?? ""),
-      }
-
-      // Only validate when all three names are non-empty
-      if (names.planilla && names.arl && names.contract) {
-        // Tokenize and count shared words (ignoring short words like "de", "la")
-        const tokens = (s: string) =>
-          s.split(/\s+/).filter((w) => w.length > 2)
-        const overlap = (a: string, b: string) => {
-          const ta = new Set(tokens(a))
-          const tb = tokens(b)
-          return tb.filter((w) => ta.has(w)).length
-        }
-        const pilaArlMatch = overlap(names.planilla, names.arl)
-        const pilaContractMatch = overlap(names.planilla, names.contract)
-
-        if (pilaArlMatch === 0) {
+      // ── Cross-doc name consistency ───────────────────────────────────────
+      if (
+        paymentSheet?.contractorName &&
+        arl?.contractorName &&
+        contract?.contractorName
+      ) {
+        const np = normalizeName(paymentSheet.contractorName)
+        const na = normalizeName(arl.contractorName)
+        const nc = normalizeName(contract.contractorName)
+        if (nameOverlap(np, na) === 0) {
           warnings.push(
-            `Posible error de extracción: el nombre en la planilla ("${paymentSheet?.contractorName}") no coincide con el nombre en la ARL ("${arl?.contractorName}"). Verifica que ambos correspondan al mismo contratista.`
+            `Posible error: el nombre en la planilla ("${paymentSheet.contractorName}") no coincide con el de la ARL ("${arl.contractorName}").`
           )
+          downgrade(confidence, "paymentSheet", "contractorName")
+          downgrade(confidence, "arl", "contractorName")
         }
-        if (pilaContractMatch === 0) {
+        if (nameOverlap(np, nc) === 0) {
           warnings.push(
-            `Posible error de extracción: el nombre en la planilla ("${paymentSheet?.contractorName}") no coincide con el nombre en el contrato ("${contract?.contractorName}"). Verifica que ambos correspondan al mismo contratista.`
+            `Posible error: el nombre en la planilla ("${paymentSheet.contractorName}") no coincide con el del contrato ("${contract.contractorName}").`
           )
+          downgrade(confidence, "paymentSheet", "contractorName")
+          downgrade(confidence, "contract", "contractorName")
         }
       }
 
-      const extractedData: ExtractedData = {
+      // ── Result ───────────────────────────────────────────────────────────
+      // The schemas allow nulls (LLM can opt out of guessing), but the
+      // canonical ExtractedData types are non-nullable. `denull` already
+      // converted nulls to "" / 0 / null-on-paymentDeadline at collect time,
+      // so the runtime shape matches — cast to satisfy the type system.
+      const data = {
         paymentSheet,
         arl,
         contract,
         ...(contract2 ? { contract2 } : {}),
         ...(paymentSheet2 ? { paymentSheet2 } : {}),
         ...(activityReport ? { activityReport } : {}),
-      }
-
-      const finalIssuers: Record<string, string> = {}
-      if (issuerKeys.paymentSheet)
-        finalIssuers.paymentSheet = issuerKeys.paymentSheet
-      if (issuerKeys.arl) finalIssuers.arl = issuerKeys.arl
-      if (issuerKeys.contract) finalIssuers.contract = issuerKeys.contract
-      if (issuerKeys.contract2) finalIssuers.contract2 = issuerKeys.contract2
-      if (issuerKeys.paymentSheet2)
-        finalIssuers.paymentSheet2 = issuerKeys.paymentSheet2
+      } as unknown as ExtractedData
 
       send({
         type: "result",
-        data: extractedData,
+        data,
         warnings,
-        issuerKeys: finalIssuers,
+        issuerKeys: {},
         confidence,
       })
     } catch (error) {
       const message =
-        error instanceof Error
-          ? error.message
-          : "Error desconocido al extraer datos con IA."
+        error instanceof Error ? error.message : "Error desconocido en extracción."
       send({
         type: "error",
         message: "Falló la extracción estructurada con IA.",

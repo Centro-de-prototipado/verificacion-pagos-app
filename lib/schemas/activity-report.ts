@@ -1,43 +1,45 @@
 import { z } from "zod"
 
+import { dateField, docField, nameField } from "./_shared"
+
+const NULL_INSTRUCTION =
+  "Si el dato NO aparece o no estás seguro, devuelve null. NUNCA inventes."
+
 export const ActivityReportSchema = z.object({
-  items: z.array(
-    z.object({
-      activityDescription: z
-        .string()
-        .describe(
-          "Texto de la columna 'OBLIGACIÓN ESPECÍFICA (Incluir cada obligación tal como se pactó en la OPS)'. IGNORA la de Actividades Ejecutadas."
-        ),
-      periodPercentage: z
-        .number()
-        .describe("Valor de la columna Periodo (%) para este item"),
-      accumulatedPercentage: z
-        .number()
-        .describe(
-          "Valor de la columna Acumulada a la fecha (%) para este item"
-        ),
-    })
-  ),
-  signatureDate: z
-    .string()
+  items: z
+    .array(
+      z.object({
+        activityDescription: z.string(),
+        periodPercentage: z.number(),
+        accumulatedPercentage: z.number(),
+      })
+    )
     .describe(
-      "Fecha después de 'En constancia de lo anterior, se firma el presente informe el' (DD/MM/YYYY)"
+      "Una entrada por cada obligación de la columna 'OBLIGACIÓN ESPECÍFICA' " +
+        "(IGNORA 'Actividades Ejecutadas'). Devuelve [] si no hay tabla."
     ),
-  periodFrom: z.string().describe("PERIODO DEL INFORME: Desde (DD/MM/YYYY)"),
-  periodTo: z.string().describe("PERIODO DEL INFORME: Hasta (DD/MM/YYYY)"),
-  opsStartDate: z.string().describe("PLAZO OPS: Fecha inicio (DD/MM/YYYY)"),
-  opsEndDate: z.string().describe("PLAZO OPS: Fecha Terminación (DD/MM/YYYY)"),
-  contractorName: z
-    .string()
-    .describe(
-      "Nombre del contratista que aparece en el informe (usualmente arriba o en el bloque de firma)"
-    ),
-  documentNumber: z.string().describe("C.C. / C.E. No. del contratista"),
-  isSigned: z
-    .boolean()
-    .describe(
-      "¿El documento parece estar firmado? Busca firmas manuscritas o sellos al final."
-    ),
+  signatureDate: dateField()
+    .nullable()
+    .describe("Fecha de firma (DD/MM/YYYY). " + NULL_INSTRUCTION),
+  periodFrom: dateField()
+    .nullable()
+    .describe("Periodo informe Desde (DD/MM/YYYY). " + NULL_INSTRUCTION),
+  periodTo: dateField()
+    .nullable()
+    .describe("Periodo informe Hasta (DD/MM/YYYY). " + NULL_INSTRUCTION),
+  opsStartDate: dateField()
+    .nullable()
+    .describe("Plazo OPS — inicio (DD/MM/YYYY). " + NULL_INSTRUCTION),
+  opsEndDate: dateField()
+    .nullable()
+    .describe("Plazo OPS — fin (DD/MM/YYYY). " + NULL_INSTRUCTION),
+  contractorName: nameField()
+    .nullable()
+    .describe("Nombre del contratista. " + NULL_INSTRUCTION),
+  documentNumber: docField()
+    .nullable()
+    .describe("C.C. / C.E. del contratista. " + NULL_INSTRUCTION),
+  isSigned: z.boolean().describe("¿Hay firma o sello al final?"),
 })
 
 export type ActivityReportExtracted = z.infer<typeof ActivityReportSchema>

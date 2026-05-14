@@ -133,7 +133,52 @@ interface EditFieldProps {
   placeholder?: string
 }
 
-/** Universal editable field with optional auto-format on blur. */
+// ─── Per-format input filters (mask while typing) ─────────────────────────
+
+/** Insert "/" automatically as user types DDMMYYYY → DD/MM/YYYY. */
+function maskDate(input: string): string {
+  const d = input.replace(/\D/g, "").slice(0, 8)
+  if (d.length <= 2) return d
+  if (d.length <= 4) return `${d.slice(0, 2)}/${d.slice(2)}`
+  return `${d.slice(0, 2)}/${d.slice(2, 4)}/${d.slice(4)}`
+}
+
+/** Mask MM/YYYY: insert "/" after 2 digits. */
+function maskPeriod(input: string): string {
+  const d = input.replace(/\D/g, "").slice(0, 6)
+  if (d.length <= 2) return d
+  return `${d.slice(0, 2)}/${d.slice(2)}`
+}
+
+/** Letters + spaces + accents only, auto-uppercase. */
+function maskUppercase(input: string): string {
+  return input
+    .toUpperCase()
+    .replace(/[^A-ZÁÉÍÓÚÑÜ\s\-']/g, "")
+}
+
+/** Digits + thousands separators with live COP formatting. */
+function maskMoney(input: string): string {
+  const digits = input.replace(/\D/g, "")
+  if (!digits) return ""
+  // Live thousand separators (dots — es-CO convention)
+  return new Intl.NumberFormat("es-CO").format(parseInt(digits, 10))
+}
+
+/** Allow digits + single decimal separator. */
+function maskRate(input: string): string {
+  // Normalize comma → dot, strip everything else
+  const cleaned = input.replace(",", ".").replace(/[^\d.]/g, "")
+  // Keep only first dot
+  const firstDot = cleaned.indexOf(".")
+  if (firstDot === -1) return cleaned
+  return (
+    cleaned.slice(0, firstDot + 1) +
+    cleaned.slice(firstDot + 1).replace(/\./g, "")
+  )
+}
+
+/** Universal editable field with input masking + format-on-blur. */
 export function EditField({
   label,
   value,
@@ -149,7 +194,9 @@ export function EditField({
         ? value
           ? COP.format(value as number)
           : ""
-        : String(value)
+        : format === "uppercase"
+          ? String(value).toUpperCase()
+          : String(value)
   const [text, setText] = useState(initial)
 
   useEffect(() => {
@@ -158,10 +205,22 @@ export function EditField({
   }, [value])
 
   const handleChange = (v: string) => {
-    if (format === "digits") setText(digitsOnly(v))
-    else if (format === "money")
-      setText(v) // allow free typing, format on blur
-    else setText(v)
+    switch (format) {
+      case "digits":
+        return setText(digitsOnly(v))
+      case "date":
+        return setText(maskDate(v))
+      case "period":
+        return setText(maskPeriod(v))
+      case "uppercase":
+        return setText(maskUppercase(v))
+      case "money":
+        return setText(maskMoney(v))
+      case "rate":
+        return setText(maskRate(v))
+      default:
+        return setText(v)
+    }
   }
 
   const handleBlur = () => {
@@ -188,6 +247,14 @@ export function EditField({
     onChange(next)
   }
 
+  // Limit length per format to prevent typing past sensible bounds.
+  const maxLength =
+    format === "date"
+      ? 10 // DD/MM/YYYY
+      : format === "period"
+        ? 7 // MM/YYYY
+        : undefined
+
   return (
     <div className="flex flex-col gap-0.5 rounded-lg border px-3 py-2 focus-within:border-primary/60">
       <div className="flex items-center gap-1.5">
@@ -200,14 +267,18 @@ export function EditField({
         onChange={(e) => handleChange(e.target.value)}
         onBlur={handleBlur}
         placeholder={placeholder}
-        className="w-full bg-transparent text-sm font-medium outline-none placeholder:text-muted-foreground/50"
+        maxLength={maxLength}
+        autoCapitalize={format === "uppercase" ? "characters" : "off"}
+        className={`w-full bg-transparent text-sm font-medium outline-none placeholder:text-muted-foreground/50 ${
+          format === "uppercase" ? "uppercase" : ""
+        }`}
         spellCheck={format === "text" || format === "uppercase"}
         lang="es"
         inputMode={
           format === "digits" || format === "money"
             ? "numeric"
-            : format === "rate"
-              ? "decimal"
+            : format === "rate" || format === "date" || format === "period"
+              ? "numeric"
               : undefined
         }
       />
@@ -318,6 +389,7 @@ const COVERAGE_OPTIONS: { value: ARLData["coverageStatus"]; label: string }[] =
     { value: "ACTIVA", label: "ACTIVA" },
     { value: "INACTIVA", label: "INACTIVA" },
     { value: "SUSPENDIDA", label: "SUSPENDIDA" },
+    { value: "MORA", label: "MORA" },
   ]
 
 const RISK_OPTIONS: { value: RiskClass; label: string }[] = [
@@ -405,14 +477,14 @@ export function PlanillaEditor({
         format="money"
       />
       <EditField
-        label="Nombre cotizante (Planilla)"
+        label="Nombre cotizante"
         value={d.contractorName}
         onChange={(v) => set({ contractorName: String(v) })}
         confidence={c?.contractorName}
         format="uppercase"
       />
       <EditField
-        label="Documento (Planilla)"
+        label="Número documento"
         value={d.documentNumber}
         onChange={(v) => set({ documentNumber: String(v) })}
         confidence={c?.documentNumber}
@@ -486,14 +558,14 @@ export function ARLEditor({
         format="rate"
       />
       <EditField
-        label="Nombre afiliado (ARL)"
+        label="Nombre afiliado"
         value={d.contractorName}
         onChange={(v) => set({ contractorName: String(v) })}
         confidence={c?.contractorName}
         format="uppercase"
       />
       <EditField
-        label="Documento (ARL)"
+        label="Número documento"
         value={d.documentNumber}
         onChange={(v) => set({ documentNumber: String(v) })}
         confidence={c?.documentNumber}
