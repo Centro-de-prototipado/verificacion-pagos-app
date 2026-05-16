@@ -1,0 +1,2076 @@
+{
+  "Instrucciones": {
+    "max_row": 54,
+    "max_col": 3,
+    "cells": [
+      {
+        "coord": "B1",
+        "row": 1,
+        "col": 2,
+        "value": "INSTRUCCIONES DE DILIGENCIAMIENTO "
+      },
+      {
+        "coord": "B3",
+        "row": 3,
+        "col": 2,
+        "value": "Este es un formato mediante el cual usted declara que pertenece a la cédula de Rentas de Trabajo establecida en el artículo103 del Estatuto Tributario, y que la información suministrada es fidedigna y corresponde a los soportes que permiten obtener las deducciones y rentas exentas para aplicar en los contratos de prestación de servicios suscritos con la Universidad Nacional de Colombia.\n\nLa finalidad del formato es para efectos tributarios y de control."
+      },
+      {
+        "coord": "B5",
+        "row": 5,
+        "col": 2,
+        "value": "¿EN QUÉ CASOS UNA PERSONA NATURAL PERTENECE A LA CÉDULA DE RENTAS DE TRABAJO?"
+      },
+      {
+        "coord": "C5",
+        "row": 5,
+        "col": 3,
+        "value": "¿EN QUÉ CASOS UNA PERSONA NATURAL NO PERTENECE A LA CÉDULA DE RENTAS DE TRABAJO?"
+      },
+      {
+        "coord": "B6",
+        "row": 6,
+        "col": 2,
+        "value": "Se considera que una persona natural pertenece a la cédula de Rentas de Trabajo cuando:\n\n - Presta el servicio personalmente.\n - No tiene empleados ejecutando el contrato.\n - No existe una empresa o estructura empresarial detrás del servicio.\n - El ingreso depende directamente de su trabajo y conocimiento.\n - Declara anualmente sus ingresos como rentas de trabajo."
+      },
+      {
+        "coord": "C6",
+        "row": 6,
+        "col": 3,
+        "value": "Se considera que una persona natural no pertenece a la cédula de Rentas de Trabajo cuando:\n\n - Tiene personal contratado que ejecuta el servicio.\n - Existe venta o comercialización de equipos, materiales, insumos o mercancías en general.\n - Se realizan arreglos locativos que incluyen materiales.\n - El ingreso corresponde a una actividad comercial.\n - Declara el ingreso con costos y gastos asociados."
+      },
+      {
+        "coord": "B8",
+        "row": 8,
+        "col": 2,
+        "value": "1. DATOS GENERALES"
+      },
+      {
+        "coord": "B9",
+        "row": 9,
+        "col": 2,
+        "value": "Nombre del Contratista:"
+      },
+      {
+        "coord": "C9",
+        "row": 9,
+        "col": 3,
+        "value": "Registre su nombre completo tal como aparece en su documento de identidad."
+      },
+      {
+        "coord": "B10",
+        "row": 10,
+        "col": 2,
+        "value": "Tipo y número de documento de identificación"
+      },
+      {
+        "coord": "C10",
+        "row": 10,
+        "col": 3,
+        "value": "Indique el tipo de documento (CC, CE, etc.) y el número correspondiente."
+      },
+      {
+        "coord": "B11",
+        "row": 11,
+        "col": 2,
+        "value": "Correo institucional"
+      },
+      {
+        "coord": "C11",
+        "row": 11,
+        "col": 3,
+        "value": "Registre el correo incluido el @unal.edu.co, si no tienen un correo institucional por favor dejar en blanco  "
+      },
+      {
+        "coord": "B12",
+        "row": 12,
+        "col": 2,
+        "value": "Fecha de diligenciamiento"
+      },
+      {
+        "coord": "C12",
+        "row": 12,
+        "col": 3,
+        "value": "Indique la fecha en la que diligencia este formato."
+      },
+      {
+        "coord": "B13",
+        "row": 13,
+        "col": 2,
+        "value": "¿Es usted pensionado ?"
+      },
+      {
+        "coord": "C13",
+        "row": 13,
+        "col": 3,
+        "value": "Seleccione “SI\" únicamente si aplica al menos una de estas condiciones:\n1. Ya cuenta con pensión reconocida.\n2. Cumple las semanas cotizadas exigidas para pensionarse.\n3.Obtuvo devolución de saldos o indemnización sustitutiva, según corresponda. "
+      },
+      {
+        "coord": "B15",
+        "row": 15,
+        "col": 2,
+        "value": "2. RELACIÓN DE CONTRATOS QUE ORIGINAN PAGOS"
+      },
+      {
+        "coord": "B16",
+        "row": 16,
+        "col": 2,
+        "value": "Empresa en QUIPU"
+      },
+      {
+        "coord": "C16",
+        "row": 16,
+        "col": 3,
+        "value": "Corresponde al código de la empresa en la cual se encuentra registrada su orden contractual. Este dato lo puede obtener del Formato: Comunicación de legalización de orden contractual o contrato \"Empresa (Código QUIPU)\""
+      },
+      {
+        "coord": "B17",
+        "row": 17,
+        "col": 2,
+        "value": "Tipo Orden Contractual"
+      },
+      {
+        "coord": "C17",
+        "row": 17,
+        "col": 3,
+        "value": "Indique el tipo de de la orden o contrato vigente."
+      },
+      {
+        "coord": "B18",
+        "row": 18,
+        "col": 2,
+        "value": "Número orden contractual "
+      },
+      {
+        "coord": "C18",
+        "row": 18,
+        "col": 3,
+        "value": "Registre unicamente el número de la orden o contrato vigente."
+      },
+      {
+        "coord": "B19",
+        "row": 19,
+        "col": 2,
+        "value": "Valor total del contrato antes de IVA"
+      },
+      {
+        "coord": "C19",
+        "row": 19,
+        "col": 3,
+        "value": "Indique el valor total del contrato sin incluir IVA."
+      },
+      {
+        "coord": "B20",
+        "row": 20,
+        "col": 2,
+        "value": "Fecha de inicio"
+      },
+      {
+        "coord": "C20",
+        "row": 20,
+        "col": 3,
+        "value": "Registre la fecha de inicio del contrato en formato dd/mm/aaaa"
+      },
+      {
+        "coord": "B21",
+        "row": 21,
+        "col": 2,
+        "value": "Fecha de terminación "
+      },
+      {
+        "coord": "C21",
+        "row": 21,
+        "col": 3,
+        "value": "Registre la fecha de finalización del contrato en formato dd/mm/aaaa"
+      },
+      {
+        "coord": "B22",
+        "row": 22,
+        "col": 2,
+        "value": "Clase de riesgos laborales"
+      },
+      {
+        "coord": "C22",
+        "row": 22,
+        "col": 3,
+        "value": "Indique la clase de riesgo asignado el cual se puede verificar en el certificado de afiliación a la ARL"
+      },
+      {
+        "coord": "B24",
+        "row": 24,
+        "col": 2,
+        "value": "3. ANEXOS: DOCUMENTOS PARA SOPORTE DE DEDUCCIONES"
+      },
+      {
+        "coord": "B26",
+        "row": 26,
+        "col": 2,
+        "value": "Esta sección aplica solo si desea solicitar deducciones y si sus ingresos mensualizados son superiores a 95 UVT.\nMarque y adjunte únicamente los documentos que apliquen a su caso. Si no adjunta los soportes correctos, no se aplicarán las deducciones.\nLas deducciones se aplicarán unicamente a un solo contrato."
+      },
+      {
+        "coord": "B28",
+        "row": 28,
+        "col": 2,
+        "value": "Solicito aplicar mis deducciones al contrato No."
+      },
+      {
+        "coord": "C28",
+        "row": 28,
+        "col": 3,
+        "value": "Seleccione de la lista desplegable la información del contrato al que solicita aplicar las deducciones. Este campo es obligatorio; la falta de diligenciamiento será causal de devolución."
+      },
+      {
+        "coord": "B29",
+        "row": 29,
+        "col": 2,
+        "value": "Formato de Certificado de dependientes"
+      },
+      {
+        "coord": "C29",
+        "row": 29,
+        "col": 3,
+        "value": "Formato U.FT.12.010.077 Declaración para la deducción de pagos por dependientes  (máximo 4) - con sus documentos anexos  "
+      },
+      {
+        "coord": "B30",
+        "row": 30,
+        "col": 2,
+        "value": "Certificado de intereses o corrección monetaria por préstamos para adquisición de vivienda"
+      },
+      {
+        "coord": "C30",
+        "row": 30,
+        "col": 3,
+        "value": "Certificado expedido por la entidad financiera del año gravable anterior"
+      },
+      {
+        "coord": "B31",
+        "row": 31,
+        "col": 2,
+        "value": "Certificado de cuentas de ahorro y pago de aporte mensual para el fomento de la construcción - AFC"
+      },
+      {
+        "coord": "C31",
+        "row": 31,
+        "col": 3,
+        "value": "Certificado expedido por la entidad financiera donde constan los aportes realizados a una cuenta AFC en el año gravable anterior.\nPara hacer posible la deducción se debe anexar adicionalmente una autorización por parte del contratista que autorice la transferencia a la cuenta AFC por parte de la Universidad."
+      },
+      {
+        "coord": "B32",
+        "row": 32,
+        "col": 2,
+        "value": "Certificado de seguro de salud - Póliza "
+      },
+      {
+        "coord": "C32",
+        "row": 32,
+        "col": 3,
+        "value": "Factura o certificación de la aseguradora, acompañada del comprobante de pago, correspondiente al período del pago"
+      },
+      {
+        "coord": "B33",
+        "row": 33,
+        "col": 2,
+        "value": "Comprobante de pago mensual de Medicina Prepagada"
+      },
+      {
+        "coord": "C33",
+        "row": 33,
+        "col": 3,
+        "value": "Factura y comprobante de pago emitidos por la entidad de medicina prepagada siempre que corresponda al mismo período del pago solicitado."
+      },
+      {
+        "coord": "B34",
+        "row": 34,
+        "col": 2,
+        "value": "Aportes voluntarios a pensión - AVP"
+      },
+      {
+        "coord": "C34",
+        "row": 34,
+        "col": 3,
+        "value": "Certificado anual de Aportes Voluntarios a Pensión, expedido por el fondo de pensiones (público o privado) del año anterior.\nPara hacer posible la deducción se debe anexar adicionalmente una autorización por parte del contratista que autorice el pago de AVP por parte de la Universidad."
+      },
+      {
+        "coord": "B36",
+        "row": 36,
+        "col": 2,
+        "value": "Periodo de solicitud de pago "
+      },
+      {
+        "coord": "C36",
+        "row": 36,
+        "col": 3,
+        "value": "Registre el periodo al cual corresponde la solicitud de pago. Debe estar en formato mm/yyyy \nEjemplo: 05/2026"
+      },
+      {
+        "coord": "B37",
+        "row": 37,
+        "col": 2,
+        "value": "Periodo de la planilla"
+      },
+      {
+        "coord": "C37",
+        "row": 37,
+        "col": 3,
+        "value": "Indique el periodo de pago de la planilla de aportes al Sistema de Seguridad Social que adjunta como independiente. Debe estar en formato mm/yyyy. \nEjemplo: 05/2026"
+      },
+      {
+        "coord": "B39",
+        "row": 39,
+        "col": 2,
+        "value": "Declaración formal para disminución de base de retención"
+      },
+      {
+        "coord": "C39",
+        "row": 39,
+        "col": 3,
+        "value": "Seleccione \"SI\" o \"NO\" segun corresponda. \nSeleccione “SI” únicamente si desea que se le aplique la disminución de la base de retención por los aportes al Sistema de Seguridad Social y siempre que el período de la solicitud de pago coincida con el período de la planilla efectivamente pagada.\nEn caso contrario seleccion \"NO\"."
+      },
+      {
+        "coord": "B41",
+        "row": 41,
+        "col": 2,
+        "value": "4. CALCULO APORTES OBLIGATORIOS AL SISTEMA DE SEGURIDAD SOCIAL INTEGRAL (SGSSI) MENSUALES"
+      },
+      {
+        "coord": "B42",
+        "row": 42,
+        "col": 2,
+        "value": "Esta sección calcula automaticamente los aportes obligatorios a salud, pensión, fondo de solidaridad y subsistencia (cuando aplica) y ARL (cuando aplica), con base en el Ingreso Base de Cotización (IBC) mensual."
+      },
+      {
+        "coord": "B44",
+        "row": 44,
+        "col": 2,
+        "value": "5. MENSUALIZACIÓN CONTRACTUAL"
+      },
+      {
+        "coord": "B46",
+        "row": 46,
+        "col": 2,
+        "value": "Esta sección determina automaticamente el valor mensual del contrato teniendo en cuenta el número de meses de ejecución del mismo, y el ingreso base de cotización (IBC) para el calculo de los aportes al sistema de seguridad social."
+      },
+      {
+        "coord": "B48",
+        "row": 48,
+        "col": 2,
+        "value": "6. BASE DE RETENCIÓN MENSUALIZADA "
+      },
+      {
+        "coord": "B49",
+        "row": 49,
+        "col": 2,
+        "value": "Esta sección calcula automaticamente la base sobre la cual se aplicará la retención en la fuente."
+      },
+      {
+        "coord": "B51",
+        "row": 51,
+        "col": 2,
+        "value": "7. FIRMA DEL CONTRATISTA"
+      },
+      {
+        "coord": "B52",
+        "row": 52,
+        "col": 2,
+        "value": "Cuando el trámite se realice a través de la Central de Pagos, no se requiere firma, dado que el diligenciamiento y envío de la información mediante el usuario y contraseña asignados constituye firma electrónica y representa la manifestación expresa de voluntad del contratista. \n\nCuando el trámite no se realice por la Central de Pagos, el formato deberá ser firmado por el contratista para su validez."
+      },
+      {
+        "coord": "B54",
+        "row": 54,
+        "col": 2,
+        "value": "Una vez finalice el diligenciamiento, guarde o imprima el archivo en formato PDF únicamente de la hoja de Certificación Mensual y adjúntelo posteriormente a la solicitud de pago."
+      }
+    ]
+  },
+  "Certificación Mensual": {
+    "max_row": 60,
+    "max_col": 9,
+    "cells": [
+      {
+        "coord": "B2",
+        "row": 2,
+        "col": 2,
+        "value": "Proceso: Gestión Financiera"
+      },
+      {
+        "coord": "B3",
+        "row": 3,
+        "col": 2,
+        "value": "Formato: Certificación determinación cedular Rentas de Trabajo "
+      },
+      {
+        "coord": "B4",
+        "row": 4,
+        "col": 2,
+        "value": "Etapa: Ejecutar y reconocer los hechos económicos y financieros"
+      },
+      {
+        "coord": "B7",
+        "row": 7,
+        "col": 2,
+        "formula": "=CONCATENATE(\"Este formato aplica para la vigencia \", Vigencia)",
+        "value": "Este formato aplica para la vigencia 2026"
+      },
+      {
+        "coord": "B9",
+        "row": 9,
+        "col": 2,
+        "value": "INFORMACIÓN DE LA PERSONA NATURAL "
+      },
+      {
+        "coord": "B10",
+        "row": 10,
+        "col": 2,
+        "value": "DECLARACIÓN BAJO GRAVEDAD DE JURAMENTO"
+      },
+      {
+        "coord": "B11",
+        "row": 11,
+        "col": 2,
+        "formula": "=CONCATENATE(\"Yo, \",D17,Datos!A22,)",
+        "value": "Yo,  identificado como aparece al pie de mi firma, declaro bajo gravedad de juramento, que pertenezco a la cédula de Rentas de Trabajo establecida en el artículo103 del Estatuto Tributario, y que la información suministrada es fidedigna y corresponde a los soportes que me permiten obtener las deducciones y rentas exentas para aplicar en los siguientes contratos de prestación de servicios suscritos con la Universidad Nacional de Colombia."
+      },
+      {
+        "coord": "B13",
+        "row": 13,
+        "col": 2,
+        "value": "NOTA: Favor diligenciar las celdas editables de color azul claro"
+      },
+      {
+        "coord": "B15",
+        "row": 15,
+        "col": 2,
+        "value": "1. DATOS GENERALES"
+      },
+      {
+        "coord": "B17",
+        "row": 17,
+        "col": 2,
+        "value": "Nombre del Contratista"
+      },
+      {
+        "coord": "G17",
+        "row": 17,
+        "col": 7,
+        "value": "Fecha de diligenciamiento"
+      },
+      {
+        "coord": "B18",
+        "row": 18,
+        "col": 2,
+        "value": "Tipo y número de documento de identificación"
+      },
+      {
+        "coord": "G18",
+        "row": 18,
+        "col": 7,
+        "value": "¿Es usted pensionado ?"
+      },
+      {
+        "coord": "I18",
+        "row": 18,
+        "col": 9,
+        "value": "NO",
+        "number_format": "mm-dd-yy"
+      },
+      {
+        "coord": "B19",
+        "row": 19,
+        "col": 2,
+        "value": "Correo institucional"
+      },
+      {
+        "coord": "B21",
+        "row": 21,
+        "col": 2,
+        "value": "2. RELACIÓN DE CONTRATOS QUE ORIGINAN PAGOS (a)"
+      },
+      {
+        "coord": "B22",
+        "row": 22,
+        "col": 2,
+        "value": "NOMBRE O RAZÓN SOCIAL DEL CONTRATANTE"
+      },
+      {
+        "coord": "C22",
+        "row": 22,
+        "col": 3,
+        "value": "EMPRESA EN QUIPU"
+      },
+      {
+        "coord": "D22",
+        "row": 22,
+        "col": 4,
+        "value": "TIPO ORDEN\nCONTRACTUAL"
+      },
+      {
+        "coord": "E22",
+        "row": 22,
+        "col": 5,
+        "value": "NÚMERO ORDEN CONTRACTUAL "
+      },
+      {
+        "coord": "F22",
+        "row": 22,
+        "col": 6,
+        "value": "VALOR TOTAL DEL CONTRATO ANTES DE IVA",
+        "number_format": "_(\"$\"\\ * #,##0_);_(\"$\"\\ * \\(#,##0\\);_(\"$\"\\ * \"-\"??_);_(@_)"
+      },
+      {
+        "coord": "G22",
+        "row": 22,
+        "col": 7,
+        "value": "FECHA DE INICIO (DD/MM/AAAA)"
+      },
+      {
+        "coord": "H22",
+        "row": 22,
+        "col": 8,
+        "value": "FECHA DE TERMINACION \n(DD/MM/AAAA)"
+      },
+      {
+        "coord": "I22",
+        "row": 22,
+        "col": 9,
+        "value": "CLASE DE RIESGOS LABORALES (b)"
+      },
+      {
+        "coord": "B23",
+        "row": 23,
+        "col": 2,
+        "value": "UNIVERSIDAD NACIONAL DE COLOMBIA"
+      },
+      {
+        "coord": "B28",
+        "row": 28,
+        "col": 2,
+        "value": "TOTAL"
+      },
+      {
+        "coord": "F28",
+        "row": 28,
+        "col": 6,
+        "formula": "=SUM(F23:F27)",
+        "value": 0,
+        "number_format": "_(\"$\"\\ * #,##0_);_(\"$\"\\ * \\(#,##0\\);_(\"$\"\\ * \"-\"??_);_(@_)"
+      },
+      {
+        "coord": "B30",
+        "row": 30,
+        "col": 2,
+        "value": "(a)  Si tiene varias Ordenes Contractuales de Prestación de Servicios suscritas con la Universidad Nacional de Colombia y que se encuentren en ejecución dentro del periodo de solicitud de pago, debe relacionarlas una a una."
+      },
+      {
+        "coord": "B31",
+        "row": 31,
+        "col": 2,
+        "value": "(b)  Seleccione el tipo de riesgos laborales de acuerdo al certificado de afiliación (Recuerde que cuando las ordenes establezcan diferentes tipos de riesgo, el aporte pago debe realizarse por el porcentaje mas alto)."
+      },
+      {
+        "coord": "B33",
+        "row": 33,
+        "col": 2,
+        "formula": "=+IF(B57=0,\"\",IF(B57<(UVT*95),\"Debido a que sus ingresos mensuales son inferiores a 95 UVT NO debe presentar los documentos descritos en la seccion 3. ANEXOS para soportes de deducciones.\",\"Debido a que sus ingresos mensuales son superiores a 95 UVT puede presentar los documentos descritos en la seccion 3. ANEXOS para soportes de deducciones.\"))"
+      },
+      {
+        "coord": "B35",
+        "row": 35,
+        "col": 2,
+        "value": "3. ANEXOS: DOCUMENTOS PARA SOPORTE DE DEDUCCIONES"
+      },
+      {
+        "coord": "G35",
+        "row": 35,
+        "col": 7,
+        "value": "4. CALCULO APORTES OBLIGATORIOS AL SISTEMA DE SEGURIDAD SOCIAL INTEGRAL (SGSSI) MENSUALES"
+      },
+      {
+        "coord": "B36",
+        "row": 36,
+        "col": 2,
+        "value": "Solicito aplicar mis deducciones al contrato No."
+      },
+      {
+        "coord": "G36",
+        "row": 36,
+        "col": 7,
+        "value": "Aporte obligatorio a salud (12,5%)"
+      },
+      {
+        "coord": "I36",
+        "row": 36,
+        "col": 9,
+        "formula": "=+Datos!F16",
+        "value": 0,
+        "number_format": "_(\"$\"\\ * #,##0_);_(\"$\"\\ * \\(#,##0\\);_(\"$\"\\ * \"-\"??_);_(@_)"
+      },
+      {
+        "coord": "B37",
+        "row": 37,
+        "col": 2,
+        "value": "Formato de Certificado de dependientes"
+      },
+      {
+        "coord": "C37",
+        "row": 37,
+        "col": 3,
+        "value": "NO",
+        "number_format": "[$$-240A]\\ #,##0.00"
+      },
+      {
+        "coord": "D37",
+        "row": 37,
+        "col": 4,
+        "value": "Certificado de seguro de salud - Póliza "
+      },
+      {
+        "coord": "E37",
+        "row": 37,
+        "col": 5,
+        "value": "NO",
+        "number_format": "[$$-240A]\\ #,##0.00"
+      },
+      {
+        "coord": "G37",
+        "row": 37,
+        "col": 7,
+        "value": "Aporte obligatorio a pensión (16%)"
+      },
+      {
+        "coord": "I37",
+        "row": 37,
+        "col": 9,
+        "formula": "=Datos!G16",
+        "value": 0,
+        "number_format": "_(\"$\"\\ * #,##0_);_(\"$\"\\ * \\(#,##0\\);_(\"$\"\\ * \"-\"??_);_(@_)"
+      },
+      {
+        "coord": "B38",
+        "row": 38,
+        "col": 2,
+        "value": "Certificado de intereses o corrección monetaria por préstamos para adquisición de vivienda"
+      },
+      {
+        "coord": "C38",
+        "row": 38,
+        "col": 3,
+        "value": "NO",
+        "number_format": "[$$-240A]\\ #,##0.00"
+      },
+      {
+        "coord": "D38",
+        "row": 38,
+        "col": 4,
+        "value": "Comprobante de pago mensual de Medicina Prepagada"
+      },
+      {
+        "coord": "E38",
+        "row": 38,
+        "col": 5,
+        "value": "NO",
+        "number_format": "[$$-240A]\\ #,##0.00"
+      },
+      {
+        "coord": "G38",
+        "row": 38,
+        "col": 7,
+        "value": "Fondo de solidaridad pensional"
+      },
+      {
+        "coord": "I38",
+        "row": 38,
+        "col": 9,
+        "formula": "=Datos!H16",
+        "value": 0,
+        "number_format": "_(\"$\"\\ * #,##0_);_(\"$\"\\ * \\(#,##0\\);_(\"$\"\\ * \"-\"??_);_(@_)"
+      },
+      {
+        "coord": "B39",
+        "row": 39,
+        "col": 2,
+        "value": "Certificado de cuentas de ahorro y pago de aporte mensual para el fomento de la construcción - AFC"
+      },
+      {
+        "coord": "C39",
+        "row": 39,
+        "col": 3,
+        "value": "NO",
+        "number_format": "[$$-240A]\\ #,##0.00"
+      },
+      {
+        "coord": "D39",
+        "row": 39,
+        "col": 4,
+        "value": "Aportes voluntarios a pensión"
+      },
+      {
+        "coord": "E39",
+        "row": 39,
+        "col": 5,
+        "value": "NO",
+        "number_format": "[$$-240A]\\ #,##0.00"
+      },
+      {
+        "coord": "G39",
+        "row": 39,
+        "col": 7,
+        "value": "Aportes a Riesgos laborales (ARL)"
+      },
+      {
+        "coord": "I39",
+        "row": 39,
+        "col": 9,
+        "formula": "=Datos!J16",
+        "value": 0,
+        "number_format": "_(\"$\"\\ * #,##0_);_(\"$\"\\ * \\(#,##0\\);_(\"$\"\\ * \"-\"??_);_(@_)"
+      },
+      {
+        "coord": "G40",
+        "row": 40,
+        "col": 7,
+        "value": "Total Aportes Obligatorios"
+      },
+      {
+        "coord": "I40",
+        "row": 40,
+        "col": 9,
+        "formula": "=+SUM(I36:I39)",
+        "value": 0,
+        "number_format": "_(\"$\"\\ * #,##0_);_(\"$\"\\ * \\(#,##0\\);_(\"$\"\\ * \"-\"??_);_(@_)"
+      },
+      {
+        "coord": "B41",
+        "row": 41,
+        "col": 2,
+        "value": "Periodo de solicitud de pago "
+      },
+      {
+        "coord": "B42",
+        "row": 42,
+        "col": 2,
+        "value": "Periodo de la planilla"
+      },
+      {
+        "coord": "B44",
+        "row": 44,
+        "col": 2,
+        "value": "DECLARACIÓN FORMAL PARA DISMINUCIÓN DE BASE DE RETENCIÓN"
+      },
+      {
+        "coord": "G44",
+        "row": 44,
+        "col": 7,
+        "value": "7. FIRMA DEL CONTRATISTA"
+      },
+      {
+        "coord": "B45",
+        "row": 45,
+        "col": 2,
+        "value": "Declaro bajo la gravedad de juramento, para efectos de verificación, control, trámite de pago y disminución de base de retención, y en cumplimiento de lo dispuesto en el parágrafo 1 del artículo 4 del Decreto 2271 de 2009, Artículo 126-1 del Estatuto Tributario y las demás normas que regulan el Sistema de Seguridad Social Integral, que los documentos que adjunto a la presente declaración corresponden al pago efectivo, oportuno y completo de los aportes obligatorios al Sistema de Seguridad Social Integral, por los conceptos de salud y pensión, asociados a la(s) orden(es) contractual(es) correspondiente(s) y al mismo período que origina el pago objeto de verificación.\n\nAsí mismo, manifiesto expresamente que los ingresos correspondientes al período de cotización declarado se encuentran determinados conforme a lo previsto en el artículo 3 del Decreto 510 de 2003 y las normas concordantes, esto es, sobre el ingreso realmente percibido, dentro de los topes legales aplicables."
+      },
+      {
+        "coord": "E45",
+        "row": 45,
+        "col": 5,
+        "value": "  NO  ",
+        "number_format": "[$$-240A]\\ #,##0.00"
+      },
+      {
+        "coord": "G47",
+        "row": 47,
+        "col": 7,
+        "value": "Nombre:"
+      },
+      {
+        "coord": "H47",
+        "row": 47,
+        "col": 8,
+        "formula": "=IF(D17=\"\",\"\",D17)"
+      },
+      {
+        "coord": "G48",
+        "row": 48,
+        "col": 7,
+        "value": "Número de documento de identificación"
+      },
+      {
+        "coord": "H48",
+        "row": 48,
+        "col": 8,
+        "formula": "=IF(D18=\"\",\"\",D18)"
+      },
+      {
+        "coord": "B50",
+        "row": 50,
+        "col": 2,
+        "value": "5. MENSUALIZACIÓN CONTRACTUAL"
+      },
+      {
+        "coord": "F50",
+        "row": 50,
+        "col": 6,
+        "value": "6. BASE DE RETENCIÓN MENSUALIZADA "
+      },
+      {
+        "coord": "B51",
+        "row": 51,
+        "col": 2,
+        "value": "VALOR MENSUALIZADO"
+      },
+      {
+        "coord": "C51",
+        "row": 51,
+        "col": 3,
+        "value": "NÚMERO DE MESES"
+      },
+      {
+        "coord": "D51",
+        "row": 51,
+        "col": 4,
+        "value": "INGRESO BASE DE COTIZACIÓN POR CONTRATO IBC (40%). VR MENSUALIZADO "
+      },
+      {
+        "coord": "F51",
+        "row": 51,
+        "col": 6,
+        "value": "APORTE OBLIGATORIO A SALUD (12,5)"
+      },
+      {
+        "coord": "G51",
+        "row": 51,
+        "col": 7,
+        "value": "APORTE OBLIGATORIO A PENSIÓN (16%)"
+      },
+      {
+        "coord": "H51",
+        "row": 51,
+        "col": 8,
+        "value": "FONDO DE SOLIDARIDAD PENSIONAL  Y SUBSISTENCIA"
+      },
+      {
+        "coord": "I51",
+        "row": 51,
+        "col": 9,
+        "value": "BASE DE RETENCIÓN MENSUAL"
+      },
+      {
+        "coord": "B52",
+        "row": 52,
+        "col": 2,
+        "formula": "=+IF(C52=0,0,F23/C52)",
+        "value": 0,
+        "number_format": "_(\"$\"\\ * #,##0_);_(\"$\"\\ * \\(#,##0\\);_(\"$\"\\ * \"-\"??_);_(@_)"
+      },
+      {
+        "coord": "C52",
+        "row": 52,
+        "col": 3,
+        "formula": "=+IF(OR(G23=\"\",H23=\"\"),0,((YEAR(H23)-YEAR(G23))*12)+MONTH(H23)-MONTH(G23)+1)",
+        "value": 0,
+        "number_format": "0"
+      },
+      {
+        "coord": "D52",
+        "row": 52,
+        "col": 4,
+        "formula": "=+B52*Porcentaje_IBC",
+        "value": 0,
+        "number_format": "_(\"$\"\\ * #,##0_);_(\"$\"\\ * \\(#,##0\\);_(\"$\"\\ * \"-\"??_);_(@_)"
+      },
+      {
+        "coord": "F52",
+        "row": 52,
+        "col": 6,
+        "formula": "=IFERROR(+D52/SUM(Datos!$D$11:$D$15)*I$36,0)",
+        "value": 0,
+        "number_format": "_(\"$\"\\ * #,##0_);_(\"$\"\\ * \\(#,##0\\);_(\"$\"\\ * \"-\"??_);_(@_)"
+      },
+      {
+        "coord": "G52",
+        "row": 52,
+        "col": 7,
+        "formula": "=IFERROR(+D52/SUM(Datos!$D$11:$D$15)*$I$37,0)",
+        "value": 0,
+        "number_format": "_(\"$\"\\ * #,##0_);_(\"$\"\\ * \\(#,##0\\);_(\"$\"\\ * \"-\"??_);_(@_)"
+      },
+      {
+        "coord": "H52",
+        "row": 52,
+        "col": 8,
+        "formula": "=IFERROR(D52/SUM(Datos!$D$11:$D$15)*$I$38,0)",
+        "value": 0,
+        "number_format": "_(\"$\"\\ * #,##0_);_(\"$\"\\ * \\(#,##0\\);_(\"$\"\\ * \"-\"??_);_(@_)"
+      },
+      {
+        "coord": "I52",
+        "row": 52,
+        "col": 9,
+        "formula": "=IF($E$45=\"  SI  \",B52-F52-G52-H52,B52)",
+        "value": 0,
+        "number_format": "_-\"$\"* #,##0_-;\\-\"$\"* #,##0_-;_-\"$\"* \"-\"_-;_-@"
+      },
+      {
+        "coord": "B53",
+        "row": 53,
+        "col": 2,
+        "formula": "=+IF(C53=0,0,F24/C53)",
+        "value": 0,
+        "number_format": "_(\"$\"\\ * #,##0_);_(\"$\"\\ * \\(#,##0\\);_(\"$\"\\ * \"-\"??_);_(@_)"
+      },
+      {
+        "coord": "C53",
+        "row": 53,
+        "col": 3,
+        "formula": "=+IF(OR(G24=\"\",H24=\"\"),0,((YEAR(H24)-YEAR(G24))*12)+MONTH(H24)-MONTH(G24)+1)",
+        "value": 0,
+        "number_format": "0"
+      },
+      {
+        "coord": "D53",
+        "row": 53,
+        "col": 4,
+        "formula": "=+B53*Porcentaje_IBC",
+        "value": 0,
+        "number_format": "_(\"$\"\\ * #,##0_);_(\"$\"\\ * \\(#,##0\\);_(\"$\"\\ * \"-\"??_);_(@_)"
+      },
+      {
+        "coord": "F53",
+        "row": 53,
+        "col": 6,
+        "formula": "=IFERROR(+D53/SUM(Datos!$D$11:$D$15)*I$36,0)",
+        "value": 0,
+        "number_format": "_(\"$\"\\ * #,##0_);_(\"$\"\\ * \\(#,##0\\);_(\"$\"\\ * \"-\"??_);_(@_)"
+      },
+      {
+        "coord": "G53",
+        "row": 53,
+        "col": 7,
+        "formula": "=IFERROR(+D53/SUM(Datos!$D$11:$D$15)*$I$37,0)",
+        "value": 0,
+        "number_format": "_(\"$\"\\ * #,##0_);_(\"$\"\\ * \\(#,##0\\);_(\"$\"\\ * \"-\"??_);_(@_)"
+      },
+      {
+        "coord": "H53",
+        "row": 53,
+        "col": 8,
+        "formula": "=IFERROR(D53/SUM(Datos!$D$11:$D$15)*$I$38,0)",
+        "value": 0,
+        "number_format": "_(\"$\"\\ * #,##0_);_(\"$\"\\ * \\(#,##0\\);_(\"$\"\\ * \"-\"??_);_(@_)"
+      },
+      {
+        "coord": "I53",
+        "row": 53,
+        "col": 9,
+        "formula": "=IF($E$45=\"  SI  \",B53-F53-G53-H53,B53)",
+        "value": 0,
+        "number_format": "_-\"$\"* #,##0_-;\\-\"$\"* #,##0_-;_-\"$\"* \"-\"_-;_-@"
+      },
+      {
+        "coord": "B54",
+        "row": 54,
+        "col": 2,
+        "formula": "=+IF(C54=0,0,F25/C54)",
+        "value": 0,
+        "number_format": "_(\"$\"\\ * #,##0_);_(\"$\"\\ * \\(#,##0\\);_(\"$\"\\ * \"-\"??_);_(@_)"
+      },
+      {
+        "coord": "C54",
+        "row": 54,
+        "col": 3,
+        "formula": "=+IF(OR(G25=\"\",H25=\"\"),0,((YEAR(H25)-YEAR(G25))*12)+MONTH(H25)-MONTH(G25)+1)",
+        "value": 0,
+        "number_format": "0"
+      },
+      {
+        "coord": "D54",
+        "row": 54,
+        "col": 4,
+        "formula": "=+B54*Porcentaje_IBC",
+        "value": 0,
+        "number_format": "_(\"$\"\\ * #,##0_);_(\"$\"\\ * \\(#,##0\\);_(\"$\"\\ * \"-\"??_);_(@_)"
+      },
+      {
+        "coord": "F54",
+        "row": 54,
+        "col": 6,
+        "formula": "=IFERROR(+D54/SUM(Datos!$D$11:$D$15)*I$36,0)",
+        "value": 0,
+        "number_format": "_(\"$\"\\ * #,##0_);_(\"$\"\\ * \\(#,##0\\);_(\"$\"\\ * \"-\"??_);_(@_)"
+      },
+      {
+        "coord": "G54",
+        "row": 54,
+        "col": 7,
+        "formula": "=IFERROR(+D54/SUM(Datos!$D$11:$D$15)*$I$37,0)",
+        "value": 0,
+        "number_format": "_(\"$\"\\ * #,##0_);_(\"$\"\\ * \\(#,##0\\);_(\"$\"\\ * \"-\"??_);_(@_)"
+      },
+      {
+        "coord": "H54",
+        "row": 54,
+        "col": 8,
+        "formula": "=IFERROR(D54/SUM(Datos!$D$11:$D$15)*$I$38,0)",
+        "value": 0,
+        "number_format": "_(\"$\"\\ * #,##0_);_(\"$\"\\ * \\(#,##0\\);_(\"$\"\\ * \"-\"??_);_(@_)"
+      },
+      {
+        "coord": "I54",
+        "row": 54,
+        "col": 9,
+        "formula": "=IF($E$45=\"  SI  \",B54-F54-G54-H54,B54)",
+        "value": 0,
+        "number_format": "_-\"$\"* #,##0_-;\\-\"$\"* #,##0_-;_-\"$\"* \"-\"_-;_-@"
+      },
+      {
+        "coord": "B55",
+        "row": 55,
+        "col": 2,
+        "formula": "=+IF(C55=0,0,F26/C55)",
+        "value": 0,
+        "number_format": "_(\"$\"\\ * #,##0_);_(\"$\"\\ * \\(#,##0\\);_(\"$\"\\ * \"-\"??_);_(@_)"
+      },
+      {
+        "coord": "C55",
+        "row": 55,
+        "col": 3,
+        "formula": "=+IF(OR(G26=\"\",H26=\"\"),0,((YEAR(H26)-YEAR(G26))*12)+MONTH(H26)-MONTH(G26)+1)",
+        "value": 0,
+        "number_format": "0"
+      },
+      {
+        "coord": "D55",
+        "row": 55,
+        "col": 4,
+        "formula": "=+B55*Porcentaje_IBC",
+        "value": 0,
+        "number_format": "_(\"$\"\\ * #,##0_);_(\"$\"\\ * \\(#,##0\\);_(\"$\"\\ * \"-\"??_);_(@_)"
+      },
+      {
+        "coord": "F55",
+        "row": 55,
+        "col": 6,
+        "formula": "=IFERROR(+D55/SUM(Datos!$D$11:$D$15)*I$36,0)",
+        "value": 0,
+        "number_format": "_(\"$\"\\ * #,##0_);_(\"$\"\\ * \\(#,##0\\);_(\"$\"\\ * \"-\"??_);_(@_)"
+      },
+      {
+        "coord": "G55",
+        "row": 55,
+        "col": 7,
+        "formula": "=IFERROR(+D55/SUM(Datos!$D$11:$D$15)*$I$37,0)",
+        "value": 0,
+        "number_format": "_(\"$\"\\ * #,##0_);_(\"$\"\\ * \\(#,##0\\);_(\"$\"\\ * \"-\"??_);_(@_)"
+      },
+      {
+        "coord": "H55",
+        "row": 55,
+        "col": 8,
+        "formula": "=IFERROR(D55/SUM(Datos!$D$11:$D$15)*$I$38,0)",
+        "value": 0,
+        "number_format": "_(\"$\"\\ * #,##0_);_(\"$\"\\ * \\(#,##0\\);_(\"$\"\\ * \"-\"??_);_(@_)"
+      },
+      {
+        "coord": "I55",
+        "row": 55,
+        "col": 9,
+        "formula": "=IF($E$45=\"  SI  \",B55-F55-G55-H55,B55)",
+        "value": 0,
+        "number_format": "_-\"$\"* #,##0_-;\\-\"$\"* #,##0_-;_-\"$\"* \"-\"_-;_-@"
+      },
+      {
+        "coord": "B56",
+        "row": 56,
+        "col": 2,
+        "formula": "=+IF(C56=0,0,F27/C56)",
+        "value": 0,
+        "number_format": "_(\"$\"\\ * #,##0_);_(\"$\"\\ * \\(#,##0\\);_(\"$\"\\ * \"-\"??_);_(@_)"
+      },
+      {
+        "coord": "C56",
+        "row": 56,
+        "col": 3,
+        "formula": "=+IF(OR(G27=\"\",H27=\"\"),0,((YEAR(H27)-YEAR(G27))*12)+MONTH(H27)-MONTH(G27)+1)",
+        "value": 0,
+        "number_format": "0"
+      },
+      {
+        "coord": "D56",
+        "row": 56,
+        "col": 4,
+        "formula": "=+B56*Porcentaje_IBC",
+        "value": 0,
+        "number_format": "_(\"$\"\\ * #,##0_);_(\"$\"\\ * \\(#,##0\\);_(\"$\"\\ * \"-\"??_);_(@_)"
+      },
+      {
+        "coord": "F56",
+        "row": 56,
+        "col": 6,
+        "formula": "=IFERROR(+D56/SUM(Datos!$D$11:$D$15)*I$36,0)",
+        "value": 0,
+        "number_format": "_(\"$\"\\ * #,##0_);_(\"$\"\\ * \\(#,##0\\);_(\"$\"\\ * \"-\"??_);_(@_)"
+      },
+      {
+        "coord": "G56",
+        "row": 56,
+        "col": 7,
+        "formula": "=IFERROR(+D56/SUM(Datos!$D$11:$D$15)*$I$37,0)",
+        "value": 0,
+        "number_format": "_(\"$\"\\ * #,##0_);_(\"$\"\\ * \\(#,##0\\);_(\"$\"\\ * \"-\"??_);_(@_)"
+      },
+      {
+        "coord": "H56",
+        "row": 56,
+        "col": 8,
+        "formula": "=IFERROR(D56/SUM(Datos!$D$11:$D$15)*$I$38,0)",
+        "value": 0,
+        "number_format": "_(\"$\"\\ * #,##0_);_(\"$\"\\ * \\(#,##0\\);_(\"$\"\\ * \"-\"??_);_(@_)"
+      },
+      {
+        "coord": "I56",
+        "row": 56,
+        "col": 9,
+        "formula": "=IF($E$45=\"  SI  \",B56-F56-G56-H56,B56)",
+        "value": 0,
+        "number_format": "_-\"$\"* #,##0_-;\\-\"$\"* #,##0_-;_-\"$\"* \"-\"_-;_-@"
+      },
+      {
+        "coord": "B57",
+        "row": 57,
+        "col": 2,
+        "formula": "=SUM(B52:B56)",
+        "value": 0,
+        "number_format": "_(\"$\"\\ * #,##0_);_(\"$\"\\ * \\(#,##0\\);_(\"$\"\\ * \"-\"??_);_(@_)"
+      },
+      {
+        "coord": "D57",
+        "row": 57,
+        "col": 4,
+        "formula": "=IF(SUM(D52:D56)=0,0,Datos!D16)",
+        "value": 0,
+        "number_format": "_(\"$\"\\ * #,##0_);_(\"$\"\\ * \\(#,##0\\);_(\"$\"\\ * \"-\"??_);_(@_)"
+      },
+      {
+        "coord": "I57",
+        "row": 57,
+        "col": 9,
+        "formula": "=SUM(I52:I56)",
+        "value": 0,
+        "number_format": "_(\"$\"\\ * #,##0_);_(\"$\"\\ * \\(#,##0\\);_(\"$\"\\ * \"-\"??_);_(@_)"
+      },
+      {
+        "coord": "B59",
+        "row": 59,
+        "col": 2,
+        "value": "La Universidad Nacional de Colombia, como responsable del Tratamiento de Datos Personales, informa que los datos de carácter personal recolectados mediante este formato, se encuentran bajo medidas que garantizan la seguridad, confidencialidad e integridad y su tratamiento se realiza de acuerdo al cumplimiento normativo de la Ley 1581 de 2012 y de la Política de Tratamiento de Datos de la Universidad Nacional de Colombia. Puede ejercer sus derechos como titular a conocer, actualizar, rectificar y revocar las autorizaciones dadas a las finalidades aplicables a través de los canales dispuestos y disponibles en www.unal.edu.co o e-mail: protecdatos_na@unal.edu.co."
+      },
+      {
+        "coord": "B60",
+        "row": 60,
+        "col": 2,
+        "value": "Código: U.FT.12.010.069"
+      },
+      {
+        "coord": "E60",
+        "row": 60,
+        "col": 5,
+        "value": "Versión: 6.0"
+      },
+      {
+        "coord": "I60",
+        "row": 60,
+        "col": 9,
+        "value": "Página: 1 de 1"
+      }
+    ]
+  },
+  "Datos": {
+    "max_row": 45,
+    "max_col": 11,
+    "cells": [
+      {
+        "coord": "D1",
+        "row": 1,
+        "col": 4,
+        "value": "Tarifas ARL"
+      },
+      {
+        "coord": "G1",
+        "row": 1,
+        "col": 7,
+        "value": "Tarifas Fondo de Solidaridad Pensional y Subsistencia"
+      },
+      {
+        "coord": "K1",
+        "row": 1,
+        "col": 11,
+        "value": "Lista Condicional"
+      },
+      {
+        "coord": "A2",
+        "row": 2,
+        "col": 1,
+        "value": "Vigencia"
+      },
+      {
+        "coord": "B2",
+        "row": 2,
+        "col": 2,
+        "value": 2026
+      },
+      {
+        "coord": "D2",
+        "row": 2,
+        "col": 4,
+        "value": "Clase Riesgo"
+      },
+      {
+        "coord": "E2",
+        "row": 2,
+        "col": 5,
+        "value": "Tarifa"
+      },
+      {
+        "coord": "G2",
+        "row": 2,
+        "col": 7,
+        "value": "Rango inferior"
+      },
+      {
+        "coord": "H2",
+        "row": 2,
+        "col": 8,
+        "value": "Rango Superior"
+      },
+      {
+        "coord": "I2",
+        "row": 2,
+        "col": 9,
+        "value": "Tarifa"
+      },
+      {
+        "coord": "K2",
+        "row": 2,
+        "col": 11,
+        "value": "  SI  "
+      },
+      {
+        "coord": "A3",
+        "row": 3,
+        "col": 1,
+        "value": "Salario Minimo"
+      },
+      {
+        "coord": "B3",
+        "row": 3,
+        "col": 2,
+        "value": 1750905,
+        "number_format": "_-\"$\"\\ * #,##0_-;\\-\"$\"\\ * #,##0_-;_-\"$\"\\ * \"-\"??_-;_-@"
+      },
+      {
+        "coord": "D3",
+        "row": 3,
+        "col": 4,
+        "value": "Riesgo 1"
+      },
+      {
+        "coord": "E3",
+        "row": 3,
+        "col": 5,
+        "value": 0.00522,
+        "number_format": "0.00%"
+      },
+      {
+        "coord": "G3",
+        "row": 3,
+        "col": 7,
+        "value": 4
+      },
+      {
+        "coord": "H3",
+        "row": 3,
+        "col": 8,
+        "value": 16
+      },
+      {
+        "coord": "I3",
+        "row": 3,
+        "col": 9,
+        "value": 0.01,
+        "number_format": "0%"
+      },
+      {
+        "coord": "K3",
+        "row": 3,
+        "col": 11,
+        "value": "  NO  "
+      },
+      {
+        "coord": "A4",
+        "row": 4,
+        "col": 1,
+        "value": "UVT "
+      },
+      {
+        "coord": "B4",
+        "row": 4,
+        "col": 2,
+        "value": 52374,
+        "number_format": "_-\"$\"\\ * #,##0_-;\\-\"$\"\\ * #,##0_-;_-\"$\"\\ * \"-\"??_-;_-@"
+      },
+      {
+        "coord": "D4",
+        "row": 4,
+        "col": 4,
+        "value": "Riesgo 2"
+      },
+      {
+        "coord": "E4",
+        "row": 4,
+        "col": 5,
+        "value": 0.01044,
+        "number_format": "0.00%"
+      },
+      {
+        "coord": "G4",
+        "row": 4,
+        "col": 7,
+        "value": 16
+      },
+      {
+        "coord": "H4",
+        "row": 4,
+        "col": 8,
+        "value": 17
+      },
+      {
+        "coord": "I4",
+        "row": 4,
+        "col": 9,
+        "value": 0.012,
+        "number_format": "0.00%"
+      },
+      {
+        "coord": "A5",
+        "row": 5,
+        "col": 1,
+        "value": "Porcentaje IBC"
+      },
+      {
+        "coord": "B5",
+        "row": 5,
+        "col": 2,
+        "value": 0.4,
+        "number_format": "0%"
+      },
+      {
+        "coord": "D5",
+        "row": 5,
+        "col": 4,
+        "value": "Riesgo 3"
+      },
+      {
+        "coord": "E5",
+        "row": 5,
+        "col": 5,
+        "value": 0.02436,
+        "number_format": "0.00%"
+      },
+      {
+        "coord": "G5",
+        "row": 5,
+        "col": 7,
+        "value": 17
+      },
+      {
+        "coord": "H5",
+        "row": 5,
+        "col": 8,
+        "value": 18
+      },
+      {
+        "coord": "I5",
+        "row": 5,
+        "col": 9,
+        "value": 0.014,
+        "number_format": "0.00%"
+      },
+      {
+        "coord": "A6",
+        "row": 6,
+        "col": 1,
+        "value": "Salud"
+      },
+      {
+        "coord": "B6",
+        "row": 6,
+        "col": 2,
+        "value": 0.125,
+        "number_format": "0.00%"
+      },
+      {
+        "coord": "D6",
+        "row": 6,
+        "col": 4,
+        "value": "Riesgo 4"
+      },
+      {
+        "coord": "E6",
+        "row": 6,
+        "col": 5,
+        "value": 0.0435,
+        "number_format": "0.00%"
+      },
+      {
+        "coord": "G6",
+        "row": 6,
+        "col": 7,
+        "value": 18
+      },
+      {
+        "coord": "H6",
+        "row": 6,
+        "col": 8,
+        "value": 19
+      },
+      {
+        "coord": "I6",
+        "row": 6,
+        "col": 9,
+        "value": 0.016,
+        "number_format": "0.00%"
+      },
+      {
+        "coord": "A7",
+        "row": 7,
+        "col": 1,
+        "value": "Pension"
+      },
+      {
+        "coord": "B7",
+        "row": 7,
+        "col": 2,
+        "value": 0.16,
+        "number_format": "0%"
+      },
+      {
+        "coord": "D7",
+        "row": 7,
+        "col": 4,
+        "value": "Riesgo 5"
+      },
+      {
+        "coord": "E7",
+        "row": 7,
+        "col": 5,
+        "value": 0.0696,
+        "number_format": "0.00%"
+      },
+      {
+        "coord": "G7",
+        "row": 7,
+        "col": 7,
+        "value": 19
+      },
+      {
+        "coord": "H7",
+        "row": 7,
+        "col": 8,
+        "value": 20
+      },
+      {
+        "coord": "I7",
+        "row": 7,
+        "col": 9,
+        "value": 0.018,
+        "number_format": "0.00%"
+      },
+      {
+        "coord": "G8",
+        "row": 8,
+        "col": 7,
+        "value": 20
+      },
+      {
+        "coord": "H8",
+        "row": 8,
+        "col": 8,
+        "value": 25
+      },
+      {
+        "coord": "I8",
+        "row": 8,
+        "col": 9,
+        "value": 0.02,
+        "number_format": "0%"
+      },
+      {
+        "coord": "A10",
+        "row": 10,
+        "col": 1,
+        "value": "#"
+      },
+      {
+        "coord": "B10",
+        "row": 10,
+        "col": 2,
+        "value": "Orden"
+      },
+      {
+        "coord": "C10",
+        "row": 10,
+        "col": 3,
+        "value": "Valor Mensualizado"
+      },
+      {
+        "coord": "D10",
+        "row": 10,
+        "col": 4,
+        "value": "IBC"
+      },
+      {
+        "coord": "E10",
+        "row": 10,
+        "col": 5,
+        "value": "Salarios minimos"
+      },
+      {
+        "coord": "F10",
+        "row": 10,
+        "col": 6,
+        "value": "Aportes Salud"
+      },
+      {
+        "coord": "G10",
+        "row": 10,
+        "col": 7,
+        "value": "Aportes Pensión -"
+      },
+      {
+        "coord": "H10",
+        "row": 10,
+        "col": 8,
+        "value": "Fondo de Solidaridad Pensional  y subsistencia"
+      },
+      {
+        "coord": "I10",
+        "row": 10,
+        "col": 9,
+        "value": "Clase ARL"
+      },
+      {
+        "coord": "J10",
+        "row": 10,
+        "col": 10,
+        "value": "ARL"
+      },
+      {
+        "coord": "A11",
+        "row": 11,
+        "col": 1,
+        "value": 1
+      },
+      {
+        "coord": "B11",
+        "row": 11,
+        "col": 2,
+        "formula": "=IF(ISBLANK('Certificación Mensual'!E23),\"\",CONCATENATE('Certificación Mensual'!C23,\"-\",'Certificación Mensual'!D23,\"-\",'Certificación Mensual'!E23,\"-\",YEAR('Certificación Mensual'!G23)\n))",
+        "number_format": "\" \"General"
+      },
+      {
+        "coord": "C11",
+        "row": 11,
+        "col": 3,
+        "formula": "='Certificación Mensual'!B52",
+        "value": 0,
+        "number_format": "_-\"$\"\\ * #,##0_-;\\-\"$\"\\ * #,##0_-;_-\"$\"\\ * \"-\"??_-;_-@"
+      },
+      {
+        "coord": "D11",
+        "row": 11,
+        "col": 4,
+        "formula": "=C11*$B$5",
+        "value": 0,
+        "number_format": "_-\"$\"\\ * #,##0_-;\\-\"$\"\\ * #,##0_-;_-\"$\"\\ * \"-\"??_-;_-@"
+      },
+      {
+        "coord": "E11",
+        "row": 11,
+        "col": 5,
+        "formula": "=D11/$B$3",
+        "value": 0,
+        "number_format": "0.00"
+      },
+      {
+        "coord": "F11",
+        "row": 11,
+        "col": 6,
+        "formula": "=D11*$B$6",
+        "value": 0,
+        "number_format": "_(\"$\"\\ * #,##0_);_(\"$\"\\ * \\(#,##0\\);_(\"$\"\\ * \"-\"??_);_(@_)"
+      },
+      {
+        "coord": "G11",
+        "row": 11,
+        "col": 7,
+        "formula": "=IF('Certificación Mensual'!I18=\"SI\",\"0\",D11*$B$7)",
+        "value": 0,
+        "number_format": "_-\"$\"\\ * #,##0.00_-;\\-\"$\"\\ * #,##0.00_-;_-\"$\"\\ * \"-\"??_-;_-@"
+      },
+      {
+        "coord": "H11",
+        "row": 11,
+        "col": 8,
+        "formula": "=+IF(AND(E11>=$G$3,E11<$H$3),D11*$I$3,IF(AND(E11>=$G$4,E11<$H$4),D11*$I$4,IF(AND(E11>=$G$5,E11<$H$5),D11*$I$5,IF(AND(E11>=$G$6,E11<$H$6),D11*$I$6,IF(AND(E11>=$G$7,E11<$H$7),D11*$I$7,IF(E11>=$G$8,D11*$I$8,IF(E11>=$H$8,Salario_Minimo*25*$I$8,0)))))))",
+        "value": 0,
+        "number_format": "_(\"$\"\\ * #,##0_);_(\"$\"\\ * \\(#,##0\\);_(\"$\"\\ * \"-\"??_);_(@_)"
+      },
+      {
+        "coord": "I11",
+        "row": 11,
+        "col": 9,
+        "formula": "=IF(ISBLANK('Certificación Mensual'!H22ESPACIOS),\"0\",'Certificación Mensual'!I23)",
+        "array_ref": "I11",
+        "value": 0,
+        "number_format": "@"
+      },
+      {
+        "coord": "J11",
+        "row": 11,
+        "col": 10,
+        "formula": "=IF(OR(I11=\"Riesgo 4\",I11=\"Riesgo 5\"),0,IFERROR(D11*INDEX($E$3:$E$7,MATCH(I11,$D$3:$D$7,0)),0))",
+        "value": 0,
+        "number_format": "_(\"$\"\\ * #,##0_);_(\"$\"\\ * \\(#,##0\\);_(\"$\"\\ * \"-\"??_);_(@_)"
+      },
+      {
+        "coord": "A12",
+        "row": 12,
+        "col": 1,
+        "value": 2
+      },
+      {
+        "coord": "B12",
+        "row": 12,
+        "col": 2,
+        "formula": "=IF(ISBLANK('Certificación Mensual'!E24),\"\",CONCATENATE('Certificación Mensual'!C24,\"-\",'Certificación Mensual'!D24,\"-\",'Certificación Mensual'!E24,\"-\",YEAR('Certificación Mensual'!G24)\n))",
+        "number_format": "\" \"General"
+      },
+      {
+        "coord": "C12",
+        "row": 12,
+        "col": 3,
+        "formula": "='Certificación Mensual'!B53",
+        "value": 0,
+        "number_format": "_-\"$\"\\ * #,##0_-;\\-\"$\"\\ * #,##0_-;_-\"$\"\\ * \"-\"??_-;_-@"
+      },
+      {
+        "coord": "D12",
+        "row": 12,
+        "col": 4,
+        "formula": "=C12*$B$5",
+        "value": 0,
+        "number_format": "_-\"$\"\\ * #,##0_-;\\-\"$\"\\ * #,##0_-;_-\"$\"\\ * \"-\"??_-;_-@"
+      },
+      {
+        "coord": "E12",
+        "row": 12,
+        "col": 5,
+        "formula": "=D12/$B$3",
+        "value": 0,
+        "number_format": "0.00"
+      },
+      {
+        "coord": "F12",
+        "row": 12,
+        "col": 6,
+        "formula": "=D12*$B$6",
+        "value": 0,
+        "number_format": "_(\"$\"\\ * #,##0_);_(\"$\"\\ * \\(#,##0\\);_(\"$\"\\ * \"-\"??_);_(@_)"
+      },
+      {
+        "coord": "G12",
+        "row": 12,
+        "col": 7,
+        "formula": "=IF('Certificación Mensual'!I20=\"SI\",\"0\",D12*$B$7)",
+        "value": 0,
+        "number_format": "_(\"$\"\\ * #,##0_);_(\"$\"\\ * \\(#,##0\\);_(\"$\"\\ * \"-\"??_);_(@_)"
+      },
+      {
+        "coord": "H12",
+        "row": 12,
+        "col": 8,
+        "formula": "=+IF(AND(E12>=$G$3,E12<$H$3),D12*$I$3,IF(AND(E12>=$G$4,E12<$H$4),D12*$I$4,IF(AND(E12>=$G$5,E12<$H$5),D12*$I$5,IF(AND(E12>=$G$6,E12<$H$6),D12*$I$6,IF(AND(E12>=$G$7,E12<$H$7),D12*$I$7,IF(E12>=$G$8,D12*$I$8,IF(E12>=$H$8,Salario_Minimo*25*$I$8,0)))))))",
+        "value": 0,
+        "number_format": "_(\"$\"\\ * #,##0_);_(\"$\"\\ * \\(#,##0\\);_(\"$\"\\ * \"-\"??_);_(@_)"
+      },
+      {
+        "coord": "I12",
+        "row": 12,
+        "col": 9,
+        "formula": "=IF(ISBLANK('Certificación Mensual'!H22ESPACIOS),\"0\",'Certificación Mensual'!I24)",
+        "array_ref": "I12",
+        "value": 0,
+        "number_format": "@"
+      },
+      {
+        "coord": "J12",
+        "row": 12,
+        "col": 10,
+        "formula": "=IF(OR(I12=\"Riesgo 4\",I12=\"Riesgo 5\"),0,IFERROR(D12*INDEX($E$3:$E$7,MATCH(I12,$D$3:$D$7,0)),0))",
+        "value": 0,
+        "number_format": "_(\"$\"\\ * #,##0_);_(\"$\"\\ * \\(#,##0\\);_(\"$\"\\ * \"-\"??_);_(@_)"
+      },
+      {
+        "coord": "A13",
+        "row": 13,
+        "col": 1,
+        "value": 3
+      },
+      {
+        "coord": "B13",
+        "row": 13,
+        "col": 2,
+        "formula": "=IF(ISBLANK('Certificación Mensual'!E25),\"\",CONCATENATE('Certificación Mensual'!C25,\"-\",'Certificación Mensual'!D25,\"-\",'Certificación Mensual'!E25,\"-\",YEAR('Certificación Mensual'!G25)\n))",
+        "number_format": "\" \"General"
+      },
+      {
+        "coord": "C13",
+        "row": 13,
+        "col": 3,
+        "formula": "='Certificación Mensual'!B54",
+        "value": 0,
+        "number_format": "_-\"$\"\\ * #,##0_-;\\-\"$\"\\ * #,##0_-;_-\"$\"\\ * \"-\"??_-;_-@"
+      },
+      {
+        "coord": "D13",
+        "row": 13,
+        "col": 4,
+        "formula": "=C13*$B$5",
+        "value": 0,
+        "number_format": "_-\"$\"\\ * #,##0_-;\\-\"$\"\\ * #,##0_-;_-\"$\"\\ * \"-\"??_-;_-@"
+      },
+      {
+        "coord": "E13",
+        "row": 13,
+        "col": 5,
+        "formula": "=D13/$B$3",
+        "value": 0,
+        "number_format": "0.00"
+      },
+      {
+        "coord": "F13",
+        "row": 13,
+        "col": 6,
+        "formula": "=D13*$B$6",
+        "value": 0,
+        "number_format": "_(\"$\"\\ * #,##0_);_(\"$\"\\ * \\(#,##0\\);_(\"$\"\\ * \"-\"??_);_(@_)"
+      },
+      {
+        "coord": "G13",
+        "row": 13,
+        "col": 7,
+        "formula": "=IF('Certificación Mensual'!I21=\"SI\",\"0\",D13*$B$7)",
+        "value": 0,
+        "number_format": "_(\"$\"\\ * #,##0_);_(\"$\"\\ * \\(#,##0\\);_(\"$\"\\ * \"-\"??_);_(@_)"
+      },
+      {
+        "coord": "H13",
+        "row": 13,
+        "col": 8,
+        "formula": "=+IF(AND(E13>=$G$3,E13<$H$3),D13*$I$3,IF(AND(E13>=$G$4,E13<$H$4),D13*$I$4,IF(AND(E13>=$G$5,E13<$H$5),D13*$I$5,IF(AND(E13>=$G$6,E13<$H$6),D13*$I$6,IF(AND(E13>=$G$7,E13<$H$7),D13*$I$7,IF(E13>=$G$8,D13*$I$8,IF(E13>=$H$8,Salario_Minimo*25*$I$8,0)))))))",
+        "value": 0,
+        "number_format": "_(\"$\"\\ * #,##0_);_(\"$\"\\ * \\(#,##0\\);_(\"$\"\\ * \"-\"??_);_(@_)"
+      },
+      {
+        "coord": "I13",
+        "row": 13,
+        "col": 9,
+        "formula": "=IF(ISBLANK('Certificación Mensual'!H22ESPACIOS),\"0\",'Certificación Mensual'!I25)",
+        "array_ref": "I13",
+        "value": 0,
+        "number_format": "@"
+      },
+      {
+        "coord": "J13",
+        "row": 13,
+        "col": 10,
+        "formula": "=IF(OR(I13=\"Riesgo 4\",I13=\"Riesgo 5\"),0,IFERROR(D13*INDEX($E$3:$E$7,MATCH(I13,$D$3:$D$7,0)),0))",
+        "value": 0,
+        "number_format": "_(\"$\"\\ * #,##0_);_(\"$\"\\ * \\(#,##0\\);_(\"$\"\\ * \"-\"??_);_(@_)"
+      },
+      {
+        "coord": "A14",
+        "row": 14,
+        "col": 1,
+        "value": 4
+      },
+      {
+        "coord": "B14",
+        "row": 14,
+        "col": 2,
+        "formula": "=IF(ISBLANK('Certificación Mensual'!E26),\"\",CONCATENATE('Certificación Mensual'!C26,\"-\",'Certificación Mensual'!D26,\"-\",'Certificación Mensual'!E26,\"-\",YEAR('Certificación Mensual'!G26)\n))",
+        "number_format": "\" \"General"
+      },
+      {
+        "coord": "C14",
+        "row": 14,
+        "col": 3,
+        "formula": "='Certificación Mensual'!B55",
+        "value": 0,
+        "number_format": "_-\"$\"\\ * #,##0_-;\\-\"$\"\\ * #,##0_-;_-\"$\"\\ * \"-\"??_-;_-@"
+      },
+      {
+        "coord": "D14",
+        "row": 14,
+        "col": 4,
+        "formula": "=C14*$B$5",
+        "value": 0,
+        "number_format": "_-\"$\"\\ * #,##0_-;\\-\"$\"\\ * #,##0_-;_-\"$\"\\ * \"-\"??_-;_-@"
+      },
+      {
+        "coord": "E14",
+        "row": 14,
+        "col": 5,
+        "formula": "=D14/$B$3",
+        "value": 0,
+        "number_format": "0.00"
+      },
+      {
+        "coord": "F14",
+        "row": 14,
+        "col": 6,
+        "formula": "=D14*$B$6",
+        "value": 0,
+        "number_format": "_(\"$\"\\ * #,##0_);_(\"$\"\\ * \\(#,##0\\);_(\"$\"\\ * \"-\"??_);_(@_)"
+      },
+      {
+        "coord": "G14",
+        "row": 14,
+        "col": 7,
+        "formula": "=IF('Certificación Mensual'!I22=\"SI\",\"0\",D14*$B$7)",
+        "value": 0,
+        "number_format": "_(\"$\"\\ * #,##0_);_(\"$\"\\ * \\(#,##0\\);_(\"$\"\\ * \"-\"??_);_(@_)"
+      },
+      {
+        "coord": "H14",
+        "row": 14,
+        "col": 8,
+        "formula": "=+IF(AND(E14>=$G$3,E14<$H$3),D14*$I$3,IF(AND(E14>=$G$4,E14<$H$4),D14*$I$4,IF(AND(E14>=$G$5,E14<$H$5),D14*$I$5,IF(AND(E14>=$G$6,E14<$H$6),D14*$I$6,IF(AND(E14>=$G$7,E14<$H$7),D14*$I$7,IF(E14>=$G$8,D14*$I$8,IF(E14>=$H$8,Salario_Minimo*25*$I$8,0)))))))",
+        "value": 0,
+        "number_format": "_(\"$\"\\ * #,##0_);_(\"$\"\\ * \\(#,##0\\);_(\"$\"\\ * \"-\"??_);_(@_)"
+      },
+      {
+        "coord": "I14",
+        "row": 14,
+        "col": 9,
+        "formula": "=IF(ISBLANK('Certificación Mensual'!H22ESPACIOS),\"0\",'Certificación Mensual'!I26)",
+        "array_ref": "I14",
+        "value": 0,
+        "number_format": "@"
+      },
+      {
+        "coord": "J14",
+        "row": 14,
+        "col": 10,
+        "formula": "=IF(OR(I14=\"Riesgo 4\",I14=\"Riesgo 5\"),0,IFERROR(D14*INDEX($E$3:$E$7,MATCH(I14,$D$3:$D$7,0)),0))",
+        "value": 0,
+        "number_format": "_(\"$\"\\ * #,##0_);_(\"$\"\\ * \\(#,##0\\);_(\"$\"\\ * \"-\"??_);_(@_)"
+      },
+      {
+        "coord": "A15",
+        "row": 15,
+        "col": 1,
+        "value": 5
+      },
+      {
+        "coord": "B15",
+        "row": 15,
+        "col": 2,
+        "formula": "=IF(ISBLANK('Certificación Mensual'!E27),\"\",CONCATENATE('Certificación Mensual'!C27,\"-\",'Certificación Mensual'!D27,\"-\",'Certificación Mensual'!E27,\"-\",YEAR('Certificación Mensual'!G27)\n))",
+        "number_format": "\" \"General"
+      },
+      {
+        "coord": "C15",
+        "row": 15,
+        "col": 3,
+        "formula": "='Certificación Mensual'!B56",
+        "value": 0,
+        "number_format": "_-\"$\"\\ * #,##0_-;\\-\"$\"\\ * #,##0_-;_-\"$\"\\ * \"-\"??_-;_-@"
+      },
+      {
+        "coord": "D15",
+        "row": 15,
+        "col": 4,
+        "formula": "=C15*$B$5",
+        "value": 0,
+        "number_format": "_-\"$\"\\ * #,##0_-;\\-\"$\"\\ * #,##0_-;_-\"$\"\\ * \"-\"??_-;_-@"
+      },
+      {
+        "coord": "E15",
+        "row": 15,
+        "col": 5,
+        "formula": "=D15/$B$3",
+        "value": 0,
+        "number_format": "0.00"
+      },
+      {
+        "coord": "F15",
+        "row": 15,
+        "col": 6,
+        "formula": "=D15*$B$6",
+        "value": 0,
+        "number_format": "_(\"$\"\\ * #,##0_);_(\"$\"\\ * \\(#,##0\\);_(\"$\"\\ * \"-\"??_);_(@_)"
+      },
+      {
+        "coord": "G15",
+        "row": 15,
+        "col": 7,
+        "formula": "=IF('Certificación Mensual'!I23=\"SI\",\"0\",D15*$B$7)",
+        "value": 0,
+        "number_format": "_(\"$\"\\ * #,##0_);_(\"$\"\\ * \\(#,##0\\);_(\"$\"\\ * \"-\"??_);_(@_)"
+      },
+      {
+        "coord": "H15",
+        "row": 15,
+        "col": 8,
+        "formula": "=+IF(AND(E15>=$G$3,E15<$H$3),D15*$I$3,IF(AND(E15>=$G$4,E15<$H$4),D15*$I$4,IF(AND(E15>=$G$5,E15<$H$5),D15*$I$5,IF(AND(E15>=$G$6,E15<$H$6),D15*$I$6,IF(AND(E15>=$G$7,E15<$H$7),D15*$I$7,IF(E15>=$G$8,D15*$I$8,IF(E15>=$H$8,Salario_Minimo*25*$I$8,0)))))))",
+        "value": 0,
+        "number_format": "_(\"$\"\\ * #,##0_);_(\"$\"\\ * \\(#,##0\\);_(\"$\"\\ * \"-\"??_);_(@_)"
+      },
+      {
+        "coord": "I15",
+        "row": 15,
+        "col": 9,
+        "formula": "=IF(ISBLANK('Certificación Mensual'!H22ESPACIOS),\"0\",'Certificación Mensual'!I27)",
+        "array_ref": "I15",
+        "value": 0,
+        "number_format": "@"
+      },
+      {
+        "coord": "J15",
+        "row": 15,
+        "col": 10,
+        "formula": "=IF(OR(I15=\"Riesgo 4\",I15=\"Riesgo 5\"),0,IFERROR(D15*INDEX($E$3:$E$7,MATCH(I15,$D$3:$D$7,0)),0))",
+        "value": 0,
+        "number_format": "_(\"$\"\\ * #,##0_);_(\"$\"\\ * \\(#,##0\\);_(\"$\"\\ * \"-\"??_);_(@_)"
+      },
+      {
+        "coord": "C16",
+        "row": 16,
+        "col": 3,
+        "formula": "=IF(SUM(C11:C15)<Salario_Minimo,Salario_Minimo,SUM(C11:C15))",
+        "value": 1750905,
+        "number_format": "_-\"$\"\\ * #,##0_-;\\-\"$\"\\ * #,##0_-;_-\"$\"\\ * \"-\"??_-;_-@"
+      },
+      {
+        "coord": "D16",
+        "row": 16,
+        "col": 4,
+        "formula": "=IF(SUM(D11:D15)=0,0,MAX(Salario_Minimo,MIN(SUM(D11:D15),25*Salario_Minimo)))",
+        "value": 0,
+        "number_format": "_-\"$\"\\ * #,##0_-;\\-\"$\"\\ * #,##0_-;_-\"$\"\\ * \"-\"??_-;_-@"
+      },
+      {
+        "coord": "E16",
+        "row": 16,
+        "col": 5,
+        "formula": "=SUM(E11:E15)",
+        "value": 0,
+        "number_format": "0.00"
+      },
+      {
+        "coord": "F16",
+        "row": 16,
+        "col": 6,
+        "formula": "=IF(SUM(F11:F15)=0,0,MROUND(IF(SUM(F11:F15)<Salario_Minimo*Salud,Salario_Minimo*Salud,IF(SUM(F11:F15)>Salario_Minimo*Salud*25,Salario_Minimo*Salud*25,(SUM(F11:F15)))),100))",
+        "value": 0,
+        "number_format": "_-\"$\"\\ * #,##0_-;\\-\"$\"\\ * #,##0_-;_-\"$\"\\ * \"-\"??_-;_-@"
+      },
+      {
+        "coord": "G16",
+        "row": 16,
+        "col": 7,
+        "formula": "=IF(SUM(G11:G15)=0,0,MROUND(IF('Certificación Mensual'!I18=\"SI\",\"0\",IF(SUM(G11:G15)<Salario_Minimo*Pension,Salario_Minimo*Pension,IF(SUM(G11:G15)>Salario_Minimo*Pension*25,Salario_Minimo*Pension*25,SUM(G11:G15)))),100))",
+        "value": 0,
+        "number_format": "_(\"$\"\\ * #,##0_);_(\"$\"\\ * \\(#,##0\\);_(\"$\"\\ * \"-\"??_);_(@_)"
+      },
+      {
+        "coord": "H16",
+        "row": 16,
+        "col": 8,
+        "formula": "=MROUND(IF(AND(E16>=$G$3,E16<$H$3),D16*$I$3,IF(AND(E16>=$G$4,E16<$H$4),D16*$I$4,IF(AND(E16>=$G$5,E16<$H$5),D16*$I$5,IF(AND(E16>=$G$6,E16<$H$6),D16*$I$6,IF(AND(E16>=$G$7,E16<$H$7),D16*$I$7,IF(E16>=$G$8,D16*$I$8,IF(E16>=$H$8,Salario_Minimo*25*$I$8,0))))))),100)",
+        "value": 0,
+        "number_format": "_(\"$\"\\ * #,##0_);_(\"$\"\\ * \\(#,##0\\);_(\"$\"\\ * \"-\"??_);_(@_)"
+      },
+      {
+        "coord": "J16",
+        "row": 16,
+        "col": 10,
+        "formula": "=MROUND(IFERROR(IF(MAX(IF((VALUE(RIGHT($I$11:$I$15,1))>=1)*(VALUE(RIGHT($I$11:$I$15,1))<=3),VALUE(RIGHT($I$11:$I$15,1)),0))=0,0,D16*INDEX($E$3:$E$7,MATCH(\"Riesgo \"&MAX(IF((VALUE(RIGHT($I$11:$I$15,1))>=1)*(VALUE(RIGHT($I$11:$I$15,1))<=3),VALUE(RIGHT($I$11:$I$15,1)),0)),$D$3:$D$7,0))),0),100)",
+        "array_ref": "J16",
+        "value": 0,
+        "number_format": "_(\"$\"\\ * #,##0_);_(\"$\"\\ * \\(#,##0\\);_(\"$\"\\ * \"-\"??_);_(@_)"
+      },
+      {
+        "coord": "A18",
+        "row": 18,
+        "col": 1,
+        "value": "Ingreso mensualizado"
+      },
+      {
+        "coord": "B18",
+        "row": 18,
+        "col": 2,
+        "formula": "=ROUND(C16,0)",
+        "value": 1750905,
+        "number_format": "_-\"$\"\\ * #,##0_-;\\-\"$\"\\ * #,##0_-;_-\"$\"\\ * \"-\"??_-;_-@"
+      },
+      {
+        "coord": "H18",
+        "row": 18,
+        "col": 8,
+        "formula": "=+IF(AND(E11>=$G$3,E11<$H$3),D11*$I$3,IF(AND(E11>=$G$4,E11<$H$4),D11*$I$4,IF(AND(E11>=$G$5,E11<$H$5),D11*$I$5,IF(AND(E11>=$G$6,E11<$H$6),D11*$I$6,IF(AND(E11>=$G$7,E11<$H$7),D11*$I$7,IF(E11>=$G$8,D11*$I$8,IF(E11>=$H$8,Salario_Minimo*25*$I$8,0)))))))",
+        "value": 0,
+        "number_format": "_(\"$\"\\ * #,##0_);_(\"$\"\\ * \\(#,##0\\);_(\"$\"\\ * \"-\"??_);_(@_)"
+      },
+      {
+        "coord": "A19",
+        "row": 19,
+        "col": 1,
+        "value": "Valor ingreso en UVT"
+      },
+      {
+        "coord": "B19",
+        "row": 19,
+        "col": 2,
+        "formula": "=C16/UVT",
+        "value": 33.430805361438885,
+        "number_format": "0.00"
+      },
+      {
+        "coord": "A22",
+        "row": 22,
+        "col": 1,
+        "value": " identificado como aparece al pie de mi firma, declaro bajo gravedad de juramento, que pertenezco a la cédula de Rentas de Trabajo establecida en el artículo103 del Estatuto Tributario, y que la información suministrada es fidedigna y corresponde a los soportes que me permiten obtener las deducciones y rentas exentas para aplicar en los siguientes contratos de prestación de servicios suscritos con la Universidad Nacional de Colombia."
+      },
+      {
+        "coord": "G45",
+        "row": 45,
+        "col": 7,
+        "value": 656600,
+        "number_format": "_-* #,##0.00_-;\\-* #,##0.00_-;_-* \"-\"??_-;_-@_-"
+      }
+    ]
+  },
+  "__defined_names__": {
+    "IBCmensualizado": "Datos!$B$18",
+    "ListaCondicional": "IF( AND('Certificación Mensual'!$C$41='Certificación Mensual'!$C$42, NOT(ISBLANK('Certificación Mensual'!$C$41)),NOT(ISBLANK('Certificación Mensual'!$C$42))),Datos!$K$2:$K$3,\"NO\" )",
+    "Pension": "Datos!$B$7",
+    "Pensionado": "'Certificación Mensual'!$G$18",
+    "Porcentaje_IBC": "Datos!$B$5",
+    "Salario_Minimo": "Datos!$B$3",
+    "Salud": "Datos!$B$6",
+    "UVT": "Datos!$B$4",
+    "Vigencia": "Datos!$B$2"
+  }
+}
